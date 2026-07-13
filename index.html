@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>لعبة برا السالفة | النسخة العراقية</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -22,10 +23,6 @@
         }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
-        /* ستايل السحب والافلات */
-        .drag-item { cursor: grab; }
-        .drag-item:active { cursor: grabbing; }
-        .drag-over { border-top: 2px solid #a855f7 !important; background: rgba(139, 92, 246, 0.1); }
     </style>
 </head>
 <body class="h-screen text-slate-100 flex flex-col justify-between overflow-hidden p-3 select-none">
@@ -266,6 +263,12 @@
             
             const word = selectSecretWordForCategory(STATE.selectedCategory);
 
+            // تصفير الكاش هنا يمنع ظهور تخمينات الجولة السابقة إذا تكرر نفس اللاعب
+            if (typeof lastGuesserId !== 'undefined') {
+                lastGuesserId = null;
+                cacheGuessOptions = [];
+            }
+
             STATE.currentRound = {
                 secretWord: word,
                 outsiders: chosenOutsiders,
@@ -284,46 +287,6 @@
 
         function goToScreen(screenName) {
             STATE.screen = screenName;
-            render();
-        }
-
-        let draggedItemIdx = null;
-
-        function handleDragStart(e, idx) {
-            draggedItemIdx = idx;
-            e.dataTransfer.effectAllowed = 'move';
-            // للتمويه في الموبايل أو المتصفحات اللي تتطلب داتا
-            e.dataTransfer.setData('text/plain', idx); 
-            setTimeout(() => e.target.style.opacity = '0.5', 0);
-        }
-
-        function handleDragEnd(e) {
-            e.target.style.opacity = '1';
-            const items = document.querySelectorAll('.drag-item');
-            items.forEach(item => item.classList.remove('drag-over'));
-            draggedItemIdx = null;
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.currentTarget.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            e.currentTarget.classList.remove('drag-over');
-        }
-
-        function handleDrop(e, targetIdx) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('drag-over');
-            
-            if (draggedItemIdx === null || draggedItemIdx === targetIdx) return;
-            
-            const players = STATE.players;
-            const item = players.splice(draggedItemIdx, 1)[0];
-            players.splice(targetIdx, 0, item);
-            
-            saveState(); 
             render();
         }
 
@@ -379,15 +342,9 @@
             let playersHtml = '';
             STATE.players.forEach((p, idx) => {
                 playersHtml += `
-                    <div class="drag-item flex justify-between items-center bg-slate-900/90 border border-slate-800/80 px-2.5 py-1.5 rounded-lg transition" 
-                         draggable="true" 
-                         ondragstart="handleDragStart(event, ${idx})"
-                         ondragend="handleDragEnd(event)"
-                         ondragover="handleDragOver(event)"
-                         ondragleave="handleDragLeave(event)"
-                         ondrop="handleDrop(event, ${idx})">
+                    <div class="flex justify-between items-center bg-slate-900/90 border border-slate-800/80 px-2.5 py-1.5 rounded-lg transition" data-player-id="${p.id}">
                         <div class="flex items-center gap-2 w-1/2">
-                            <span class="text-slate-600 text-[10px] cursor-grab active:cursor-grabbing px-1" title="اسحب للترتيب">☰</span>
+                            <span class="sort-handle text-slate-500 text-base cursor-grab active:cursor-grabbing px-1 py-1" title="اسحب للترتيب">☰</span>
                             <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
                             <span class="font-bold text-slate-200 text-xs truncate" title="${p.name}">${p.name}</span>
                         </div>
@@ -413,7 +370,7 @@
                             <input id="playerNameInput" type="text" placeholder="اكتب اسم جديد..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addPlayer()">
                             <button onclick="addPlayer()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold transition text-xs shadow shrink-0">إضافة +</button>
                         </div>
-                        <div class="space-y-1 overflow-y-auto pr-0.5 flex-1" style="max-height: calc(100vh - 200px);">${playersHtml}</div>
+                        <div id="players-list-container" class="space-y-1 overflow-y-auto pr-0.5 flex-1" style="max-height: calc(100vh - 200px);">${playersHtml}</div>
                     </div>
                     <div class="pt-2 flex gap-2 shrink-0">
                         <button onclick="showHomeConfirm()" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg font-bold transition text-xs">رجوع</button>
@@ -423,6 +380,27 @@
             `;
             const nextBtn = document.getElementById('nextToSettingsBtn');
             if (STATE.players.length < 3) nextBtn.disabled = true;
+
+            const listElement = document.getElementById('players-list-container');
+            if (listElement && typeof Sortable !== 'undefined') {
+                new Sortable(listElement, {
+                    handle: '.sort-handle',
+                    animation: 150,
+                    ghostClass: 'opacity-50',
+                    onEnd: function () {
+                        const newOrder = [];
+                        const listItems = listElement.querySelectorAll('[data-player-id]');
+                        listItems.forEach(item => {
+                            const id = parseInt(item.getAttribute('data-player-id'));
+                            const player = STATE.players.find(p => p.id === id);
+                            if (player) newOrder.push(player);
+                        });
+                        STATE.players = newOrder;
+                        saveState();
+                        render();
+                    }
+                });
+            }
         }
 
         function addPlayer() {
@@ -936,6 +914,13 @@
                 let correctVotes = 0;
                 let wrongVotes = 0;
 
+                // استخراج أسماء اللاعبين الذين قام بالتصويت عليهم
+                const votedNames = pVotes.map(vId => {
+                    const vp = STATE.players.find(x => x.id === vId);
+                    return vp ? vp.name : 'مجهول';
+                });
+                const votesStr = votedNames.length > 0 ? votedNames.join('، ') : 'محد';
+
                 pVotes.forEach(vId => {
                     if (outsiders.includes(vId)) { pointsEarned += 1; correctVotes++; } 
                     else { pointsEarned -= 1; wrongVotes++; }
@@ -944,10 +929,11 @@
                 playerRoundPoints[p.id] = pointsEarned;
                 p.score += pointsEarned;
                 
-                // حفظ التاريخ (History)
+                // حفظ التاريخ (History) مع الأسماء
                 p.history.unshift({
                     word: secret, role: 'داخل السالفة', points: pointsEarned,
-                    desc: `صاد ${correctVotes} | غلط ${wrongVotes}`
+                    desc: `صاد ${correctVotes} | غلط ${wrongVotes}`,
+                    votes: votesStr
                 });
             });
 
@@ -1001,13 +987,18 @@
                     const isZero = h.points === 0;
                     const roleColor = h.role === 'برا السالفة' ? 'text-red-400' : 'text-indigo-400';
                     const ptColor = isPositive ? 'text-emerald-400' : (isZero ? 'text-slate-400' : 'text-red-500');
+                    
+                    // تنسيق قسم "صوت على"
+                    const votesHtml = h.votes ? `<p class="text-[9px] text-slate-400 mt-1 border-t border-slate-700/50 pt-1">صوّت على: <span class="text-slate-200 font-bold">${h.votes}</span></p>` : '';
+                    
                     html += `
                         <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50 flex justify-between items-center text-[10px]">
-                            <div>
+                            <div class="flex-1">
                                 <p class="font-bold text-slate-200">الكلمة: <span class="text-yellow-400">${h.word}</span></p>
                                 <p class="text-slate-400">الدور: <span class="${roleColor} font-bold">${h.role}</span> - ${h.desc}</p>
+                                ${votesHtml}
                             </div>
-                            <span class="${ptColor} font-black text-xs block" dir="ltr">${h.points > 0 ? '+' : ''}${h.points}</span>
+                            <span class="${ptColor} font-black text-xs block ml-2 shrink-0" dir="ltr">${h.points > 0 ? '+' : ''}${h.points}</span>
                         </div>
                     `;
                 });
