@@ -6,9 +6,11 @@
     <title>لعبة برا السالفة | النسخة العراقية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- اضافة عدة خطوط عربية جميلة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&family=Almarai:wght@400;700;800&family=Changa:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
+            /* الخط الافتراضي، سيتم تغييره عبر JS */
             font-family: 'Cairo', sans-serif;
             background: radial-gradient(circle at center, #1e1b4b 0%, #030712 100%);
             overscroll-behavior: none;
@@ -27,11 +29,15 @@
 </head>
 <body class="h-[100dvh] text-slate-100 flex flex-col justify-between overflow-hidden p-3 pb-8 sm:pb-3 select-none">
 
-    <header class="w-full max-w-md mx-auto flex justify-center items-center mb-1 shrink-0 z-10">
-        <div class="flex items-center gap-1.5">
+    <header class="w-full max-w-md mx-auto flex justify-between items-center mb-1 shrink-0 z-10 bg-slate-900/50 p-2 rounded-xl border border-slate-800">
+        <button onclick="openQuickLeaderboard()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition" title="عرض النقاط">🏆</button>
+        
+        <div class="flex items-center gap-1.5 cursor-pointer" onclick="goToScreen('welcome')">
             <span class="text-xl">🤫</span>
-            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[10px] text-slate-400 font-normal ml-1 tracking-widest">v2.1</span></h1>
+            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[10px] text-slate-400 font-normal ml-1 tracking-widest">v2.3</span></h1>
         </div>
+        
+        <button onclick="openQuickMenu()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition" title="القائمة السريعة">⚙️</button>
     </header>
 
     <main id="app" class="w-full max-w-md mx-auto flex-1 flex flex-col justify-center items-center overflow-hidden">
@@ -41,6 +47,35 @@
     <footer class="w-full max-w-md mx-auto text-center py-1 text-[9px] text-slate-600 shrink-0">
         لعبة برا السالفة - النسخة العراقية المحدثة &copy; 2026
     </footer>
+
+    <!-- نافذة القائمة السريعة -->
+    <div id="quickMenuModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-3 shadow-2xl">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-sm font-bold text-white">القائمة السريعة ⚡</h3>
+                <button onclick="closeQuickMenu()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            <button onclick="executeQuickAction('setup')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition text-slate-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
+                <span>👥</span> تعديل أسماء اللاعبين
+            </button>
+            <button onclick="executeQuickAction('welcome')" class="w-full py-2.5 bg-red-950/50 hover:bg-red-900/50 border border-red-900 transition text-red-400 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
+                <span>🏠</span> إنهاء الجولة للرئيسية
+            </button>
+        </div>
+    </div>
+
+    <!-- نافذة النقاط السريعة -->
+    <div id="quickLeaderboardModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-xs shadow-2xl flex flex-col max-h-[70vh]">
+            <div class="flex justify-between items-center mb-3 shrink-0">
+                <h3 class="text-sm font-bold text-yellow-400">النقاط الحالية 🏆</h3>
+                <button onclick="closeQuickLeaderboard()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            <div id="quickLeaderboardContent" class="flex-1 overflow-y-auto space-y-1 pr-1">
+                <!-- سيتم تعبئتها باللاعبين -->
+            </div>
+        </div>
+    </div>
 
     <!-- نافذة تعديل الاسم -->
     <div id="customModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -57,12 +92,12 @@
     <!-- نافذة تأكيد الرجوع للرئيسية -->
     <div id="homeConfirmModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-4 text-center shadow-2xl">
-            <span class="text-4xl block mb-2">🏠</span>
-            <h3 class="text-base font-bold text-white">الرجوع للرئيسية؟</h3>
-            <p class="text-xs text-slate-400">أكيد تريد ترجع للواجهة الرئيسية؟ سيتم إيقاف تحضيرات الجولة الحالية.</p>
+            <span class="text-4xl block mb-2">⚠️</span>
+            <h3 class="text-base font-bold text-white">تحذير!</h3>
+            <p class="text-xs text-slate-400" id="homeConfirmText">أكيد تريد ترجع؟ سيتم إلغاء الجولة الحالية.</p>
             <div class="flex gap-2 mt-4">
                 <button onclick="closeHomeConfirm()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
-                <button onclick="executeGoHome()" class="flex-1 py-2.5 bg-yellow-600 hover:bg-yellow-500 transition text-white rounded-xl text-xs font-bold">نعم، ارجع</button>
+                <button onclick="executeGoHome()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-500 transition text-white rounded-xl text-xs font-bold">نعم، متأكد</button>
             </div>
         </div>
     </div>
@@ -90,6 +125,24 @@
             <div id="historyContent" class="flex-1 overflow-y-auto space-y-2 pr-1">
                 <!-- سيتم تعبئة السجل هنا -->
             </div>
+        </div>
+    </div>
+
+    <!-- نافذة عرض خيارات برا السالفة -->
+    <div id="outsiderOptionsModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-3 shrink-0">
+                <h3 id="optionsModalTitle" class="text-sm font-black text-white">خيارات اللاعب</h3>
+                <button onclick="closeOutsiderOptionsModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            <div class="mb-2 text-[10px] flex gap-2 justify-center shrink-0">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 block"></span>الكلمة السرية</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500 block"></span>تخمين خاطئ</span>
+            </div>
+            <div id="optionsModalGrid" class="grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto p-1">
+                <!-- سيتم تعبئة الخيارات هنا -->
+            </div>
+            <button onclick="closeOutsiderOptionsModal()" class="w-full py-2.5 mt-3 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">إغلاق</button>
         </div>
     </div>
 
@@ -157,7 +210,42 @@
             ]
         };
 
-        // إنشاء التصنيف العام
+        // مصفوفة التقارب الذكي للتمويه (تعرض كلمات مشابهة للمزيد من الصعوبة)
+        const SIMILARITY_GROUPS = [
+            // حشرات ومخلوقات صغيرة
+            ["زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "دودة", "دعسوقة", "قملة", "برغوث", "نملة", "حشرة"],
+            // طيور
+            ["صقر", "نسر", "غراب", "بومة", "طاووس", "ببغاء", "مينا", "زاجل", "حمامة", "زرزور", "بلبل", "فاختة", "طير حب"],
+            // حيوانات مفترسة وبرية
+            ["أسد", "نمر", "فهد", "ذيب", "واوي", "ثعلب", "دب", "دب قطبي", "قط بري"],
+            // حيوانات اليفة أو داجنة
+            ["بزونة", "عتوي", "كلب", "جلب", "حصان", "زمال", "مطي", "بقرة", "هايشة", "خروف", "طلي", "نعجة"],
+            // بحريات واسماك
+            ["سمجة", "زبيدي", "شبوط", "كطان", "بني", "كوسج", "حوت", "دولفين", "أخطبوط", "ربيان بصراوي"],
+            // مشروبات
+            ["شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "عصير برتقال", "شنينة", "لبن عيران", "حليب سباع", "شاي حامض", "عصير نومي دوزي"],
+            // وجبات سريعة
+            ["بيتزا", "برگر", "صاج", "لفة فلافل", "كص دجاج", "كص لحم", "فلافل وعمبة", "بورك"],
+            // اكلات شعبية دسمة
+            ["دولمة", "باجة", "مسكوف", "تشريب دجاج", "قوزي عراقي", "مطبك سمك", "برياني عراقي", "مقلوبة"],
+            // حلويات
+            ["كليجة", "زردة", "دهينة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لوزينة", "من السما", "مكروطة", "بسكت", "نستلة", "كيكة"],
+            // محافظات
+            ["بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء", "ديوانية", "ناصرية"],
+            // دول ومدن عالمية
+            ["لندن", "باريس", "روما", "مدريد", "برلين", "نيويورك", "طوكيو", "دبي", "رياض", "قاهرة", "عمان", "إسطنبول"],
+            // كهربائيات
+            ["مبردة", "صوبة", "بنكة", "شاشة", "ثلاجة", "مجمدة", "طباخ", "فرن", "غسالة", "كاوية"],
+            // ملابس
+            ["حذاء", "قندرة", "نعال", "جواريب", "تشاكيت", "قمصلة", "بنطرون", "قميص", "تيشيرت", "دشداشة", "عباية"],
+            // عدد وادوات
+            ["طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير", "مكناسة", "مقص", "قفل"],
+            // مهن طبية وعلمية
+            ["دكتور", "مهندس", "محامي", "قاضي", "معلم", "مدرس", "صيدلاني", "دكتور اسنان", "بيطري"],
+            // مهن حرفية ويومية
+            ["بنجرجي", "فيتر", "صباغ", "نجار", "حداد", "كهربائي", "بوريجي", "خياط", "كصاب", "خباز"]
+        ];
+
         WORD_DATABASE.general = [...WORD_DATABASE.food, ...WORD_DATABASE.animals, ...WORD_DATABASE.places, ...WORD_DATABASE.household, ...WORD_DATABASE.jobs];
 
         const CATEGORIES_INFO = {
@@ -170,15 +258,13 @@
         };
 
         const STATE = {
+            fontFamily: 'Cairo', // الخط الافتراضي الجديد
             players: [
                 { id: 1, name: 'حسين', score: 0, history: [] },
                 { id: 2, name: 'بهاء', score: 0, history: [] },
                 { id: 3, name: 'توني', score: 0, history: [] },
                 { id: 4, name: 'فريق', score: 0, history: [] },
-                { id: 5, name: 'فاضل', score: 0, history: [] },
-                { id: 6, name: 'شريف', score: 0, history: [] },
-                { id: 7, name: 'رسلان', score: 0, history: [] },
-                { id: 8, name: 'وسام', score: 0, history: [] }
+                { id: 5, name: 'فاضل', score: 0, history: [] }
             ],
             selectedCategory: 'general',
             outsidersCountSetting: 'random', 
@@ -189,8 +275,9 @@
                 activeRevealerIdx: 0,
                 votes: {}, 
                 outsiderGuesses: {}, 
+                outsiderOptionsCache: {}, 
                 currentVotingPlayerIdx: 0,
-                votingOrder: [], // ترتيب عشوائي للتصويت
+                votingOrder: [],
                 currentOutsiderGuessIdx: 0,
                 selectedSuspects: [],
                 forgotRolePlayerId: null 
@@ -198,8 +285,12 @@
             screen: 'welcome'
         };
 
+        function applyFont() {
+            document.body.style.fontFamily = `'${STATE.fontFamily}', sans-serif`;
+        }
+
         function loadState() {
-            const saved = localStorage.getItem('barrasalfa_iq_state_v7');
+            const saved = localStorage.getItem('barrasalfa_iq_state_v8');
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
@@ -209,18 +300,67 @@
                     }
                     if (parsed.selectedCategory) STATE.selectedCategory = parsed.selectedCategory;
                     if (parsed.outsidersCountSetting) STATE.outsidersCountSetting = parsed.outsidersCountSetting;
+                    if (parsed.fontFamily) STATE.fontFamily = parsed.fontFamily;
                 } catch(e) {}
             }
+            applyFont();
         }
 
         function saveState() {
-            localStorage.setItem('barrasalfa_iq_state_v7', JSON.stringify({
+            localStorage.setItem('barrasalfa_iq_state_v8', JSON.stringify({
                 playedWords: STATE.playedWords,
                 players: STATE.players,
                 selectedCategory: STATE.selectedCategory,
-                outsidersCountSetting: STATE.outsidersCountSetting
+                outsidersCountSetting: STATE.outsidersCountSetting,
+                fontFamily: STATE.fontFamily
             }));
         }
+
+        function openQuickMenu() { document.getElementById('quickMenuModal').classList.remove('hidden'); }
+        function closeQuickMenu() { document.getElementById('quickMenuModal').classList.add('hidden'); }
+        
+        let pendingTargetScreen = null;
+        function executeQuickAction(targetScreen) {
+            closeQuickMenu();
+            // إذا كنا في جولة فعالة (وليس في البداية أو النتائج)، نحذر اللاعب
+            const isPlaying = !['welcome', 'setup', 'settings', 'summary'].includes(STATE.screen);
+            if (isPlaying) {
+                pendingTargetScreen = targetScreen;
+                const text = targetScreen === 'setup' ? 'سيتم إنهاء الجولة الحالية لتعديل اللاعبين!' : 'سيتم إلغاء الجولة والرجوع للرئيسية!';
+                document.getElementById('homeConfirmText').innerText = text;
+                document.getElementById('homeConfirmModal').classList.remove('hidden');
+            } else {
+                goToScreen(targetScreen);
+            }
+        }
+
+        function closeHomeConfirm() { 
+            document.getElementById('homeConfirmModal').classList.add('hidden'); 
+            pendingTargetScreen = null;
+        }
+        function executeGoHome() { 
+            closeHomeConfirm(); 
+            if(pendingTargetScreen) goToScreen(pendingTargetScreen);
+            pendingTargetScreen = null;
+        }
+
+        function openQuickLeaderboard() {
+            const container = document.getElementById('quickLeaderboardContent');
+            const sortedPlayers = [...STATE.players].sort((a, b) => b.score - a.score);
+            let html = '';
+            sortedPlayers.forEach((p, idx) => {
+                let badge = idx === 0 ? '👑' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+                html += `
+                    <div class="flex justify-between items-center py-2 border-b border-slate-700/50 text-sm">
+                        <span class="font-bold text-slate-200">${idx + 1}. ${p.name} ${badge}</span>
+                        <span class="font-black text-yellow-400">${p.score}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            document.getElementById('quickLeaderboardModal').classList.remove('hidden');
+        }
+        function closeQuickLeaderboard() { document.getElementById('quickLeaderboardModal').classList.add('hidden'); }
 
         function selectSecretWordForCategory(catKey) {
             const allWords = WORD_DATABASE[catKey];
@@ -240,6 +380,37 @@
         }
 
         function getCategoryPlayedCount(catKey) { return (STATE.playedWords[catKey] || []).length; }
+
+        function generateOutsiderGuessingOptions() {
+            const secret = STATE.currentRound.secretWord;
+            let targetCategory = 'food'; // Default fallback
+            
+            // تحديد التصنيف الفرعي الدقيق
+            for (const [cat, words] of Object.entries(WORD_DATABASE)) {
+                if (cat !== 'general' && words.includes(secret)) {
+                    targetCategory = cat;
+                    break;
+                }
+            }
+
+            let pool = [];
+            
+            // 1. البحث في مجموعات التقارب الذكي للحصول على كلمات خادعة جداً
+            let smartGroup = SIMILARITY_GROUPS.find(group => group.includes(secret));
+            if (smartGroup) {
+                pool = smartGroup.filter(w => w !== secret);
+            }
+
+            // 2. اكمال العدد (إلى 9 كلمات خاطئة) من نفس الفئة لتكون منطقية
+            let categoryDecoys = WORD_DATABASE[targetCategory].filter(w => w !== secret && !pool.includes(w));
+            // خلط الكلمات المتبقية
+            categoryDecoys = categoryDecoys.sort(() => Math.random() - 0.5);
+            
+            // دمج الكلمات الذكية أولاً ثم اكمالها
+            let finalDecoys = [...pool, ...categoryDecoys].slice(0, 9);
+            
+            return [secret, ...finalDecoys].sort(() => Math.random() - 0.5);
+        }
 
         function startNewRound() {
             let numOutsiders = 1;
@@ -263,18 +434,13 @@
             
             const word = selectSecretWordForCategory(STATE.selectedCategory);
 
-            // تصفير الكاش هنا يمنع ظهور تخمينات الجولة السابقة إذا تكرر نفس اللاعب
-            if (typeof lastGuesserId !== 'undefined') {
-                lastGuesserId = null;
-                cacheGuessOptions = [];
-            }
-
             STATE.currentRound = {
                 secretWord: word,
                 outsiders: chosenOutsiders,
                 activeRevealerIdx: 0,
                 votes: {}, 
                 outsiderGuesses: {},
+                outsiderOptionsCache: {},
                 currentVotingPlayerIdx: 0,
                 votingOrder: votingOrder,
                 currentOutsiderGuessIdx: 0,
@@ -319,7 +485,7 @@
                         <div class="relative bg-slate-950 p-4 rounded-full border border-slate-800 text-4xl">🕵️‍♂️</div>
                     </div>
                     <div class="space-y-0.5 shrink-0">
-                        <h2 class="text-xl font-black text-white">برا السالفة العرقية</h2>
+                        <h2 class="text-xl font-black text-white">برا السالفة العراقية</h2>
                         <p class="text-[10px] text-slate-400">لعبة الفراسة، الذكاء والضحكة الطيبة!</p>
                     </div>
                     <div class="w-full glass-panel p-3 rounded-xl text-right space-y-1.5 max-w-xs shrink-0">
@@ -349,11 +515,8 @@
                             <span class="font-bold text-slate-200 text-xs truncate" title="${p.name}">${p.name}</span>
                         </div>
                         <div class="flex gap-0.5 shrink-0 bg-slate-950/50 rounded-lg p-0.5 border border-slate-800/50">
-                            <button onclick="movePlayerUp(${idx})" class="p-1 text-slate-400 hover:text-white transition rounded hover:bg-slate-800 text-[10px]" ${idx === 0 ? 'disabled style="opacity: 0.2"' : ''}>⬆️</button>
-                            <button onclick="movePlayerDown(${idx})" class="p-1 text-slate-400 hover:text-white transition rounded hover:bg-slate-800 text-[10px]" ${idx === STATE.players.length - 1 ? 'disabled style="opacity: 0.2"' : ''}>⬇️</button>
-                            <div class="w-px bg-slate-800 mx-0.5 my-1"></div>
-                            <button onclick="openEditModal(${p.id})" class="p-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[10px]">✏️</button>
-                            <button onclick="removePlayer(${p.id})" class="p-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[10px]">❌</button>
+                            <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[10px]">✏️</button>
+                            <button onclick="removePlayer(${p.id})" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[10px]">❌</button>
                         </div>
                     </div>
                 `;
@@ -363,7 +526,7 @@
                 <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden">
                     <div class="space-y-2 flex-1 flex flex-col overflow-hidden">
                         <div class="flex items-center justify-between shrink-0">
-                            <h2 class="text-sm font-bold text-slate-200">ترتيب اللاعبين 👥 <span class="text-[9px] text-slate-500 font-normal">(اسحب للترتيب)</span></h2>
+                            <h2 class="text-sm font-bold text-slate-200">ترتيب اللاعبين 👥 <span class="text-[9px] text-slate-500 font-normal">(اسحب ☰ للترتيب)</span></h2>
                             <span class="text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">الحد الأدنى: 3</span>
                         </div>
                         <div class="flex gap-1.5 shrink-0">
@@ -373,7 +536,7 @@
                         <div id="players-list-container" class="space-y-1 overflow-y-auto pr-0.5 flex-1" style="max-height: calc(100vh - 200px);">${playersHtml}</div>
                     </div>
                     <div class="pt-2 flex gap-2 shrink-0">
-                        <button onclick="showHomeConfirm()" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg font-bold transition text-xs">رجوع</button>
+                        <button onclick="goToScreen('welcome')" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg font-bold transition text-xs">رجوع</button>
                         <button id="nextToSettingsBtn" onclick="goToSettings()" class="flex-[2] py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg font-bold text-xs shadow transition">التالي: ضبط الجولة ⚙️</button>
                     </div>
                 </div>
@@ -421,24 +584,6 @@
             saveState(); render();
         }
 
-        function movePlayerUp(index) {
-            if (index > 0) {
-                const temp = STATE.players[index - 1];
-                STATE.players[index - 1] = STATE.players[index];
-                STATE.players[index] = temp;
-                saveState(); render();
-            }
-        }
-
-        function movePlayerDown(index) {
-            if (index < STATE.players.length - 1) {
-                const temp = STATE.players[index + 1];
-                STATE.players[index + 1] = STATE.players[index];
-                STATE.players[index] = temp;
-                saveState(); render();
-            }
-        }
-
         let editingPlayerId = null;
         function openEditModal(id) {
             const player = STATE.players.find(p => p.id === id);
@@ -471,10 +616,6 @@
             }
             closeEditModal();
         }
-
-        function showHomeConfirm() { document.getElementById('homeConfirmModal').classList.remove('hidden'); }
-        function closeHomeConfirm() { document.getElementById('homeConfirmModal').classList.add('hidden'); }
-        function executeGoHome() { closeHomeConfirm(); goToScreen('welcome'); }
 
         function showConfirmReset() { document.getElementById('confirmModal').classList.remove('hidden'); }
         function closeConfirmReset() { document.getElementById('confirmModal').classList.add('hidden'); }
@@ -519,16 +660,39 @@
             });
 
             const maxAllowedOutsiders = Math.max(1, Math.min(3, STATE.players.length - 2));
+            
+            // خيارات الخطوط
+            const fontOptions = [
+                { id: 'Cairo', name: 'كايرو (أساسي)' },
+                { id: 'Tajawal', name: 'تجول (ناعم)' },
+                { id: 'Almarai', name: 'المراعي (رسمي)' },
+                { id: 'Changa', name: 'تشانجا (بارز)' }
+            ];
+            let fontsHtml = '';
+            fontOptions.forEach(f => {
+                fontsHtml += `<option value="${f.id}" ${STATE.fontFamily === f.id ? 'selected' : ''} style="font-family: '${f.id}', sans-serif; background: #1e293b;">${f.name}</option>`;
+            });
+
             container.innerHTML = `
                 <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden">
                     <div class="space-y-2 flex-1 flex flex-col overflow-hidden">
-                        <h2 class="text-sm font-bold text-slate-200 shrink-0">ضبط الجولة والكلمات ⚙️</h2>
-                        <div class="space-y-1 overflow-y-auto flex-1 max-h-[50vh] pr-0.5">
-                            <label class="text-[10px] font-bold text-slate-300 block">1. اختار الفئة:</label>
+                        <h2 class="text-sm font-bold text-slate-200 shrink-0">ضبط الجولة والخيارات ⚙️</h2>
+                        
+                        <div class="space-y-1 shrink-0 bg-slate-900/50 p-2 rounded-lg border border-slate-800">
+                            <label class="text-[10px] font-bold text-slate-300 flex items-center justify-between">
+                                <span>خط اللعبة 🔠</span>
+                                <select onchange="changeFont(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none">
+                                    ${fontsHtml}
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="space-y-1 overflow-y-auto flex-1 pr-0.5">
+                            <label class="text-[10px] font-bold text-slate-300 block">اختار الفئة للعب:</label>
                             <div class="space-y-1.5">${categoriesHtml}</div>
                         </div>
                         <div class="space-y-1 shrink-0">
-                            <label class="text-[10px] font-bold text-slate-300 block">2. عدد "برا السالفة" 🤫</label>
+                            <label class="text-[10px] font-bold text-slate-300 block">عدد "برا السالفة" 🤫</label>
                             <div class="grid grid-cols-4 gap-1">
                                 <button onclick="selectOutsidersCountSetting('random')" class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === 'random' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}">عشوائي</button>
                                 <button onclick="selectOutsidersCountSetting('1')" class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === '1' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}">1</button>
@@ -543,6 +707,12 @@
                     </div>
                 </div>
             `;
+        }
+
+        function changeFont(font) {
+            STATE.fontFamily = font;
+            applyFont();
+            saveState();
         }
 
         function selectCategory(catKey) { STATE.selectedCategory = catKey; saveState(); render(); }
@@ -621,7 +791,9 @@
 
         function renderForgotRoleSelectScreen(container) {
             let listHtml = '';
-            STATE.players.forEach(p => {
+            // ترتيب أبجدي لنسيان الدور
+            const sortedPlayers = [...STATE.players].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+            sortedPlayers.forEach(p => {
                 listHtml += `
                     <button onclick="initiateForgotRolePass(${p.id})" class="w-full py-2 px-3 text-xs font-bold text-slate-200 bg-slate-900 border border-slate-800 rounded-lg text-right hover:bg-slate-800 flex justify-between">
                         <span>👤 ${p.name}</span>
@@ -634,7 +806,7 @@
                     <h2 class="text-sm font-black text-slate-100 shrink-0">منو نسى دوره؟ (اختر اللاعب)</h2>
                     <p class="text-[10px] text-slate-400 mb-1 shrink-0">المسؤول يختار اسم اللاعب اللي نسى دوره</p>
                     <div class="space-y-1.5 overflow-y-auto pr-0.5 flex-1">${listHtml}</div>
-                    <button onclick="goToScreen('vote-action')" class="mt-2 py-2 bg-slate-800 text-slate-300 rounded-lg text-xs font-bold shrink-0">إلغاء والرجوع للتصويت</button>
+                    <button onclick="goToScreen('vote-action')" class="mt-2 py-2 bg-slate-800 text-slate-300 rounded-lg text-xs font-bold shrink-0">رجوع للتصويت</button>
                 </div>
             `;
         }
@@ -703,11 +875,10 @@
             
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
             const totalOutsiders = STATE.currentRound.outsiders.length;
-            const maxSelections = isRandomSetting ? Math.max(1, Math.min(3, STATE.players.length - 2)) : totalOutsiders;
 
             let candidatesHtml = '';
             
-            // جلب الأسماء وترتيبها أبجدياً لتسهيل البحث
+            // ترتيب أبجدي لتسهيل البحث
             const candidates = STATE.players.filter(p => p.id !== currentPlayer.id);
             candidates.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
 
@@ -725,7 +896,7 @@
             });
 
             const rulesInstructionHtml = isRandomSetting 
-                ? `<p class="text-[10px] text-indigo-300 font-bold mt-0.5">بما أن عدد برا السالفة "عشوائي"، تكدر تختار أي عدد تشك بيهم!</p>`
+                ? `<p class="text-[10px] text-indigo-300 font-bold mt-0.5">عدد "برا السالفة" عشوائي، اختار منو تشك بيهم!</p>`
                 : `<p class="text-[10px] text-indigo-300 font-bold mt-0.5">لازم تختار بالضبط: ${totalOutsiders} (المختار حالياً: ${STATE.currentRound.selectedSuspects.length})</p>`;
 
             container.innerHTML = `
@@ -819,43 +990,24 @@
             `;
         }
 
-        function generateOutsiderGuessingOptions() {
-            const secret = STATE.currentRound.secretWord;
-            let targetCategory = 'food'; // Default fallback
-            
-            // تحديد التصنيف الفرعي الدقيق للكلمة حتى لو كان التصنيف المختار "عام"
-            for (const [cat, words] of Object.entries(WORD_DATABASE)) {
-                if (cat !== 'general' && words.includes(secret)) {
-                    targetCategory = cat;
-                    break;
-                }
-            }
-
-            // سحب كلمات مموهة من نفس التصنيف لزيادة الصعوبة والمنطقية
-            const pool = WORD_DATABASE[targetCategory].filter(w => w !== secret);
-            const decoys = pool.sort(() => Math.random() - 0.5).slice(0, 9);
-            return [secret, ...decoys].sort(() => Math.random() - 0.5);
-        }
-
-        let cacheGuessOptions = [];
-        let lastGuesserId = null;
-
         function renderGuessActionScreen(container) {
             const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
             const outsiderPlayer = STATE.players.find(p => p.id === outsiderId);
 
-            if (lastGuesserId !== outsiderId) {
-                cacheGuessOptions = generateOutsiderGuessingOptions();
-                lastGuesserId = outsiderId;
+            if (!STATE.currentRound.outsiderOptionsCache[outsiderId]) {
+                STATE.currentRound.outsiderOptionsCache[outsiderId] = generateOutsiderGuessingOptions();
+                saveState();
             }
 
+            const currentOptions = STATE.currentRound.outsiderOptionsCache[outsiderId];
             const chosenWord = STATE.currentRound.outsiderGuesses[outsiderId];
             let optionsHtml = '';
-            cacheGuessOptions.forEach((word) => {
+            
+            // تكبير خط الكلمات في التخمين بناء على طلبك
+            currentOptions.forEach((word) => {
                 const isSelected = chosenWord === word;
-                // تم تكبير الخط هنا إلى text-sm sm:text-base وزيادة الحشوة py-3
                 optionsHtml += `
-                    <button onclick="selectGuessWord('${word}')" class="py-3 px-1 glass-panel rounded-lg border font-bold text-sm sm:text-base transition text-center ${isSelected ? 'border-yellow-400 bg-violet-950/40 text-yellow-400 scale-105 shadow-lg' : 'border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800'}">
+                    <button onclick="selectGuessWord('${word}')" class="py-3 px-1 glass-panel rounded-lg border font-bold text-lg sm:text-xl transition text-center ${isSelected ? 'border-yellow-400 bg-violet-950/40 text-yellow-400 scale-105 shadow-lg' : 'border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800'}">
                         ${word}
                     </button>
                 `;
@@ -912,6 +1064,7 @@
             const votedStatsFlags = {}; 
             const guessSuccessFlags = {}; 
             const outsiderGuessesCache = { ...STATE.currentRound.outsiderGuesses };
+            const outsiderOptionsSaved = { ...STATE.currentRound.outsiderOptionsCache };
 
             STATE.players.forEach(p => {
                 if (outsiders.includes(p.id)) return; 
@@ -920,7 +1073,6 @@
                 let correctVotes = 0;
                 let wrongVotes = 0;
 
-                // استخراج أسماء اللاعبين الذين قام بالتصويت عليهم
                 const votedNames = pVotes.map(vId => {
                     const vp = STATE.players.find(x => x.id === vId);
                     return vp ? vp.name : 'مجهول';
@@ -935,7 +1087,6 @@
                 playerRoundPoints[p.id] = pointsEarned;
                 p.score += pointsEarned;
                 
-                // حفظ التاريخ (History) مع الأسماء
                 p.history.unshift({
                     word: secret, role: 'داخل السالفة', points: pointsEarned,
                     desc: `صاد ${correctVotes} | غلط ${wrongVotes}`,
@@ -953,7 +1104,6 @@
                 playerRoundPoints[oId] = points;
                 if (oPlayer) {
                     oPlayer.score += points;
-                    // حفظ التاريخ (History)
                     oPlayer.history.unshift({
                         word: secret, role: 'برا السالفة', points: points,
                         desc: guessCorrect ? 'خمن صح ✔️' : `خمن غلط (${guess}) ❌`
@@ -961,10 +1111,9 @@
                 }
             });
 
-            // تقليم التاريخ لآخر 15 جولة لتوفير المساحة
             STATE.players.forEach(p => { if(p.history.length > 15) p.history = p.history.slice(0,15); });
 
-            roundResultsCache = { secretWord: secret, outsiders: [...outsiders], playerRoundPoints, votedStatsFlags, guessSuccessFlags, outsiderGuessesCache };
+            roundResultsCache = { secretWord: secret, outsiders: [...outsiders], playerRoundPoints, votedStatsFlags, guessSuccessFlags, outsiderGuessesCache, outsiderOptionsSaved };
             saveState();
         }
 
@@ -973,7 +1122,6 @@
             if (player) {
                 player.score += amount;
                 
-                // تسجيل التعديل اليدوي في السجل
                 player.history.unshift({
                     word: '---', 
                     role: 'تعديل مسؤول', 
@@ -985,7 +1133,7 @@
                 if (player.history.length > 15) player.history = player.history.slice(0, 15);
                 
                 saveState();
-                render(); // إعادة رسم واجهة النتائج فقط
+                render(); 
             }
         }
 
@@ -1006,7 +1154,6 @@
                     const roleColor = h.role === 'برا السالفة' ? 'text-red-400' : 'text-indigo-400';
                     const ptColor = isPositive ? 'text-emerald-400' : (isZero ? 'text-slate-400' : 'text-red-500');
                     
-                    // تنسيق قسم "صوت على"
                     const votesHtml = h.votes ? `<p class="text-[9px] text-slate-400 mt-1 border-t border-slate-700/50 pt-1">صوّت على: <span class="text-slate-200 font-bold">${h.votes}</span></p>` : '';
                     
                     html += `
@@ -1024,10 +1171,43 @@
             }
             document.getElementById('historyModal').classList.remove('hidden');
         }
+        function closeHistoryModal() { document.getElementById('historyModal').classList.add('hidden'); }
 
-        function closeHistoryModal() {
-            document.getElementById('historyModal').classList.add('hidden');
+        function openOutsiderOptionsModal(playerId) {
+            const player = STATE.players.find(p => p.id === playerId);
+            if (!player) return;
+
+            document.getElementById('optionsModalTitle').innerText = `خيارات: ${player.name}`;
+            
+            const options = roundResultsCache.outsiderOptionsSaved[playerId] || [];
+            const guessedWord = roundResultsCache.outsiderGuessesCache[playerId];
+            const secretWord = roundResultsCache.secretWord;
+            
+            const gridContainer = document.getElementById('optionsModalGrid');
+            let html = '';
+            
+            options.forEach(word => {
+                let borderClass = 'border-slate-700 bg-slate-800 text-slate-300';
+                
+                if (word === secretWord && word === guessedWord) {
+                    borderClass = 'border-emerald-500 bg-emerald-950/40 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.3)]';
+                } else if (word === secretWord) {
+                    borderClass = 'border-emerald-500 border-dashed bg-emerald-950/20 text-emerald-500';
+                } else if (word === guessedWord) {
+                    borderClass = 'border-red-500 bg-red-950/40 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.3)]';
+                }
+                
+                html += `
+                    <div class="py-2.5 px-1 rounded-lg border text-center text-xs font-bold ${borderClass}">
+                        ${word}
+                    </div>
+                `;
+            });
+            
+            gridContainer.innerHTML = html;
+            document.getElementById('outsiderOptionsModal').classList.remove('hidden');
         }
+        function closeOutsiderOptionsModal() { document.getElementById('outsiderOptionsModal').classList.add('hidden'); }
 
         function renderSummaryScreen(container) {
             const results = roundResultsCache;
@@ -1039,12 +1219,17 @@
                 const points = results.playerRoundPoints[oId];
                 const guessWord = results.outsiderGuessesCache[oId] || 'لم يخمن';
                 outsidersHtml += `
-                    <div class="bg-red-950/20 border border-red-900/40 p-2 rounded-lg flex justify-between items-center text-right text-xs">
-                        <div>
-                            <h4 class="font-extrabold text-red-400 text-xs">${player.name}</h4>
-                            <p class="text-[9px] text-slate-300">تخمينه: <span class="font-bold text-yellow-400">${guessWord}</span> - ${isGuessed ? '<span class="text-emerald-400 font-bold">صح ✔️</span>' : '<span class="text-red-400 font-bold">غلط ❌</span>'}</p>
+                    <div class="bg-red-950/20 border border-red-900/40 p-2 rounded-lg flex flex-col gap-1 text-right text-xs">
+                        <div class="flex justify-between items-center w-full">
+                            <div>
+                                <h4 class="font-extrabold text-red-400 text-xs">${player.name}</h4>
+                                <p class="text-[9px] text-slate-300">تخمينه: <span class="font-bold text-yellow-400">${guessWord}</span> - ${isGuessed ? '<span class="text-emerald-400 font-bold">صح ✔️</span>' : '<span class="text-red-400 font-bold">غلط ❌</span>'}</p>
+                            </div>
+                            <div class="text-left"><span class="${points > 0 ? 'text-emerald-400' : 'text-slate-400'} font-black text-xs block">+${points} ن</span></div>
                         </div>
-                        <div class="text-left"><span class="${points > 0 ? 'text-emerald-400' : 'text-slate-400'} font-black text-xs block">+${points} ن</span></div>
+                        <button onclick="openOutsiderOptionsModal(${oId})" class="w-full mt-0.5 py-1.5 bg-red-900/30 hover:bg-red-800/50 border border-red-800/40 rounded text-[10px] text-red-300 font-bold transition flex justify-center items-center gap-1">
+                            <span>🔍</span> شوف خياراته شنو كانت!
+                        </button>
                     </div>
                 `;
             });
