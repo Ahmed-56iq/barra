@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- تم تحديث الإصدار إلى 2.5 -->
-    <title>لعبة برا السالفة | الإصدار 2.5</title>
+    <title>لعبة برا السالفة | الإصدار 2.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&family=Almarai:wght@400;700;800&family=Changa:wght@400;700&display=swap" rel="stylesheet">
@@ -35,26 +34,24 @@
 <body class="h-[100dvh] text-slate-100 flex flex-col justify-between overflow-hidden p-3 pb-8 sm:pb-3 select-none">
 
     <header class="w-full max-w-md mx-auto flex justify-between items-center mb-1 shrink-0 z-10 bg-slate-900/50 p-2 rounded-xl border border-slate-800">
-        <button onclick="openQuickLeaderboard()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition" title="عرض النقاط">🏆</button>
+        <button onclick="openQuickLeaderboard()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition text-base" title="عرض النقاط">🏆</button>
         
-        <!-- تم تعديل الرابط لاستدعاء دالة التأكيد قبل الخروج -->
         <div class="flex items-center gap-1.5 cursor-pointer" onclick="executeGoHomeAction()">
             <span class="text-xl">🤫</span>
-            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[10px] text-slate-400 font-normal ml-1 tracking-widest">v2.5</span></h1>
+            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v2.8</span></h1>
         </div>
         
-        <button onclick="openQuickMenu()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition" title="القائمة السريعة">⚙️</button>
+        <button onclick="openQuickMenu()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition text-base" title="القائمة السريعة">⚙️</button>
     </header>
 
     <main id="app" class="w-full max-w-md mx-auto flex-1 flex flex-col justify-center items-center overflow-hidden min-h-0">
         <!-- يتم توليد المحتوى هنا -->
     </main>
 
-    <footer class="w-full max-w-md mx-auto text-center py-1 text-[9px] text-slate-600 shrink-0">
-        لعبة برا السالفة - الإصدار 2.5 &copy; 2026
+    <footer class="w-full max-w-md mx-auto text-center py-1 text-[0.6rem] text-slate-600 shrink-0">
+        لعبة برا السالفة - الإصدار 2.8 &copy; 2026
     </footer>
 
-    <!-- نافذة القائمة السريعة تم نقل اعدادات الخطوط اليها -->
     <div id="quickMenuModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-3 shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-2 shrink-0">
@@ -64,9 +61,9 @@
             
             <div class="overflow-y-auto space-y-3 pr-1 pb-2 min-h-0">
                 <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 space-y-3">
-                    <h4 class="text-[10px] font-bold text-slate-400 border-b border-slate-700 pb-1">إعدادات المظهر 🎨</h4>
+                    <h4 class="text-[0.625rem] font-bold text-slate-400 border-b border-slate-700 pb-1">إعدادات المظهر 🎨</h4>
                     
-                    <label class="text-[10px] font-bold text-slate-300 flex items-center justify-between">
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between">
                         <span>نوع الخط 🔠</span>
                         <select onchange="changeFont(this.value)" id="fontFamilySelect" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none">
                             <option value="Cairo">كايرو</option>
@@ -76,7 +73,7 @@
                         </select>
                     </label>
                     
-                    <label class="text-[10px] font-bold text-slate-300 flex items-center justify-between border-t border-slate-700/50 pt-2">
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between border-t border-slate-700/50 pt-2">
                         <span>حجم الخط 🔍</span>
                         <select onchange="changeFontSize(this.value)" id="fontSizeSelect" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none">
                             <option value="12">12</option>
@@ -100,7 +97,6 @@
         </div>
     </div>
 
-    <!-- نافذة إدارة اللاعبين السريعة -->
     <div id="quickPlayerManagerModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[90] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm max-h-[85vh] flex flex-col shadow-2xl">
             <div class="flex justify-between items-center mb-3 shrink-0">
@@ -113,8 +109,8 @@
                 <button onclick="addQuickPlayer()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold transition text-xs shadow shrink-0">إضافة +</button>
             </div>
             
-            <p id="quickPlayerWarning" class="hidden text-[9px] text-yellow-400 bg-yellow-900/30 border border-yellow-800 p-1.5 rounded mb-2 text-center shrink-0">⚠️ الجولة نشطة حالياً: لا يمكن حذف لاعبين، يمكنك التعديل والترتيب فقط.</p>
-            <p class="text-[9px] text-slate-500 mb-1 shrink-0 text-center">اسحب ☰ لترتيب اللاعبين</p>
+            <p id="quickPlayerWarning" class="hidden text-[0.625rem] text-yellow-400 bg-yellow-900/30 border border-yellow-800 p-1.5 rounded mb-2 text-center shrink-0">⚠️ الجولة نشطة حالياً: لا يمكن حذف لاعبين، يمكنك التعديل والترتيب فقط.</p>
+            <p class="text-[0.625rem] text-slate-500 mb-1 shrink-0 text-center">اسحب ☰ لترتيب اللاعبين</p>
 
             <div id="quickPlayersList" class="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-[50vh]">
                 <!-- سيتم تعبئتها ديناميكياً -->
@@ -122,7 +118,6 @@
         </div>
     </div>
 
-    <!-- نافذة عرض جميع كلمات الفئة -->
     <div id="categoryWordsModal" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[75] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm max-h-[85vh] flex flex-col shadow-2xl">
             <div class="flex justify-between items-center mb-2 shrink-0">
@@ -130,15 +125,20 @@
                     <span id="catWordsIcon" class="text-xl">📚</span>
                     <div>
                         <h3 id="catWordsTitle" class="text-sm font-bold text-white">كلمات الفئة</h3>
-                        <p class="text-[9px] text-slate-400">الكلمات المظللة ظهرت مسبقاً</p>
+                        <p class="text-[0.625rem] text-slate-400">الكلمات المظللة ظهرت مسبقاً</p>
                     </div>
                 </div>
                 <button onclick="closeCategoryWordsModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
             </div>
             
-            <div class="bg-slate-950/50 p-2 rounded-lg border border-slate-800 flex justify-between text-[10px] text-slate-300 mb-3 shrink-0">
+            <div class="bg-slate-950/50 p-2 rounded-lg border border-slate-800 flex justify-between text-[0.6875rem] text-slate-300 mb-2 shrink-0">
                 <span>إجمالي الكلمات: <b id="catWordsTotal" class="text-indigo-400">0</b></span>
                 <span>المتبقي: <b id="catWordsRemaining" class="text-emerald-400">0</b></span>
+            </div>
+
+            <!-- حقل البحث الجديد في الكلمات -->
+            <div class="mb-3 shrink-0">
+                <input id="catWordsSearchInput" type="text" oninput="filterCategoryWords()" placeholder="ابحث عن كلمة معينة... 🔍" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
             </div>
 
             <div id="catWordsGrid" class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 gap-1.5 content-start">
@@ -149,14 +149,13 @@
         </div>
     </div>
 
-    <!-- نافذة النقاط السريعة -->
     <div id="quickLeaderboardModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-xs shadow-2xl flex flex-col max-h-[70vh]">
             <div class="flex justify-between items-center mb-3 shrink-0">
                 <h3 class="text-sm font-bold text-yellow-400">النقاط الحالية 🏆</h3>
                 <button onclick="closeQuickLeaderboard()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
             </div>
-            <p class="text-[9px] text-slate-400 text-center mb-2 border-b border-slate-800 pb-1">اضغط على اسم اللاعب لرؤية سجله</p>
+            <p class="text-[0.625rem] text-slate-400 text-center mb-2 border-b border-slate-800 pb-1">اضغط على اسم اللاعب لرؤية سجله</p>
             <div id="quickLeaderboardContent" class="flex-1 overflow-y-auto space-y-1 pr-1 min-h-0">
             </div>
         </div>
@@ -187,7 +186,6 @@
         </div>
     </div>
 
-    <!-- نافذة تصفير اللعبة -->
     <div id="confirmModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-4 text-center shadow-2xl">
             <span class="text-4xl block mb-2">⚠️</span>
@@ -223,7 +221,7 @@
                 <h3 id="optionsModalTitle" class="text-sm font-black text-white">خيارات اللاعب</h3>
                 <button onclick="closeOutsiderOptionsModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
             </div>
-            <div class="mb-2 text-[10px] flex gap-2 justify-center shrink-0">
+            <div class="mb-2 text-[0.6875rem] flex gap-2 justify-center shrink-0">
                 <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 block"></span>الكلمة السرية</span>
                 <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500 block"></span>تخمين خاطئ</span>
             </div>
@@ -233,12 +231,37 @@
         </div>
     </div>
 
+    <!-- نافذة خيارات انتهاء وقت التصويت المحدثة -->
+    <div id="voteTimeoutModal" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[110] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-4 text-center shadow-2xl">
+            <span class="text-4xl block mb-2">⏳</span>
+            <h3 class="text-base font-black text-white">انتهى وقت التصويت!</h3>
+            <p class="text-xs text-slate-400">كيف ترغب بالتعامل مع التصويت المتبقي؟</p>
+            
+            <div class="space-y-2">
+                <button onclick="handleTimeoutChoice('approve')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 transition text-white rounded-xl text-xs font-bold block">
+                    👍 اعتماد اختياراتي الحالية
+                </button>
+                <button onclick="handleTimeoutChoice('penalty-keep-votes')" class="w-full py-2.5 bg-red-600 hover:bg-red-500 transition text-white rounded-xl text-xs font-bold block">
+                    ⚠️ خصم نقطة + اعتماد اختياراتي الحالية
+                </button>
+                <button onclick="handleTimeoutChoice('postpone')" id="timeoutPostponeBtn" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 transition text-white rounded-xl text-xs font-bold block">
+                    ⏰ تأجيل دوري بالتصويت لاحقاً
+                </button>
+                <button onclick="handleTimeoutChoice('empty-no-penalty')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold block">
+                    🕊️ تصويت فارغ بدون خصم نقاط
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const WORD_DATABASE = {
-            food: ["دولمة", "باجة", "مسكوف", "كاهي وقيمر", "كليجة", "صمون حجري", "تشريب دجاج", "قوزي عراقي", "زردة", "تمن ومرك", "فلافل وعمبة", "طرشي نجفي", "دهينة", "شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "خبز تنور", "بورك", "كباب عراقي", "تكة لحم", "معلاك مشوي", "مخلمة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لفة فلافل", "طماطة مقلية", "باذنجان مقلي", "سمك زبيدي", "ربيان بصراوي", "صبورة مشوية", "بامية", "فاصوليا يابسة", "مركة شجر", "مركة بتيتة", "مطبك سمك", "برياني عراقي", "مقلوبة", "شوربة عدس", "ماش", "هريسة", "حلاوة تمر", "تمر خستاوي", "رقي", "بطيخ سامراء", "نومي بصرة", "كص دجاج", "كص لحم", "عروك طاوة", "كفتة", "بيتزا", "برگر", "صاج", "حليب سباع", "لبن اربيل", "كيمر سدة", "جبن عرب", "لبلبي", "باقلاء بالدهن", "شلغم مطبوخ", "لوزينة", "من السما", "راشي ودبس", "عسل طبيعي", "زلاطة", "جاجيك", "مقبلات", "حمص بطحينة", "متبل", "بابا غنوج", "زيتون", "بصل أخضر", "فجل", "كرفس", "ريحان", "نعناع", "طرشي مدبس", "مدكوكة", "تمرية", "تمر هند", "كرزات", "حب شمسي", "حب رقي", "فستق حلبي", "لوز", "جوز", "كاجو", "مكروطة", "sahoon", "بسكت", "نستلة", "جيلاتين", "كيكة", "عصير برتقال", "عصير نومي دوزي", "شنينة", "لبن عيران", "شاي حامض"],
-            animals: ["واوي", "ططوة", "عتوي", "بزونة", "صخيلة", "طلي", "دجاجة", "ديج", "بطة", "وزة", "زرزور", "فاختة", "بلبل", "حمامة", "زاجل", "حصان", "زمال", "مطي", "بقرة", "هايشة", "عجل", "جاموسة", "خروف", "نعجة", "كلب", "جلب", "ذيب", "ثعلب", "أسد", "نمر", "فهد", "دب", "فيل", "زرافة", "قرد", "سنجاب", "أرنب", "غزال", "طير حب", "مينا", "ببغاء", "طاووس", "نعامة", "صقر", "نسر", "غراب", "بومة", "خفاش", "تمساح", "سلحفاة", "ركة", "حية", "دودة", "جريذي", "فارة", "بريعصي", "سحلية", "ضفدع", "عكركروك", "سمجة", "جصيص", "زبيدي", "شبوط", "كطان", "بني", "كوسج", "حوت", "دولفين", "أخطبوط", "قنديل بحر", "نجم بحر", "سرطان", "دودة قز", "فراشة", "زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "حشرة", "قملة", "برغوث", "نملة", "أبو جنيب", "أم سليمان", "دعسوقة", "خنفساء", "حلزون", "بطريق", "فقمة", "دب قطبي", "كنغر", "كوالا", "باندا", "خرتيت", "حمار وحشي", "قط بري"],
+            // قاعدة البيانات العراقية المنقحة كلياً والخالية من المترادفات
+            food: ["دولمة", "باجة", "مسكوف", "كاهي وقيمر", "كليجة", "صمون حجري", "تشريب دجاج", "قوزي عراقي", "زردة", "تمن ومرك", "فلافل وعمبة", "طرشي نجفي", "دهينة", "شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "خبز تنور", "بورك", "كباب عراقي", "تكة لحم", "معلاك مشوي", "مخلمة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لفة فلافل", "طماطة مقلية", "باذنجان مقلي", "سمك زبيدي", "ربيان بصراوي", "صبورة مشوية", "بامية", "فاصوليا يابسة", "مركة شجر", "مركة بتيتة", "مطبك سمك", "برياني عراقي", "مقلوبة", "شوربة عدس", "ماش", "هريسة", "حلاوة تمر", "تمر خستاوي", "رقي", "بطيخ سامراء", "نومي بصرة", "كص دجاج", "كص لحم", "عروك طاوة", "كفتة", "بيتزا", "برگر", "صاج", "حليب سباع", "لبن اربيل", "كيمر سدة", "جبن عرب", "لبلبي", "باقلاء بالدهن", "شلغم مطبوخ", "لوزينة", "من السما", "raashidibs", "عسل طبيعي", "زلاطة", "جاجيك", "مقبلات", "حمص بطحينة", "متبل", "بابا غنوج", "زيتون", "بصل أخضر", "فجل", "كرفس", "ريحان", "نعناع", "طرشي مدبس", "مدكوكة", "تمرية", "تمر هند", "كرزات", "حب شمسي", "حب رقي", "فستق حلبي", "لوز", "جوز", "كاجو", "مكروطة", "sahoon", "بسكت", "نستلة", "جيلاتين", "كيكة", "عصير برتقال", "عصير نومي دوزي", "شنينة", "لبن عيران", "شاي حامض"],
+            animals: ["واوي", "ططوة", "عتوي", "بزونة", "صخيلة", "طلي", "دجاجة", "ديج", "بطة", "وزة", "زرزور", "فاختة", "بلبل", "حمامة", "زاجل", "مطي", "هايشة", "عجل", "جاموسة", "خروف", "نعجة", "جلب", "ذيب", "ثعلب", "أسد", "nimer", "فهد", "دب", "فيل", "زرافة", "قرد", "سنجاب", "أرنب", "غزال", "طير حب", "مينا", "ببّغاء", "طاووس", "نعامة", "صقر", "نسر", "غراب", "بومة", "خفاش", "تمساح", "سلحفاة", "ركة", "حية", "دودة", "جريذي", "فارة", "بريعصي", "سحلية", "ضفدع", "عكركروك", "سمجة", "جصيص", "زبيدي", "شبوط", "كطان", "بني", "كوسج", "حوت", "دولفين", "أخطبوط", "قنديل بحر", "نجم بحر", "سرطان", "دودة قز", "فراشة", "زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "حشرة", "قملة", "برغوث", "نملة", "أبو جنيب", "أم سليمان", "دعسوقة", "خنفساء", "حلزون", "بطريق", "فقمة", "دب قطبي", "كنغر", "كوالا", "باندا", "خرتيت", "حمار وحشي", "قط بري"],
             places: ["بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء", "ديوانية", "سماوة", "ناصرية", "عمارة", "كوت", "بعقوبة", "تكريت", "رمادي", "فلوجة", "زاخو", "حلبجة", "شارع المتنبي", "نصب الشهيد", "ساحة التحرير", "باب الشرقي", "كرادة", "منصور", "أعظمية", "كاظمية", "أبو نواس", "شارع الرشيد", "قلعة أربيل", "زقورة أور", "بابل الأثرية", "ملوية سامراء", "طاق كسرى", "هور الحويزة", "جبل كورك", "شلال كلي علي بك", "سد دوكان", "مرقد الإمام علي", "مرقد الإمام الحسين", "مرقد الكاظمين", "الحضرة القادرية", "جامع أبو حنيفة", "كنيسة النجاة", "سوق الشورجة", "سوق الصفافير", "سوق الغزل", "مطار بغداد", "مطار أربيل", "ميناء أم قصر", "جسر الجادرية", "جسر المعلق", "جسر الجمهورية", "نهر دجلة", "نهر الفرات", "شط العرب", "الأهوار", "صحراء السماوة", "بادية الشام", "لندن", "باريس", "روما", "مدريد", "برلين", "نيويورك", "طوكيو", "بكين", "موسكو", "إسطنبول", "دبي", "رياض", "قاهرة", "عمان", "بيروت", "دمشق", "كويت", "دوحة", "منامة", "أبو ظبي", "مستشفى", "مدرسة", "جامعة بغداد", "الجامعة المستنصرية", "نادي رياضي", "ملعب الشعب", "ملعب جذع النخلة", "سينما", "مول", "أسواق", "سوبر ماركت", "مطعم", "كهوة (مقهى)", "فندق", "متنزه", "حديقة الزوراء", "مدينة العاب", "المتحف العراقي", "المسرح الوطني"],
-            household: ["مبردة", "صوبة", "قنفة", "جرباية", "خاشوكة", "جطل", "ماعون", "استكان", "قوري", "كتلي", "سماور", "بطل", "تشيز", "زولية", "بردة", "بنكة", "مكناسة", "طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير", "بلك", "سويج", "كلوب", "شاشة", "ثلاجة", "مجمدة", "طباخ", "فرن", "تنور", "غسالة", "كاوية", "ميز", "كرسي", "كنتور", "ميز تواليت", "مراية", "دوش", "شطافة", "مغسلة", "بوري", "صوندة", "خاولي", "منشفة", "ليفة", "صابونة", "شامبو", "معجون أسنان", "فرجة", "مشط", "قراصة", "ماشة", "مكياج", "حمرة", "عطر", "محبس", "ساعة", "كلادة", "سوار", "تراجي", "جنطة", "محفظة", "نظارة", "حذاء", "قندرة", "نعال", "جواريب", "تشاكيت", "قمصلة", "بنطرون", "قميص", "تيشيرت", "دشداشة", "عباية", "شيلة", "فوطة", "عكال", "يشماغ", "غترة", "سلة زبل", "وصلة مسح", "مكناسة يدوية", "سطل", "طشت", "دلة قهوة", "فنجان", "صينية", "ترمس", "حافظة طعام", "جذرية", "طاوه", "مصفي", "جفجير", "مجراشة", "شيبك", "لوح كص", "مقص", "قفل"],
+            household: ["مبردة", "صوبة", "قنفة", "جرباية", "خاشوكة", "جطل", "ماعون", "استكان", "قوري", "كتلي", "سماور", "بطل", "تشيز", "زولية", "بردة", "بنكة", "مكناسة", "طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير", "بلك", "سويج", "كلوب", "شاشة", "ثلاجة", "مجمدة", "طباخ", "فرن", "تنور", "غسالة", "كاوية", "ميز", "كرسي", "كنتور", "ميز تواليت", "مراية", "دوش", "شطافة", "مغسلة", "بوري", "صوندة", "خاولي", "ليفة", "صابونة", "شامبو", "معجون أسنان", "فرجة", "مشط", "قراصة", "ماشة", "مكياج", "حمرة", "عطر", "محبس", "ساعة", "كلادة", "سوار", "تراجي", "جنطة", "محفظة", "نظارة", "قندرة", "نعال", "جواريب", "تشاكيت", "قمصلة", "بنطرون", "قميص", "تيشيرت", "دشداشة", "عباية", "شيلة", "فوطة", "عكال", "يشماغ", "غترة", "سلة زبل", "وصلة مسح", "مكناسة يدوية", "سطل", "طشت", "دلة قهوة", "فنجان", "صينية", "ترمس", "حافظة طعام", "جذرية", "طاوه", "مصفي", "جفجير", "مجراشة", "شيبك", "لوح كص", "مقص", "قفل"],
             jobs: ["بنجرجي", "فيتر", "صباغ", "سايق", "خلفة", "عمالة", "حلاق", "مضمد", "دكتور", "مهندس", "محامي", "قاضي", "معلم", "مدرس", "مدير", "شرطي", "مرور", "جيشي", "ضابط", "حارس", "بواب", "فراش", "نجار", "حداد", "بوريجي", "كهربائي", "خياط", "كصاب", "خباز", "صمونجي", "بقال", "عطار", "ابو المخضر", "صايغ", "بياع", "ابو المولد", "مصلح تلفزيونات", "صيانة موبايلات", "ابو التكسي", "سايق كية", "سايق تريلة", "كابتن طيارة", "مضيف طيران", "بحار", "طباخ", "ويتر", "كاشير", "مصور", "مخرج", "ممثل", "مغني", "رسام", "خطاط", "كاتب", "شاعر", "صحفي", "مذيع", "رياضي", "لاعب طوبة", "مدرب", "حكم", "منقذ سباحة", "غواص", "فلاح", "مزارع", "ابو الدواب", "راعي", "صقار", "صياد سمك", "بيطري", "صيدلاني", "محلل مختبر", "دكتور اسنان", "مهندس معماري", "مهندس مدني", "مبرمج", "مصمم", "محاسب", "موظف بنك", "مندوب مبيعات", "سكرتير", "مرشد سياحي", "بودي كارد", "مراسل", "خبير تجميل", "كوافير", "ميكانيكي", "لحيمجي", "ابو الغاز", "ابو المي", "عامل نظافة", "صباغ احذية", "اسكافي", "دلال عقارات", "جابي", "معقب معاملات", "مترجم", "فلكي", "خطيب جامع", "مؤذن"],
             adult16: ["لوكي", "كلاوجي", "علاس", "قفاص", "حواسم", "لغف", "جكمجة", "طكوكي", "ملطلط", "صاك", "صاكة", "زاحف", "حديقة", "طاكات", "كبسلة", "نركيلة", "معسل", "بومة", "طكني وبجه", "دكايك", "مفلس", "بسطال", "لزكة", "عقجة", "خروف", "مكبل", "سنكل", "جفص", "مطفي", "مخربط", "عايق", "طايح حظه", "دايح", "جكارة", "مطي", "سرسري", "ادبسز", "قشمر", "زعطوط", "خفيف"]
         };
@@ -246,8 +269,8 @@
         const SIMILARITY_GROUPS = [
             ["زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "دودة", "دعسوقة", "قملة", "برغوث", "نملة", "حشرة"],
             ["صقر", "نسر", "غراب", "بومة", "طاووس", "ببغاء", "مينا", "زاجل", "حمامة", "زرزور", "بلبل", "فاختة", "طير حب"],
-            ["أسد", "نمر", "فهد", "ذيب", "واوي", "ثعلب", "دب", "دب قطبي", "قط بري"],
-            ["بزونة", "عتوي", "كلب", "جلب", "حصان", "زمال", "مطي", "بقرة", "هايشة", "خروف", "طلي", "نعجة"],
+            ["أسد", "nimer", "فهد", "ذيب", "واوي", "ثعلب", "دب", "دب قطبي", "قط بري"],
+            ["بزونة", "عتوي", "جلب", "مطي", "هايشة", "خروف", "طلي", "نعجة"],
             ["سمجة", "زبيدي", "شبوط", "كطان", "بني", "كوسج", "حوت", "دولفين", "أخطبوط", "ربيان بصراوي"],
             ["شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "عصير برتقال", "شنينة", "لبن عيران", "حليب سباع", "شاي حامض", "عصير نومي دوزي"],
             ["بيتزا", "برگر", "صاج", "لفة فلافل", "كص دجاج", "كص لحم", "فلافل وعمبة", "بورك"],
@@ -256,7 +279,7 @@
             ["بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء", "ديوانية", "ناصرية"],
             ["لندن", "باريس", "روما", "مدريد", "برلين", "نيويورك", "طوكيو", "دبي", "رياض", "قاهرة", "عمان", "إسطنبول"],
             ["مبردة", "صوبة", "بنكة", "شاشة", "ثلاجة", "مجمدة", "طباخ", "فرن", "غسالة", "كاوية"],
-            ["حذاء", "قندرة", "نعال", "جواريب", "تشاكيت", "قمصلة", "بنطرون", "قميص", "تيشيرت", "دشداشة", "عباية"],
+            ["قندرة", "نعال", "جواريب", "تشاكيت", "قمصلة", "بنطرون", "قميص", "تيشيرت", "دشداشة", "عباية"],
             ["طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير", "مكناسة", "مقص", "قفل"],
             ["دكتور", "مهندس", "محامي", "قاضي", "معلم", "مدرس", "صيدلاني", "دكتور اسنان", "بيطري"],
             ["بنجرجي", "فيتر", "صباغ", "نجار", "حداد", "كهربائي", "بوريجي", "خياط", "كصاب", "خباز"]
@@ -277,10 +300,13 @@
         const MAX_HISTORY_LEN = 50;
 
         const STATE = {
-            version: '2.5', // تحديث الإصدار
+            version: '2.8', 
             fontFamily: 'Cairo',
             fontSize: 16, 
             perfectSneakBonus: false,
+            timerVoteEnabled: true,     
+            timerGuessEnabled: true,    
+            timeoutPenaltyChoice: true, 
             players: [
                 { id: 1, name: 'حسين', score: 0, history: [], outsiderStreak: 0 },
                 { id: 2, name: 'بهاء', score: 0, history: [], outsiderStreak: 0 },
@@ -290,22 +316,42 @@
             ],
             selectedCategory: 'general',
             outsidersCountSetting: 'random', 
-            // تم إضافة الفئات لتجنب الخطأ في المستقبل
             playedWords: { general: [], food: [], animals: [], places: [], household: [], jobs: [], adult16: [] },
             currentRound: {
                 secretWord: '', outsiders: [], activeRevealerIdx: 0,
                 votes: {}, outsiderGuesses: {}, outsiderOptionsCache: {}, 
                 currentVotingPlayerIdx: 0, votingOrder: [], currentOutsiderGuessIdx: 0,
-                selectedSuspects: [], forgotRolePlayerId: null 
+                selectedSuspects: [], forgotRolePlayerId: null,
+                isPrankMode: false, prankWords: {}, activeTimerVoterId: null, votingTimerRemaining: 30,
+                activeTimerOutsiderId: null, guessingTimerRemaining: 60
             },
             screen: 'welcome'
         };
 
+        function playTimerSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime); 
+                gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.8); 
+            } catch (e) {
+                console.log("Audio API blocked or unsupported");
+            }
+        }
+
         function applyStyleSettings() {
             document.body.style.fontFamily = `'${STATE.fontFamily}', sans-serif`;
-            document.documentElement.style.fontSize = STATE.fontSize + 'px';
             
-            // تحديث قيم الـ Select في القائمة السريعة
+            // تحديث حجم خط الـ html والـ body والمنبثقات بشكل متبادل
+            document.documentElement.style.fontSize = STATE.fontSize + 'px';
+            document.body.style.fontSize = STATE.fontSize + 'px';
+            
             const fontSel = document.getElementById('fontFamilySelect');
             if(fontSel) fontSel.value = STATE.fontFamily;
             
@@ -314,13 +360,12 @@
         }
 
         function loadState() {
-            const saved = localStorage.getItem('barrasalfa_iq_state_v10'); // تغيير المفتاح لضمان تحديث الـ playedWords
+            const saved = localStorage.getItem('barrasalfa_iq_state_v12'); 
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
                     if (parsed.playedWords) {
                         STATE.playedWords = parsed.playedWords;
-                        // معالجة الخطأ القديم (عدم وجود adult16)
                         for (let cat in WORD_DATABASE) {
                             if (!STATE.playedWords[cat]) STATE.playedWords[cat] = [];
                         }
@@ -333,24 +378,23 @@
                     if (parsed.selectedCategory) STATE.selectedCategory = parsed.selectedCategory;
                     if (parsed.outsidersCountSetting) STATE.outsidersCountSetting = parsed.outsidersCountSetting;
                     if (parsed.fontFamily) STATE.fontFamily = parsed.fontFamily;
-                    
-                    if (parsed.fontSize) {
-                        if (parsed.fontSize === 'normal') STATE.fontSize = 16;
-                        else if (parsed.fontSize === 'large') STATE.fontSize = 18;
-                        else if (parsed.fontSize === 'xl') STATE.fontSize = 20;
-                        else STATE.fontSize = parseInt(parsed.fontSize) || 16;
-                    }
+                    if (parsed.fontSize) STATE.fontSize = parseInt(parsed.fontSize) || 16;
                     if (parsed.perfectSneakBonus !== undefined) STATE.perfectSneakBonus = parsed.perfectSneakBonus;
+                    if (parsed.timerVoteEnabled !== undefined) STATE.timerVoteEnabled = parsed.timerVoteEnabled;
+                    if (parsed.timerGuessEnabled !== undefined) STATE.timerGuessEnabled = parsed.timerGuessEnabled;
+                    if (parsed.timeoutPenaltyChoice !== undefined) STATE.timeoutPenaltyChoice = parsed.timeoutPenaltyChoice;
                 } catch(e) {}
             }
             applyStyleSettings();
         }
 
         function saveState() {
-            localStorage.setItem('barrasalfa_iq_state_v10', JSON.stringify({
+            localStorage.setItem('barrasalfa_iq_state_v12', JSON.stringify({
                 playedWords: STATE.playedWords, players: STATE.players,
                 selectedCategory: STATE.selectedCategory, outsidersCountSetting: STATE.outsidersCountSetting,
-                fontFamily: STATE.fontFamily, fontSize: STATE.fontSize, perfectSneakBonus: STATE.perfectSneakBonus
+                fontFamily: STATE.fontFamily, fontSize: STATE.fontSize, perfectSneakBonus: STATE.perfectSneakBonus,
+                timerVoteEnabled: STATE.timerVoteEnabled, timerGuessEnabled: STATE.timerGuessEnabled,
+                timeoutPenaltyChoice: STATE.timeoutPenaltyChoice
             }));
         }
 
@@ -391,11 +435,9 @@
         function openQuickPlayerManager() {
             closeQuickMenu();
             renderQuickPlayersList();
-            
             const warningEl = document.getElementById('quickPlayerWarning');
             if(isGameActive()) warningEl.classList.remove('hidden');
             else warningEl.classList.add('hidden');
-            
             document.getElementById('quickPlayerManagerModal').classList.remove('hidden');
         }
         
@@ -414,25 +456,24 @@
                     <div class="flex justify-between items-center bg-slate-800/80 border border-slate-700/80 px-2.5 py-1.5 rounded-lg transition" data-player-id="${p.id}">
                         <div class="flex items-center gap-2 w-1/2">
                             <span class="sort-handle text-slate-500 text-base cursor-grab active:cursor-grabbing px-1 py-1" title="اسحب للترتيب">☰</span>
-                            <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
+                            <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[0.625rem] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
                             <span class="font-bold text-slate-200 text-xs truncate" title="${p.name}">${p.name}</span>
                         </div>
                         <div class="flex gap-0.5 shrink-0 bg-slate-950/50 rounded-lg p-0.5 border border-slate-800/50">
-                            <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[10px]">✏️</button>
-                            ${!active ? `<button onclick="removePlayer(${p.id}, true)" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[10px]">❌</button>` : ''}
+                            <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[0.625rem]">✏️</button>
+                            ${!active ? `<button onclick="removePlayer(${p.id}, true)" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[0.625rem]">❌</button>` : ''}
                         </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
 
-            // تفعيل السحب والافلات للقائمة السريعة
             if (typeof Sortable !== 'undefined') {
                 if(quickPlayerSortable) quickPlayerSortable.destroy();
                 quickPlayerSortable = new Sortable(container, {
                     handle: '.sort-handle',
                     animation: 150,
-                    delay: 50, // التأخير المطلوب 50 ملي ثانية
+                    delay: 50, 
                     delayOnTouchOnly: true,
                     ghostClass: 'opacity-50',
                     onEnd: function () {
@@ -445,7 +486,7 @@
                         });
                         STATE.players = newOrder;
                         saveState();
-                        renderQuickPlayersList(); // لتحديث الأرقام
+                        renderQuickPlayersList(); 
                     }
                 });
             }
@@ -463,34 +504,61 @@
             input.value = ''; saveState(); renderQuickPlayersList();
         }
 
+        let activeCategoryInModal = '';
         function openCategoryWordsModal(catKey) {
+            activeCategoryInModal = catKey;
             const info = CATEGORIES_INFO[catKey];
-            const allWords = WORD_DATABASE[catKey];
-            const playedWords = STATE.playedWords[catKey] || [];
             
             document.getElementById('catWordsTitle').innerText = info.name;
             document.getElementById('catWordsIcon').innerText = info.icon;
+            
+            const searchInput = document.getElementById('catWordsSearchInput');
+            if (searchInput) searchInput.value = '';
+            
+            renderCategoryWordsGrid(catKey, '');
+            document.getElementById('categoryWordsModal').classList.remove('hidden');
+        }
+
+        function filterCategoryWords() {
+            const searchInput = document.getElementById('catWordsSearchInput');
+            const filterText = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            renderCategoryWordsGrid(activeCategoryInModal, filterText);
+        }
+
+        function renderCategoryWordsGrid(catKey, filterText) {
+            const allWords = WORD_DATABASE[catKey];
+            const playedWords = STATE.playedWords[catKey] || [];
+            
+            // تصفية الكلمات بناءً على المدخل
+            const filteredWords = allWords.filter(word => word.toLowerCase().includes(filterText));
+            
             document.getElementById('catWordsTotal').innerText = allWords.length;
             document.getElementById('catWordsRemaining').innerText = allWords.length - playedWords.length;
 
             const grid = document.getElementById('catWordsGrid');
             let html = '';
             
-            allWords.forEach(word => {
+            filteredWords.forEach(word => {
                 const isPlayed = playedWords.includes(word);
                 const baseClass = isPlayed 
                     ? "bg-slate-900 border-slate-800 text-slate-500 opacity-70" 
                     : "bg-slate-800 border-indigo-900/50 text-indigo-300 font-bold";
                 
-                html += `<div class="py-2 px-1 border rounded text-center text-[10px] ${baseClass} truncate" title="${word}">${word}</div>`;
+                html += `
+                    <div class="py-2.5 px-2 border rounded text-center text-xs ${baseClass} break-words whitespace-normal leading-normal flex items-center justify-center min-h-[3.5rem] h-auto" title="${word}">
+                        ${word}
+                    </div>`;
             });
             
+            if (filteredWords.length === 0) {
+                html = `<div class="col-span-2 sm:col-span-3 text-center text-slate-500 text-[0.6875rem] py-8">لا توجد كلمات تطابق بحثك 🔍</div>`;
+            }
+            
             grid.innerHTML = html;
-            document.getElementById('categoryWordsModal').classList.remove('hidden');
         }
+
         function closeCategoryWordsModal() { document.getElementById('categoryWordsModal').classList.add('hidden'); }
 
-        // نافذة النقاط السريعة
         function openQuickLeaderboard() {
             const container = document.getElementById('quickLeaderboardContent');
             const sortedPlayers = [...STATE.players].sort((a, b) => b.score - a.score);
@@ -500,7 +568,7 @@
                 html += `
                     <div class="flex justify-between items-center py-2 border-b border-slate-700/50 text-sm">
                         <button onclick="openHistoryFromLeaderboard(${p.id})" class="font-bold text-slate-200 hover:text-indigo-400 text-right w-full flex gap-1 items-center">
-                            <span class="text-[10px] text-slate-500 w-3">${idx + 1}.</span> 
+                            <span class="text-[0.625rem] text-slate-500 w-3">${idx + 1}.</span> 
                             <span>${p.name} ${badge}</span>
                         </button>
                         <span class="font-black text-yellow-400 ml-2 shrink-0">${p.score}</span>
@@ -552,50 +620,140 @@
             return [secret, ...finalDecoys].sort(() => Math.random() - 0.5);
         }
 
+        let prankHoldInterval = null;
+        let holdStartTime = 0;
+        let prankTriggered = false;
+
+        function startPrankHold(e) {
+            e.preventDefault();
+            prankTriggered = false;
+            holdStartTime = Date.now();
+            let counter = 0;
+            const btn = e.currentTarget;
+            btn.style.transition = 'all 0.1s';
+            
+            clearInterval(prankHoldInterval);
+            prankHoldInterval = setInterval(() => {
+                counter += 100;
+                const percent = Math.min(100, (counter / 3000) * 100);
+                btn.innerHTML = `مقلب.. ${Math.round(3 - counter/1000)}ث 🤫`;
+                btn.style.background = `linear-gradient(to left, rgba(239, 68, 68, 0.4) ${percent}%, rgb(15, 23, 42) ${percent}%)`;
+                
+                if (counter >= 3000) {
+                    clearInterval(prankHoldInterval);
+                    prankTriggered = true;
+                    triggerPrankMode();
+                }
+            }, 100);
+        }
+
+        function endPrankHold(e) {
+            clearInterval(prankHoldInterval);
+            const btn = e.currentTarget;
+            if (btn) {
+                btn.innerHTML = 'عشوائي';
+                btn.style.background = '';
+            }
+            
+            const holdDuration = Date.now() - holdStartTime;
+            if (holdDuration < 400 && !prankTriggered) {
+                selectOutsidersCountSetting('random');
+            }
+        }
+
+        function triggerPrankMode() {
+            alertCustom("🤫 تم تفعيل وضع المقلب السري! ابدأ اللعب دون علم اللاعبين.");
+            STATE.currentRound.isPrankMode = true;
+            STATE.outsidersCountSetting = 'prank';
+            saveState();
+            startNewRound();
+        }
+
         function startNewRound() {
             let numOutsiders = 1;
             const playerCount = STATE.players.length;
 
-            if (STATE.outsidersCountSetting === 'random') {
-                const maxAllowed = Math.min(3, Math.max(1, playerCount - 2));
-                numOutsiders = Math.floor(Math.random() * maxAllowed) + 1;
+            if (STATE.currentRound.isPrankMode || STATE.outsidersCountSetting === 'prank') {
+                STATE.currentRound.isPrankMode = true;
+                STATE.currentRound.outsiders = [];
             } else {
-                numOutsiders = parseInt(STATE.outsidersCountSetting, 10);
+                STATE.currentRound.isPrankMode = false;
+                if (STATE.outsidersCountSetting === 'random') {
+                    const maxAllowed = Math.min(3, Math.max(1, playerCount - 2));
+                    numOutsiders = Math.floor(Math.random() * maxAllowed) + 1;
+                } else {
+                    numOutsiders = parseInt(STATE.outsidersCountSetting, 10);
+                }
+                if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
             }
 
-            if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
+            let chosenOutsiders = [];
+            if (!STATE.currentRound.isPrankMode) {
+                let eligibleForOutsider = STATE.players.filter(p => (p.outsiderStreak || 0) < 2).map(p => p.id);
+                if (eligibleForOutsider.length < numOutsiders) eligibleForOutsider = STATE.players.map(p => p.id);
 
-            let eligibleForOutsider = STATE.players.filter(p => (p.outsiderStreak || 0) < 2).map(p => p.id);
-            if (eligibleForOutsider.length < numOutsiders) eligibleForOutsider = STATE.players.map(p => p.id);
-
-            const shuffledIds = [...eligibleForOutsider].sort(() => Math.random() - 0.5);
-            const chosenOutsiders = shuffledIds.slice(0, numOutsiders);
-            
-            STATE.players.forEach(p => {
-                if(chosenOutsiders.includes(p.id)) p.outsiderStreak = (p.outsiderStreak || 0) + 1;
-                else p.outsiderStreak = 0;
-            });
+                const shuffledIds = [...eligibleForOutsider].sort(() => Math.random() - 0.5);
+                chosenOutsiders = shuffledIds.slice(0, numOutsiders);
+                
+                STATE.players.forEach(p => {
+                    if(chosenOutsiders.includes(p.id)) p.outsiderStreak = (p.outsiderStreak || 0) + 1;
+                    else p.outsiderStreak = 0;
+                });
+            }
 
             const playerIndices = STATE.players.map(p => p.id);
             let votingOrder = [...playerIndices].sort(() => Math.random() - 0.5);
             
-            while(chosenOutsiders.includes(votingOrder[0])) {
-                votingOrder = [...playerIndices].sort(() => Math.random() - 0.5);
+            if (!STATE.currentRound.isPrankMode) {
+                while(chosenOutsiders.includes(votingOrder[0])) {
+                    votingOrder = [...playerIndices].sort(() => Math.random() - 0.5);
+                }
             }
             
             const word = selectSecretWordForCategory(STATE.selectedCategory);
+
+            // لوضع المقلب: توزيع كلمات مختلفة لكل لاعب
+            const prankWords = {};
+            if (STATE.currentRound.isPrankMode) {
+                const categoryWords = [...WORD_DATABASE[STATE.selectedCategory]].sort(() => Math.random() - 0.5);
+                STATE.players.forEach((p, idx) => {
+                    prankWords[p.id] = categoryWords[idx % categoryWords.length];
+                });
+            }
 
             STATE.currentRound = {
                 secretWord: word, outsiders: chosenOutsiders, activeRevealerIdx: 0,
                 votes: {}, outsiderGuesses: {}, outsiderOptionsCache: {},
                 currentVotingPlayerIdx: 0, votingOrder: votingOrder, currentOutsiderGuessIdx: 0,
-                selectedSuspects: [], forgotRolePlayerId: null
+                selectedSuspects: [], forgotRolePlayerId: null,
+                isPrankMode: STATE.currentRound.isPrankMode,
+                prankWords: prankWords,
+                activeTimerVoterId: null, votingTimerRemaining: 30,
+                activeTimerOutsiderId: null, guessingTimerRemaining: 60
             };
 
             goToScreen('pass-to-player');
         }
 
-        function goToScreen(screenName) { STATE.screen = screenName; render(); }
+        let votingTimerInterval = null;
+        let guessingTimerInterval = null;
+
+        function goToScreen(screenName) { 
+            clearInterval(votingTimerInterval);
+            clearInterval(guessingTimerInterval);
+            
+            // في حال الانتقال لشاشة الإعدادات أو الرئيسية يتم تصفير المقلب ليكون لمرة واحدة فقط
+            if (screenName === 'settings' || screenName === 'welcome') {
+                STATE.currentRound.isPrankMode = false;
+                if (STATE.outsidersCountSetting === 'prank') {
+                    STATE.outsidersCountSetting = 'random';
+                }
+                saveState();
+            }
+
+            STATE.screen = screenName; 
+            render(); 
+        }
 
         function render() {
             const container = document.getElementById('app');
@@ -626,11 +784,11 @@
                     </div>
                     <div class="space-y-0.5 shrink-0">
                         <h2 class="text-xl font-black text-white">برا السالفة العراقية</h2>
-                        <p class="text-[10px] text-slate-400">لعبة الفراسة، الذكاء والضحكة الطيبة!</p>
+                        <p class="text-[0.625rem] text-slate-400">لعبة الفراسة، الذكاء والضحكة الطيبة!</p>
                     </div>
                     <div class="w-full glass-panel p-3 rounded-xl text-right space-y-1.5 max-w-xs shrink-0">
                         <h3 class="font-bold text-yellow-400 border-b border-slate-800 pb-0.5 text-center text-xs">💡 شلون تلعبون؟</h3>
-                        <ul class="text-[10px] text-slate-300 space-y-1 list-disc list-inside">
+                        <ul class="text-[0.625rem] text-slate-300 space-y-1 list-disc list-inside">
                             <li>مرروا الموبايل لمعرفة الأدوار.</li>
                             <li>الكل حيعرف الكلمة ما عدا أشخاص <span class="text-red-400 font-bold">برا السالفة</span>.</li>
                             <li>اسألوا بعضكم بذكاء ومراوغة لكشف المريبين!</li>
@@ -651,12 +809,12 @@
                     <div class="flex justify-between items-center bg-slate-900/90 border border-slate-800/80 px-2.5 py-1.5 rounded-lg transition" data-player-id="${p.id}">
                         <div class="flex items-center gap-2 w-1/2">
                             <span class="sort-handle text-slate-500 text-base cursor-grab active:cursor-grabbing px-1 py-1" title="اسحب للترتيب">☰</span>
-                            <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
+                            <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[0.625rem] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
                             <span class="font-bold text-slate-200 text-xs truncate" title="${p.name}">${p.name}</span>
                         </div>
                         <div class="flex gap-0.5 shrink-0 bg-slate-950/50 rounded-lg p-0.5 border border-slate-800/50">
-                            <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[10px]">✏️</button>
-                            <button onclick="removePlayer(${p.id}, false)" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[10px]">❌</button>
+                            <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[0.625rem]">✏️</button>
+                            <button onclick="removePlayer(${p.id}, false)" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[0.625rem]">❌</button>
                         </div>
                     </div>
                 `;
@@ -666,8 +824,8 @@
                 <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden min-h-0">
                     <div class="space-y-2 flex-1 flex flex-col overflow-hidden min-h-0">
                         <div class="flex items-center justify-between shrink-0">
-                            <h2 class="text-sm font-bold text-slate-200">ترتيب اللاعبين 👥 <span class="text-[9px] text-slate-500 font-normal">(اسحب ☰ للترتيب)</span></h2>
-                            <span class="text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">الحد الأدنى: 3</span>
+                            <h2 class="text-sm font-bold text-slate-200">ترتيب اللاعبين 👥 <span class="text-[0.625rem] text-slate-500 font-normal">(اسحب ☰ للترتيب)</span></h2>
+                            <span class="text-[0.625rem] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">الحد الأدنى: 3</span>
                         </div>
                         <div class="flex gap-1.5 shrink-0">
                             <input id="playerNameInput" type="text" placeholder="اكتب اسم جديد..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addPlayer()">
@@ -689,7 +847,7 @@
                 new Sortable(listElement, {
                     handle: '.sort-handle',
                     animation: 150,
-                    delay: 50, // تم تعديل التأخير ليكون 50
+                    delay: 50, 
                     delayOnTouchOnly: true,
                     ghostClass: 'opacity-50',
                     onEnd: function () {
@@ -702,7 +860,7 @@
                         });
                         STATE.players = newOrder;
                         saveState();
-                        render(); // لتحديث الأرقام
+                        render(); 
                     }
                 });
             }
@@ -722,10 +880,10 @@
                                 <span class="text-xl">${value.icon}</span>
                                 <div>
                                     <h4 class="font-bold text-xs text-slate-100 ${isSelected ? 'text-yellow-400' : ''}">${value.name}</h4>
-                                    <p class="text-[9px] text-slate-400">${value.desc}</p>
+                                    <p class="text-[0.625rem] text-slate-400">${value.desc}</p>
                                 </div>
                             </div>
-                            <span class="text-[9px] text-indigo-300 font-bold bg-indigo-950 px-1.5 py-0.5 rounded border border-indigo-900">${playedCount}/${totalWords}</span>
+                            <span class="text-[0.625rem] text-indigo-300 font-bold bg-indigo-950 px-1.5 py-0.5 rounded border border-indigo-900">${playedCount}/${totalWords}</span>
                         </button>
                         <button onclick="openCategoryWordsModal('${key}')" class="shrink-0 w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 flex justify-center items-center text-slate-300 transition" title="عرض الكلمات">👁️</button>
                     </div>
@@ -741,21 +899,53 @@
                         
                         <div class="space-y-1.5 shrink-0 bg-slate-900/50 p-2 rounded-lg border border-slate-800">
                             <!-- Perfect Sneak Bonus Toggle -->
-                            <label class="text-[10px] font-bold text-slate-300 flex items-center justify-between cursor-pointer">
-                                <span>نقطة تخفي للي برا السالفة؟ 🥷<br><span class="text-[8px] text-slate-500 font-normal">اذا محد شك بيه ياخذ نقطة اضافية</span></span>
+                            <label class="text-[0.625rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer">
+                                <span>نقطة تخفي للي برا السالفة؟ 🥷<br><span class="text-[0.6rem] text-slate-500 font-normal">اذا محد شك بيه ياخذ نقطة اضافية</span></span>
                                 <input type="checkbox" onchange="toggleSneakBonus(this.checked)" ${STATE.perfectSneakBonus ? 'checked' : ''} class="w-4 h-4 accent-yellow-500">
                             </label>
                         </div>
 
-                        <div class="space-y-1 overflow-y-auto flex-1 pr-0.5 min-h-[30vh]">
-                            <label class="text-[10px] font-bold text-slate-300 block">اختار الفئة للعب:</label>
+                        <!-- إعدادات المؤقتات الاختيارية بالتفصيل -->
+                        <div class="space-y-1.5 shrink-0 bg-slate-900/50 p-2 rounded-lg border border-slate-800">
+                            <h4 class="text-[0.625rem] font-bold text-slate-400 border-b border-slate-700/50 pb-0.5 mb-1 flex items-center gap-1">⏱️ إعدادات المؤقتات والعقوبات</h4>
+                            <label class="text-[0.625rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer">
+                                <span>مؤقت التصويت 🗳️<br><span class="text-[0.6rem] text-slate-500 font-normal">60ث لأول لاعب و30ث للبقية</span></span>
+                                <input type="checkbox" onchange="toggleVoteTimer(this.checked)" ${STATE.timerVoteEnabled ? 'checked' : ''} class="w-4 h-4 accent-indigo-500">
+                            </label>
+                            
+                            <!-- الخيار الجديد لعقوبة انتهاء وقت التصويت -->
+                            <label class="text-[0.625rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer border-t border-slate-800/50 pt-1 mt-1">
+                                <span>عقوبة انتهاء وقت التصويت ⚠️<br><span class="text-[0.6rem] text-slate-500 font-normal">تخيير اللاعب بين اعتماد اختياراته أو الخصم</span></span>
+                                <input type="checkbox" onchange="toggleTimeoutPenaltyChoice(this.checked)" ${STATE.timeoutPenaltyChoice ? 'checked' : ''} class="w-4 h-4 accent-indigo-500">
+                            </label>
+
+                            <label class="text-[0.625rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer border-t border-slate-800/50 pt-1 mt-1">
+                                <span>مؤقت التخمين 🎯<br><span class="text-[0.6rem] text-slate-500 font-normal">دقيقة واحدة للي برا السالفة للتخمين</span></span>
+                                <input type="checkbox" onchange="toggleGuessTimer(this.checked)" ${STATE.timerGuessEnabled ? 'checked' : ''} class="w-4 h-4 accent-indigo-500">
+                            </label>
+                        </div>
+
+                        <div class="space-y-1 overflow-y-auto flex-1 pr-0.5 min-h-[25vh]">
+                            <label class="text-[0.625rem] font-bold text-slate-300 block">اختار الفئة للعب:</label>
                             <div class="space-y-1.5">${categoriesHtml}</div>
                         </div>
                         
                         <div class="space-y-1 shrink-0">
-                            <label class="text-[10px] font-bold text-slate-300 block">عدد "برا السالفة" 🤫</label>
+                            <div class="flex justify-between items-center">
+                                <label class="text-[0.625rem] font-bold text-slate-300 block">عدد "برا السالفة" 🤫</label>
+                            </div>
                             <div class="grid grid-cols-4 gap-1">
-                                <button onclick="selectOutsidersCountSetting('random')" class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === 'random' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}">عشوائي</button>
+                                <button 
+                                    onmousedown="startPrankHold(event)" 
+                                    onmouseup="endPrankHold(event)" 
+                                    onmouseleave="endPrankHold(event)"
+                                    ontouchstart="startPrankHold(event)"
+                                    ontouchend="endPrankHold(event)"
+                                    id="btnOutsiderRandom"
+                                    class="py-1.5 rounded-lg border text-xs font-bold transition select-none ${STATE.outsidersCountSetting === 'random' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}"
+                                >
+                                    عشوائي
+                                </button>
                                 <button onclick="selectOutsidersCountSetting('1')" class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === '1' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}">1</button>
                                 <button onclick="selectOutsidersCountSetting('2')" ${maxAllowedOutsiders < 2 ? 'disabled class="py-1.5 rounded-lg border text-xs font-bold opacity-20 cursor-not-allowed"' : `class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === '2' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}"`}>2</button>
                                 <button onclick="selectOutsidersCountSetting('3')" ${maxAllowedOutsiders < 3 ? 'disabled class="py-1.5 rounded-lg border text-xs font-bold opacity-20 cursor-not-allowed"' : `class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === '3' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}"`}>3</button>
@@ -769,6 +959,10 @@
                 </div>
             `;
         }
+
+        function toggleVoteTimer(val) { STATE.timerVoteEnabled = val; saveState(); }
+        function toggleGuessTimer(val) { STATE.timerGuessEnabled = val; saveState(); }
+        function toggleTimeoutPenaltyChoice(val) { STATE.timeoutPenaltyChoice = val; saveState(); }
 
         function addPlayer() {
             const input = document.getElementById('playerNameInput');
@@ -860,7 +1054,7 @@
                         <h3 class="text-xl font-extrabold text-violet-400 bg-violet-950/40 border border-violet-800/40 py-1.5 px-4 rounded-xl inline-block mt-1">${currentPlayer.name}</h3>
                     </div>
                     <div class="p-2 glass-panel rounded-lg border border-red-500/10 max-w-xs">
-                        <p class="text-[10px] text-red-300 font-semibold leading-relaxed">⚠️ تأكد محد غير ${currentPlayer.name} يباوع للشاشة!</p>
+                        <p class="text-[0.625rem] text-red-300 font-semibold leading-relaxed">⚠️ تأكد محد غير ${currentPlayer.name} يباوع للشاشة!</p>
                     </div>
                     <button onclick="goToScreen('reveal-role')" class="w-full max-w-xs py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg font-bold text-xs shadow hover:from-violet-500 transition">
                         أني ${currentPlayer.name}، اكشف دوري 🤫
@@ -875,31 +1069,35 @@
             const isOutsider = STATE.currentRound.outsiders.includes(currentPlayer.id);
             const categoryName = CATEGORIES_INFO[STATE.selectedCategory].name;
             
+            const secretWord = STATE.currentRound.isPrankMode 
+                ? (STATE.currentRound.prankWords[currentPlayer.id] || STATE.currentRound.secretWord)
+                : STATE.currentRound.secretWord;
+
             const cardContent = isOutsider ? `
                 <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-center space-y-3 w-full glow-purple flex-1 flex flex-col justify-center">
                     <span class="text-4xl block animate-pulse">🕵️‍♂️</span>
                     <h2 class="text-lg font-black text-slate-100">أنت برا السالفة!</h2>
                     <div class="py-1 border-t border-b border-slate-700">
-                        <p class="text-[11px] text-slate-300">أنت خارج التغطية وما تعرف الكلمة السرية! سوي نفسك تعرف حتى لا يصيدوك.</p>
+                        <p class="text-[0.6875rem] text-slate-300">أنت خارج التغطية وما تعرف الكلمة السرية! سوي نفسك تعرف حتى لا يصيدوك.</p>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-auto pt-2">فئة الكلمات: <span class="text-indigo-300">${categoryName}</span></p>
+                    <p class="text-[0.625rem] text-slate-400 mt-auto pt-2">فئة الكلمات: <span class="text-indigo-300">${categoryName}</span></p>
                 </div>
             ` : `
                 <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-center space-y-3 w-full glow-gold flex-1 flex flex-col justify-center">
                     <span class="text-4xl block animate-bounce">💬</span>
                     <h2 class="text-lg font-black text-slate-100">أنت داخل السالفة!</h2>
                     <div class="bg-slate-900 border border-slate-700 py-2.5 px-3 rounded-lg">
-                        <span class="text-[10px] text-slate-400 block mb-0.5">الكلمة السرية هي:</span>
-                        <span class="text-xl sm:text-2xl font-black text-yellow-400 tracking-wide block py-1">${STATE.currentRound.secretWord}</span>
+                        <span class="text-[0.625rem] text-slate-400 block mb-0.5">الكلمة السرية هي:</span>
+                        <span class="text-xl sm:text-2xl font-black text-yellow-400 tracking-wide block py-1">${secretWord}</span>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-auto pt-2">فئة الكلمات: <span class="text-indigo-300">${categoryName}</span></p>
+                    <p class="text-[0.625rem] text-slate-400 mt-auto pt-2">فئة الكلمات: <span class="text-indigo-300">${categoryName}</span></p>
                 </div>
             `;
 
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center justify-between max-w-xs h-full py-2 space-y-3 min-h-0">
                     <div class="text-center w-full shrink-0">
-                        <span class="text-[9px] font-semibold text-slate-500">اللاعب ${playerIndex + 1} من ${STATE.players.length}</span>
+                        <span class="text-[0.625rem] font-semibold text-slate-500">اللاعب ${playerIndex + 1} من ${STATE.players.length}</span>
                         <h2 class="text-base font-bold text-slate-200">${currentPlayer.name}</h2>
                     </div>
                     <div class="w-full flex-1 flex flex-col justify-center min-h-[40vh]">${cardContent}</div>
@@ -935,7 +1133,7 @@
             container.innerHTML = `
                 <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-2 text-center overflow-hidden min-h-0">
                     <h2 class="text-sm font-black text-slate-100 shrink-0">منو نسى دوره؟ (اختر اللاعب)</h2>
-                    <p class="text-[10px] text-slate-400 mb-1 shrink-0">المسؤول يختار اسم اللاعب اللي نسى دوره</p>
+                    <p class="text-[0.625rem] text-slate-400 mb-1 shrink-0">المسؤول يختار اسم اللاعب اللي نسى دوره</p>
                     <div class="space-y-1.5 overflow-y-auto pr-0.5 flex-1 min-h-[40vh]">${listHtml}</div>
                     <button onclick="goToScreen('vote-action')" class="mt-2 py-2 bg-slate-800 text-slate-300 rounded-lg text-xs font-bold shrink-0">رجوع للتصويت</button>
                 </div>
@@ -952,7 +1150,7 @@
                         <h2 class="text-sm font-bold text-slate-400">انطوا الجهاز لـ:</h2>
                         <h3 class="text-xl font-extrabold text-violet-400 bg-violet-950/40 border border-violet-800/40 py-1.5 px-4 rounded-xl inline-block mt-1">${player.name}</h3>
                     </div>
-                    <p class="text-[10px] text-red-300 font-semibold mb-2">⚠️ محد يباوع غيره!</p>
+                    <p class="text-[0.625rem] text-red-300 font-semibold mb-2">⚠️ محد يباوع غيره!</p>
                     <button onclick="goToScreen('forgot-role-reveal')" class="w-full max-w-xs py-2 bg-slate-700 text-white rounded-lg font-bold text-xs shadow hover:bg-slate-600 transition">
                         أني ${player.name}، اظهر دوري 🤫
                     </button>
@@ -967,19 +1165,23 @@
             const player = STATE.players.find(p => p.id === STATE.currentRound.forgotRolePlayerId);
             const isOutsider = STATE.currentRound.outsiders.includes(player.id);
             const categoryName = CATEGORIES_INFO[STATE.selectedCategory].name;
+            const secretWord = STATE.currentRound.isPrankMode 
+                ? (STATE.currentRound.prankWords[player.id] || STATE.currentRound.secretWord)
+                : STATE.currentRound.secretWord;
+
             const cardContent = isOutsider ? `
                 <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl text-center space-y-3 w-full">
                     <span class="text-4xl">🕵️‍♂️</span>
                     <h2 class="text-base font-black text-slate-100">أنت برا السالفة!</h2>
-                    <p class="text-[10px] text-slate-400">الفئة: ${categoryName}</p>
+                    <p class="text-[0.625rem] text-slate-400">الفئة: ${categoryName}</p>
                 </div>
             ` : `
                 <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl text-center space-y-3 w-full">
                     <span class="text-4xl">💬</span>
                     <h2 class="text-base font-black text-slate-100">أنت داخل السالفة!</h2>
                     <div class="bg-slate-900 border border-slate-700 py-2 px-3 rounded-lg">
-                        <span class="text-[10px] text-slate-400 block">الكلمة السرية:</span>
-                        <span class="text-lg font-black text-yellow-400 py-1 block">${STATE.currentRound.secretWord}</span>
+                        <span class="text-[0.625rem] text-slate-400 block">الكلمة السرية:</span>
+                        <span class="text-lg font-black text-yellow-400 py-1 block">${secretWord}</span>
                     </div>
                 </div>
             `;
@@ -994,11 +1196,162 @@
             `;
         }
 
+        function initVotingTimer() {
+            if (!STATE.timerVoteEnabled) return;
+            const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
+            
+            if (STATE.currentRound.activeTimerVoterId === voterId) {
+                runVotingCountdown();
+                return;
+            }
+            
+            STATE.currentRound.activeTimerVoterId = voterId;
+            STATE.currentRound.votingTimerRemaining = (STATE.currentRound.currentVotingPlayerIdx === 0) ? 60 : 30;
+            runVotingCountdown();
+        }
+
+        function runVotingCountdown() {
+            clearInterval(votingTimerInterval);
+            const display = document.getElementById('votingTimerDisplay');
+            if (!display) return;
+
+            function updateDisplay() {
+                if (!display) return;
+                const mins = Math.floor(STATE.currentRound.votingTimerRemaining / 60);
+                const secs = STATE.currentRound.votingTimerRemaining % 60;
+                display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                
+                if (STATE.currentRound.votingTimerRemaining <= 5) {
+                    display.classList.add('animate-pulse', 'text-red-500');
+                } else {
+                    display.classList.remove('animate-pulse', 'text-red-500');
+                }
+            }
+
+            updateDisplay();
+
+            votingTimerInterval = setInterval(() => {
+                if (STATE.screen !== 'vote-action') {
+                    clearInterval(votingTimerInterval);
+                    return;
+                }
+                STATE.currentRound.votingTimerRemaining--;
+                updateDisplay();
+
+                if (STATE.currentRound.votingTimerRemaining <= 0) {
+                    clearInterval(votingTimerInterval);
+                    handleVotingTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleVotingTimeOut() {
+            playTimerSound();
+            if (STATE.timeoutPenaltyChoice) {
+                // إظهار نافذة خيارات انتهاء وقت التصويت المخصصة والمطورة
+                const modal = document.getElementById('voteTimeoutModal');
+                const postponeBtn = document.getElementById('timeoutPostponeBtn');
+                
+                // منع التأجيل إذا كان آخر لاعب
+                const currentIdx = STATE.currentRound.currentVotingPlayerIdx;
+                const order = STATE.currentRound.votingOrder;
+                if (currentIdx >= order.length - 1) {
+                    postponeBtn.disabled = true;
+                    postponeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    postponeBtn.innerText = "❌ لا يمكن التأجيل (أنت آخر لاعب)";
+                } else {
+                    postponeBtn.disabled = false;
+                    postponeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    postponeBtn.innerText = "⏰ تأجيل دوري بالتصويت لاحقاً";
+                }
+                
+                modal.classList.remove('hidden');
+            } else {
+                // معالجة تلقائية سريعة
+                alertCustom("⏳ انتهى وقت التصويت! تم اعتماد اختياراتك الحالية.");
+                const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
+                STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
+                advanceVoting();
+            }
+        }
+
+        // معالجة اختيارات انتهاء الوقت المخصصة بناءً على طلب المستخدم
+        function handleTimeoutChoice(choice) {
+            document.getElementById('voteTimeoutModal').classList.add('hidden');
+            const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
+            
+            if (choice === 'approve') {
+                // 1. اعتماد الاختيارات الحالية بدون عقوبة
+                STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
+                alertCustom("تم اعتماد اختياراتك الحالية بنجاح!");
+            } else if (choice === 'penalty-keep-votes') {
+                // 2. خصم نقطة واحدة مع الاحتفاظ بالأصوات الحالية وعدم تصفيرها
+                STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
+                adjustScoreDirectly(voterId, -1, "عقوبة تأخر التصويت (مع الاحتفاظ بالأصوات) ⚠️");
+                alertCustom("تم خصم نقطة واحدة للتأخير مع اعتماد أصواتك الحالية!");
+            } else if (choice === 'postpone') {
+                // 3. تأجيل دور التصويت لنهاية القائمة
+                const currentIdx = STATE.currentRound.currentVotingPlayerIdx;
+                const order = STATE.currentRound.votingOrder;
+                if (currentIdx < order.length - 1) {
+                    const currentVoter = order.splice(currentIdx, 1)[0];
+                    order.push(currentVoter);
+                    STATE.currentRound.selectedSuspects = []; 
+                    alertCustom("تم تأجيل دورك لنهاية التصويت بسبب انتهاء الوقت!");
+                    render();
+                    return; 
+                } else {
+                    alertCustom("أنت آخر لاعب، لا يمكن التأجيل! تم اعتماد اختياراتك تلقائياً.");
+                    STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
+                }
+            } else if (choice === 'empty-no-penalty') {
+                // 4. تصويت فارغ وبدون عقوبة نقاط
+                STATE.currentRound.votes[voterId] = [];
+                alertCustom("تم إلغاء التصويت دون عقوبات.");
+            }
+            
+            advanceVoting();
+        }
+
+        function adjustScoreDirectly(playerId, amount, reason) {
+            const player = STATE.players.find(p => p.id === playerId);
+            if (player) {
+                player.score += amount;
+                player.history.unshift({ 
+                    word: '---', 
+                    role: 'تعديل آلي', 
+                    points: amount, 
+                    desc: reason, 
+                    votes: null 
+                });
+                if (player.history.length > MAX_HISTORY_LEN) player.history = player.history.slice(0, MAX_HISTORY_LEN);
+                saveState();
+            }
+        }
+
+        function advanceVoting() {
+            if (STATE.currentRound.currentVotingPlayerIdx + 1 < STATE.players.length) {
+                STATE.currentRound.currentVotingPlayerIdx += 1;
+                STATE.currentRound.selectedSuspects = [];
+                goToScreen('vote-action');
+            } else {
+                STATE.currentRound.activeTimerVoterId = null; 
+                if (STATE.currentRound.isPrankMode) {
+                    calculateRoundPoints();
+                    goToScreen('summary');
+                } else {
+                    STATE.currentRound.currentOutsiderGuessIdx = 0;
+                    goToScreen('guess-pass');
+                }
+            }
+        }
+
         function renderVoteActionScreen(container) {
             const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
             const currentPlayer = STATE.players.find(p => p.id === voterId);
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
-            const totalOutsiders = STATE.currentRound.outsiders.length;
+            const isPrank = STATE.currentRound.isPrankMode;
+            const totalOutsiders = isPrank ? 1 : STATE.currentRound.outsiders.length;
             let candidatesHtml = '';
             
             const candidates = STATE.players.filter(p => p.id !== currentPlayer.id);
@@ -1007,19 +1360,33 @@
             candidates.forEach(p => {
                 const isSelected = STATE.currentRound.selectedSuspects.includes(p.id);
                 candidatesHtml += `
-                    <button onclick="toggleSuspectVote(${p.id})" class="w-full text-right p-2.5 glass-panel rounded-lg border transition flex items-center justify-between ${isSelected ? 'border-red-500 bg-red-950/25 glow-purple' : 'border-slate-800 hover:border-slate-700'}">
+                    <button data-candidate-id="${p.id}" onclick="toggleSuspectVote(${p.id})" class="candidate-btn w-full text-right p-2.5 glass-panel rounded-lg border transition flex items-center justify-between ${isSelected ? 'border-red-500 bg-red-950/25 glow-purple' : 'border-slate-800 hover:border-slate-700'}">
                         <div class="flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full ${isSelected ? 'bg-red-950 text-red-400' : 'bg-slate-800 text-slate-400'} flex items-center justify-center text-xs">👤</span>
-                            <span class="font-bold text-xs ${isSelected ? 'text-red-400' : 'text-slate-200'}">${p.name}</span>
+                            <span class="icon-circle w-6 h-6 rounded-full ${isSelected ? 'bg-red-950 text-red-400' : 'bg-slate-800 text-slate-400'} flex items-center justify-center text-xs">👤</span>
+                            <span class="candidate-name font-bold text-xs ${isSelected ? 'text-red-400' : 'text-slate-200'}">${p.name}</span>
                         </div>
-                        ${isSelected ? '<span class="text-[9px] text-red-400 font-black border border-red-800 px-1.5 py-0.5 rounded-full">برا السالفة</span>' : '<span class="text-[9px] text-slate-600 border border-slate-800 px-1.5 py-0.5 rounded-full">اختار</span>'}
+                        <span class="vote-indicator text-[0.625rem] ${isSelected ? 'text-red-400 font-black border border-red-800' : 'text-slate-600 border border-slate-800'} px-1.5 py-0.5 rounded-full">
+                            ${isSelected ? 'برا السالفة' : 'اختار'}
+                        </span>
                     </button>
                 `;
             });
 
-            const rulesInstructionHtml = isRandomSetting 
-                ? `<p class="text-[10px] text-indigo-300 font-bold mt-0.5">عدد "برا السالفة" عشوائي، اختار منو تشك بيهم!</p>`
-                : `<p class="text-[10px] text-indigo-300 font-bold mt-0.5">لازم تختار بالضبط: ${totalOutsiders} (المختار حالياً: ${STATE.currentRound.selectedSuspects.length})</p>`;
+            let rulesInstructionHtml = '';
+            if (isPrank) {
+                rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">اختار مشتبه واحد تعتقد هو برا السالفة!</p>`;
+            } else if (isRandomSetting) {
+                rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">عدد "برا السالفة" عشوائي، اختار منو تشك بيهم!</p>`;
+            } else {
+                rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">لازم تختار بالضبط: <span id="maxOutsidersRuleText">${totalOutsiders}</span> (المختار حالياً: <span id="selectedSuspectsCount">${STATE.currentRound.selectedSuspects.length}</span>)</p>`;
+            }
+
+            const timerWidgetHtml = STATE.timerVoteEnabled 
+                ? `<div id="votingTimerContainer" class="flex items-center justify-center gap-1 bg-red-950/40 border border-red-900/40 py-1 px-3 rounded-full text-xs font-black text-red-400 shrink-0 mb-1.5">
+                       <span>⏱️ وقت التصويت المتبقي:</span>
+                       <span id="votingTimerDisplay" class="text-sm font-black text-yellow-400">--:--</span>
+                   </div>`
+                : '';
 
             container.innerHTML = `
                 <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden min-h-0">
@@ -1028,38 +1395,83 @@
                             <h2 class="text-sm font-bold text-slate-400">دور اللاعب للتصويت سرياً:</h2>
                             <h3 class="text-xl font-black text-yellow-400 bg-slate-900 border border-slate-800 py-1 px-4 rounded-xl inline-block mt-0.5">🗳️ ${currentPlayer.name}</h3>
                         </div>
-                        <div class="bg-indigo-950/40 border border-indigo-900/40 p-2 rounded-lg text-center shrink-0">
-                            ${rulesInstructionHtml}
+                        <div class="flex flex-col items-center shrink-0">
+                            ${timerWidgetHtml}
+                            <div class="bg-indigo-950/40 border border-indigo-900/40 p-2 rounded-lg text-center w-full">
+                                ${rulesInstructionHtml}
+                            </div>
                         </div>
                         <div class="space-y-1 overflow-y-auto pr-0.5 flex-1 min-h-[30vh]">${candidatesHtml}</div>
                     </div>
                     <div class="flex gap-1 shrink-0 mb-1">
-                        <button onclick="postponeVote()" class="flex-1 py-1.5 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-[10px] font-bold hover:bg-slate-700 transition">تأجيل دوري ⏭️</button>
-                        <button onclick="goToScreen('forgot-role-select')" class="flex-1 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 rounded-lg text-[10px] font-bold hover:bg-slate-800 transition">نسى دوره؟ 🤷‍♂️</button>
+                        <button onclick="postponeVote()" class="flex-1 py-1.5 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-[0.625rem] font-bold hover:bg-slate-700 transition">تأجيل دوري ⏭️</button>
+                        <button onclick="goToScreen('forgot-role-select')" class="flex-1 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 rounded-lg text-[0.625rem] font-bold hover:bg-slate-800 transition">نسى دوره؟ 🤷‍♂️</button>
                     </div>
                     <div class="flex gap-1 shrink-0">
                         <button onclick="confirmPlayerVote()" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-bold text-xs shadow hover:scale-[1.01] transition">تأكيد التصويت ✔️</button>
                     </div>
                 </div>
             `;
+
+            setTimeout(() => { initVotingTimer(); }, 50);
         }
 
         function toggleSuspectVote(suspectId) {
             const sId = parseInt(suspectId);
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
-            const totalOutsiders = STATE.currentRound.outsiders.length;
-            const maxSelections = isRandomSetting ? Math.max(1, Math.min(3, STATE.players.length - 2)) : totalOutsiders;
+            const isPrank = STATE.currentRound.isPrankMode;
+            const totalOutsiders = isPrank ? 1 : STATE.currentRound.outsiders.length;
+            const maxSelections = (isRandomSetting && !isPrank) ? Math.max(1, Math.min(3, STATE.players.length - 2)) : totalOutsiders;
 
             const index = STATE.currentRound.selectedSuspects.indexOf(sId);
-            if (index > -1) STATE.currentRound.selectedSuspects.splice(index, 1);
-            else {
+            if (index > -1) {
+                STATE.currentRound.selectedSuspects.splice(index, 1);
+            } else {
                 if (STATE.currentRound.selectedSuspects.length >= maxSelections) {
                     alertCustom(isRandomSetting ? "الحد الأقصى للمشتبه بهم!" : `تكدر تختار ${totalOutsiders} كحد أقصى!`);
                     return;
                 }
                 STATE.currentRound.selectedSuspects.push(sId);
             }
-            render();
+
+            updateSuspectButtonsUI();
+        }
+
+        function updateSuspectButtonsUI() {
+            const container = document.getElementById('app');
+            if (!container) return;
+            
+            const buttons = container.querySelectorAll('[data-candidate-id]');
+            buttons.forEach(btn => {
+                const cId = parseInt(btn.getAttribute('data-candidate-id'));
+                const isSelected = STATE.currentRound.selectedSuspects.includes(cId);
+                const indicator = btn.querySelector('.vote-indicator');
+                const nameText = btn.querySelector('.candidate-name');
+                const iconCircle = btn.querySelector('.icon-circle');
+
+                if (isSelected) {
+                    btn.className = "candidate-btn w-full text-right p-2.5 glass-panel rounded-lg border transition flex items-center justify-between border-red-500 bg-red-950/25 glow-purple";
+                    if (indicator) {
+                        indicator.className = "vote-indicator text-[0.625rem] text-red-400 font-black border border-red-800 px-1.5 py-0.5 rounded-full";
+                        indicator.innerText = "برا السالفة";
+                    }
+                    if (nameText) nameText.className = "candidate-name font-bold text-xs text-red-400";
+                    if (iconCircle) iconCircle.className = "icon-circle w-6 h-6 rounded-full bg-red-950 text-red-400 flex items-center justify-center text-xs";
+                } else {
+                    btn.className = "candidate-btn w-full text-right p-2.5 glass-panel rounded-lg border transition flex items-center justify-between border-slate-800 hover:border-slate-700";
+                    if (indicator) {
+                        indicator.className = "vote-indicator text-[0.625rem] text-slate-600 border border-slate-800 px-1.5 py-0.5 rounded-full";
+                        indicator.innerText = "اختار";
+                    }
+                    if (nameText) nameText.className = "candidate-name font-bold text-xs text-slate-200";
+                    if (iconCircle) iconCircle.className = "icon-circle w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-xs";
+                }
+            });
+
+            const countEl = document.getElementById('selectedSuspectsCount');
+            if (countEl) {
+                countEl.innerText = STATE.currentRound.selectedSuspects.length;
+            }
         }
 
         function postponeVote() {
@@ -1069,27 +1481,26 @@
                 const currentVoter = order.splice(currentIdx, 1)[0];
                 order.push(currentVoter);
                 STATE.currentRound.selectedSuspects = []; 
-                render(); alertCustom("تم تأجيل دورك لنهاية التصويت!");
+                render(); 
+                alertCustom("تم تأجيل دورك لنهاية التصويت!");
             } else alertCustom("أنت آخر لاعب، لازم تصوت هسه!");
         }
 
         function confirmPlayerVote() {
             const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
-            const totalOutsiders = STATE.currentRound.outsiders.length;
+            const isPrank = STATE.currentRound.isPrankMode;
+            const totalOutsiders = isPrank ? 1 : STATE.currentRound.outsiders.length;
 
-            if (isRandomSetting && STATE.currentRound.selectedSuspects.length === 0) { alertCustom("اختار لاعب واحد على الأقل يشك بي!"); return; }
-            if (!isRandomSetting && STATE.currentRound.selectedSuspects.length !== totalOutsiders) { alertCustom(`لازم تصوت على ${totalOutsiders} لاعبين بالضبط!`); return; }
+            if (isPrank) {
+                if (STATE.currentRound.selectedSuspects.length === 0) { alertCustom("اختار لاعب واحد على الأقل يشك بي!"); return; }
+            } else {
+                if (isRandomSetting && STATE.currentRound.selectedSuspects.length === 0) { alertCustom("اختار لاعب واحد على الأقل يشك بي!"); return; }
+                if (!isRandomSetting && STATE.currentRound.selectedSuspects.length !== totalOutsiders) { alertCustom(`لازم تصوت على ${totalOutsiders} لاعبين بالضبط!`); return; }
+            }
 
             STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
-            if (STATE.currentRound.currentVotingPlayerIdx + 1 < STATE.players.length) {
-                STATE.currentRound.currentVotingPlayerIdx += 1;
-                STATE.currentRound.selectedSuspects = [];
-                goToScreen('vote-action');
-            } else {
-                STATE.currentRound.currentOutsiderGuessIdx = 0;
-                goToScreen('guess-pass');
-            }
+            advanceVoting();
         }
 
         function renderGuessPassScreen(container) {
@@ -1100,7 +1511,7 @@
                 <div class="w-full flex flex-col items-center text-center space-y-3 px-1 my-auto shrink-0">
                     <span class="text-4xl animate-bounce">🤔</span>
                     <div class="space-y-1">
-                        <span class="text-[10px] bg-red-950 border border-red-800 text-red-400 px-2 py-0.5 rounded-full font-bold">كشف برا السالفة</span>
+                        <span class="text-[0.625rem] bg-red-950 border border-red-800 text-red-400 px-2 py-0.5 rounded-full font-bold">كشف برا السالفة</span>
                         <h2 class="text-lg font-black text-slate-100">انكشفت اللعبة! اللاعب برا السالفة هو:</h2>
                         <h3 class="text-2xl font-extrabold text-red-400 bg-slate-900 border border-slate-800 py-1.5 px-5 rounded-xl inline-block mt-1">${outsiderPlayer.name}</h3>
                         <p class="text-xs text-slate-400">هسه انطوا الجهاز إله ليخمن الكلمة من أصل 10 كلمات!</p>
@@ -1110,6 +1521,67 @@
                     </button>
                 </div>
             `;
+        }
+
+        function initGuessingTimer() {
+            if (!STATE.timerGuessEnabled) return;
+            const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
+            
+            if (STATE.currentRound.activeTimerOutsiderId === outsiderId) {
+                runGuessingCountdown();
+                return;
+            }
+            
+            STATE.currentRound.activeTimerOutsiderId = outsiderId;
+            STATE.currentRound.guessingTimerRemaining = 60; 
+            runGuessingCountdown();
+        }
+
+        function runGuessingCountdown() {
+            clearInterval(guessingTimerInterval);
+            const display = document.getElementById('guessingTimerDisplay');
+            if (!display) return;
+
+            function updateDisplay() {
+                if (!display) return;
+                const mins = Math.floor(STATE.currentRound.guessingTimerRemaining / 60);
+                const secs = STATE.currentRound.guessingTimerRemaining % 60;
+                display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                
+                if (STATE.currentRound.guessingTimerRemaining <= 5) {
+                    display.classList.add('animate-pulse', 'text-red-500');
+                } else {
+                    display.classList.remove('animate-pulse', 'text-red-500');
+                }
+            }
+
+            updateDisplay();
+
+            guessingTimerInterval = setInterval(() => {
+                if (STATE.screen !== 'guess-action') {
+                    clearInterval(guessingTimerInterval);
+                    return;
+                }
+                STATE.currentRound.guessingTimerRemaining--;
+                updateDisplay();
+
+                if (STATE.currentRound.guessingTimerRemaining <= 0) {
+                    clearInterval(guessingTimerInterval);
+                    playTimerSound();
+                    handleGuessingTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleGuessingTimeOut() {
+            alertCustom("⏳ انتهى وقت التخمين! تم اختيار كلمة عشوائية.");
+            const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
+            const currentOptions = STATE.currentRound.outsiderOptionsCache[outsiderId];
+            if (currentOptions && currentOptions.length > 0) {
+                const randomWord = currentOptions[Math.floor(Math.random() * currentOptions.length)];
+                STATE.currentRound.outsiderGuesses[outsiderId] = randomWord;
+            }
+            confirmOutsiderGuess();
         }
 
         function renderGuessActionScreen(container) {
@@ -1128,11 +1600,18 @@
             currentOptions.forEach((word) => {
                 const isSelected = chosenWord === word;
                 optionsHtml += `
-                    <button onclick="selectGuessWord('${word}')" class="py-3 px-1 glass-panel rounded-lg border font-bold text-lg sm:text-xl transition text-center ${isSelected ? 'border-yellow-400 bg-violet-950/40 text-yellow-400 scale-105 shadow-lg' : 'border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800'}">
+                    <button data-guess-word="${word}" onclick="selectGuessWord('${word}')" class="py-3 px-1 glass-panel rounded-lg border font-bold text-lg sm:text-xl transition text-center ${isSelected ? 'border-yellow-400 bg-violet-950/40 text-yellow-400 scale-105 shadow-lg' : 'border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800'}">
                         ${word}
                     </button>
                 `;
             });
+
+            const timerWidgetHtml = STATE.timerGuessEnabled 
+                ? `<div id="guessingTimerContainer" class="flex items-center justify-center gap-1 bg-red-950/40 border border-red-900/40 py-1 px-3 rounded-full text-xs font-black text-red-400 shrink-0 mb-1.5 w-full">
+                       <span>⏱️ وقت التخمين المتبقي:</span>
+                       <span id="guessingTimerDisplay" class="text-sm font-black text-yellow-400">--:--</span>
+                   </div>`
+                : '';
 
             container.innerHTML = `
                 <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-3 py-1 overflow-hidden min-h-0">
@@ -1141,14 +1620,32 @@
                             <h2 class="text-xs font-bold text-slate-400">خمن الكلمة يا بطل:</h2>
                             <h3 class="text-xl font-black text-red-400 block">${outsiderPlayer.name}</h3>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 overflow-y-auto flex-1 pr-0.5 pb-2 min-h-[40vh]">${optionsHtml}</div>
+                        <div class="shrink-0 flex justify-center">
+                            ${timerWidgetHtml}
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 overflow-y-auto flex-1 pr-0.5 pb-2 min-h-[30vh]">${optionsHtml}</div>
                     </div>
                     <button onclick="confirmOutsiderGuess()" class="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-black text-sm shadow transition shrink-0">تأكيد التخمين 🎯</button>
                 </div>
             `;
+
+            setTimeout(() => { initGuessingTimer(); }, 50);
         }
 
-        function selectGuessWord(word) { STATE.currentRound.outsiderGuesses[STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx]] = word; render(); }
+        function selectGuessWord(word) { 
+            STATE.currentRound.outsiderGuesses[STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx]] = word; 
+            
+            const buttons = document.querySelectorAll('[data-guess-word]');
+            buttons.forEach(btn => {
+                const btnWord = btn.getAttribute('data-guess-word');
+                const isSelected = (word === btnWord);
+                if (isSelected) {
+                    btn.className = "py-3 px-1 glass-panel rounded-lg border font-bold text-lg sm:text-xl transition text-center border-yellow-400 bg-violet-950/40 text-yellow-400 scale-105 shadow-lg";
+                } else {
+                    btn.className = "py-3 px-1 glass-panel rounded-lg border font-bold text-lg sm:text-xl transition text-center border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800";
+                }
+            });
+        }
 
         function confirmOutsiderGuess() {
             const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
@@ -1156,13 +1653,56 @@
             if (!chosenWord) { alertCustom("لازم تختار كلمة وحدة من الـ 10 كلمات أولاً!"); return; }
             if (STATE.currentRound.currentOutsiderGuessIdx + 1 < STATE.currentRound.outsiders.length) {
                 STATE.currentRound.currentOutsiderGuessIdx += 1; goToScreen('guess-pass');
-            } else { calculateRoundPoints(); goToScreen('summary'); }
+            } else { 
+                STATE.currentRound.activeTimerOutsiderId = null;
+                calculateRoundPoints(); 
+                goToScreen('summary'); 
+            }
         }
 
         let roundResultsCache = {};
+
         function calculateRoundPoints() {
             const secret = STATE.currentRound.secretWord;
             const outsiders = STATE.currentRound.outsiders;
+            const isPrank = STATE.currentRound.isPrankMode;
+
+            if (isPrank) {
+                const playerRoundPoints = {};
+                const votedStatsFlags = {};
+                const guessSuccessFlags = {};
+                const insidePlayerPenalties = {};
+
+                STATE.players.forEach(p => {
+                    playerRoundPoints[p.id] = 0; 
+                    votedStatsFlags[p.id] = { correct: 0, wrong: 0 };
+                    guessSuccessFlags[p.id] = false;
+                    const word = STATE.currentRound.prankWords[p.id] || 'مجهول';
+                    
+                    p.history.unshift({ 
+                        word: word, 
+                        role: 'داخل السالفة (مقلب 🤫)', 
+                        points: 0, 
+                        desc: 'جولة مقلب للمزاح والضحك', 
+                        votes: (STATE.currentRound.votes[p.id] || []).map(vId => STATE.players.find(x => x.id === vId)?.name || 'مجهول').join('، ')
+                    });
+                });
+
+                roundResultsCache = { 
+                    isPrankMode: true,
+                    secretWord: 'مقلب! كل واحد كلمة', 
+                    outsiders: [], 
+                    playerRoundPoints, 
+                    votedStatsFlags, 
+                    guessSuccessFlags, 
+                    outsiderGuessesCache: {}, 
+                    outsiderOptionsSaved: {}, 
+                    insidePlayerPenalties 
+                };
+                saveState();
+                return;
+            }
+
             const playerRoundPoints = {}, votedStatsFlags = {}, guessSuccessFlags = {}, insidePlayerPenalties = {};
             const outsiderGuessesCache = { ...STATE.currentRound.outsiderGuesses };
             const outsiderOptionsSaved = { ...STATE.currentRound.outsiderOptionsCache };
@@ -1211,7 +1751,7 @@
             });
 
             STATE.players.forEach(p => { if(p.history.length > MAX_HISTORY_LEN) p.history = p.history.slice(0, MAX_HISTORY_LEN); });
-            roundResultsCache = { secretWord: secret, outsiders: [...outsiders], playerRoundPoints, votedStatsFlags, guessSuccessFlags, outsiderGuessesCache, outsiderOptionsSaved, insidePlayerPenalties };
+            roundResultsCache = { isPrankMode: false, secretWord: secret, outsiders: [...outsiders], playerRoundPoints, votedStatsFlags, guessSuccessFlags, outsiderGuessesCache, outsiderOptionsSaved, insidePlayerPenalties };
             saveState();
         }
 
@@ -1241,8 +1781,8 @@
                 player.history.forEach(h => {
                     const roleColor = h.role === 'برا السالفة' ? 'text-red-400' : (h.role === 'داخل السالفة' ? 'text-indigo-400' : 'text-slate-400');
                     const ptColor = h.points > 0 ? 'text-emerald-400' : (h.points === 0 ? 'text-slate-400' : 'text-red-500');
-                    const votesHtml = h.votes ? `<p class="text-[9px] text-slate-400 mt-1 border-t border-slate-700/50 pt-1">صوّت على: <span class="text-slate-200 font-bold">${h.votes}</span></p>` : '';
-                    html += `<div class="bg-slate-800/50 p-2 rounded border border-slate-700/50 flex justify-between items-center text-[10px]">
+                    const votesHtml = h.votes ? `<p class="text-[0.625rem] text-slate-400 mt-1 border-t border-slate-700/50 pt-1">صوّت على: <span class="text-slate-200 font-bold">${h.votes}</span></p>` : '';
+                    html += `<div class="bg-slate-800/50 p-2 rounded border border-slate-700/50 flex justify-between items-center text-[0.6875rem]">
                             <div class="flex-1"><p class="font-bold text-slate-200">الكلمة: <span class="text-yellow-400">${h.word}</span></p>
                             <p class="text-slate-400">الدور: <span class="${roleColor} font-bold">${h.role}</span> - ${h.desc}</p>${votesHtml}</div>
                             <span class="${ptColor} font-black text-xs block ml-2 shrink-0" dir="ltr">${h.points > 0 ? '+' : ''}${h.points}</span></div>`;
@@ -1276,6 +1816,45 @@
 
         function renderSummaryScreen(container) {
             const results = roundResultsCache;
+
+            if (results.isPrankMode) {
+                let prankDetailHtml = '';
+                STATE.players.forEach(p => {
+                    const word = STATE.currentRound.prankWords[p.id] || 'مجهول';
+                    prankDetailHtml += `
+                        <div class="bg-violet-950/20 border border-violet-800/40 p-2.5 rounded-lg flex justify-between items-center text-right text-xs">
+                            <div>
+                                <span class="font-extrabold text-violet-400">${p.name}</span>
+                                <p class="text-[0.625rem] text-slate-300">الكلمة اللي طلعتله جانت: <span class="font-bold text-yellow-400">"${word}"</span></p>
+                            </div>
+                            <span class="text-slate-500 font-bold text-[0.625rem]">مقلب 🤫</span>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden min-h-0">
+                        <div class="space-y-2 flex-1 flex flex-col overflow-hidden min-h-0">
+                            <div class="bg-gradient-to-r from-red-950 to-amber-950 p-3 rounded-xl border border-red-800/40 text-center shrink-0">
+                                <span class="text-xs text-yellow-400 font-bold block mb-1">🤫 مقلب! السالفة جانت محروقة والكل برا السالفة!</span>
+                                <span class="text-[0.625rem] text-slate-300 block">ما جان اكو أي شخص برا السالفة حقيقي، الكل جانت تطلعله كلمات مختلفة تماماً والهدف هو المتعة والضحك! (النقاط لم تتأثر)</span>
+                            </div>
+                            
+                            <div id="summaryScrollArea" class="space-y-1.5 overflow-y-auto flex-1 pr-0.5 min-h-[30vh]">
+                                <h3 class="text-[0.625rem] font-bold text-slate-400">👥 كلمات اللاعبين في الجولة:</h3>
+                                <div class="space-y-1.5">${prankDetailHtml}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-1 flex gap-2 shrink-0">
+                            <button onclick="showConfirmReset()" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-red-400 rounded-lg font-bold text-xs">تصفير 🔄</button>
+                            <button onclick="goToScreen('settings')" class="flex-[2] py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg font-bold text-xs shadow transition">جولة جديدة 🔁</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
             let outsidersHtml = '';
             results.outsiders.forEach(oId => {
                 const player = STATE.players.find(p => p.id === oId);
@@ -1283,18 +1862,18 @@
                 const points = results.playerRoundPoints[oId];
                 const stats = results.votedStatsFlags[oId];
                 const guessWord = results.outsiderGuessesCache[oId] || 'لم يخمن';
-                const sneakBonusText = (STATE.perfectSneakBonus && (points > (isGuessed ? 1 : 0) + stats.correct)) ? '<span class="text-[9px] text-emerald-400 block">+1 مكافأة تخفي 🥷</span>' : '';
+                const sneakBonusText = (STATE.perfectSneakBonus && (points > (isGuessed ? 1 : 0) + stats.correct)) ? '<span class="text-[0.625rem] text-emerald-400 block">+1 مكافأة تخفي 🥷</span>' : '';
                 
                 outsidersHtml += `
                     <div class="bg-red-950/20 border border-red-900/40 p-2 rounded-lg flex flex-col gap-1 text-right text-xs">
                         <div class="flex justify-between items-center w-full">
                             <div><h4 class="font-extrabold text-red-400 text-xs">${player.name}</h4>
-                            <p class="text-[9px] text-slate-300">تخمينه: <span class="font-bold text-yellow-400">${guessWord}</span> - ${isGuessed ? '<span class="text-emerald-400 font-bold">صح ✔️</span>' : '<span class="text-red-400 font-bold">غلط ❌</span>'}</p>
-                            ${stats.correct > 0 ? `<p class="text-[9px] text-indigo-300">صاد ${stats.correct} زميل برا السالفة</p>` : ''}
+                            <p class="text-[0.625rem] text-slate-300">تخمينه: <span class="font-bold text-yellow-400">${guessWord}</span> - ${isGuessed ? '<span class="text-emerald-400 font-bold">صح ✔️</span>' : '<span class="text-red-400 font-bold">غلط ❌</span>'}</p>
+                            ${stats.correct > 0 ? `<p class="text-[0.625rem] text-indigo-300">صاد ${stats.correct} زميل برا السالفة</p>` : ''}
                             ${sneakBonusText}</div>
                             <div class="text-left"><span class="${points > 0 ? 'text-emerald-400' : 'text-slate-400'} font-black text-xs block">+${points} ن</span></div>
                         </div>
-                        <button onclick="openOutsiderOptionsModal(${oId})" class="w-full mt-0.5 py-1.5 bg-red-900/30 hover:bg-red-800/50 border border-red-800/40 rounded text-[10px] text-red-300 font-bold transition flex justify-center items-center gap-1">
+                        <button onclick="openOutsiderOptionsModal(${oId})" class="w-full mt-0.5 py-1.5 bg-red-900/30 hover:bg-red-800/50 border border-red-800/40 rounded text-[0.625rem] text-red-300 font-bold transition flex justify-center items-center gap-1">
                             <span>🔍</span> شوف خياراته شنو كانت!
                         </button>
                     </div>`;
@@ -1309,13 +1888,13 @@
                 if(results.insidePlayerPenalties[p.id]) {
                     const penInfo = results.insidePlayerPenalties[p.id];
                     const voters = penInfo.byIds.map(id => STATE.players.find(x=>x.id===id)?.name).join('، ');
-                    penaltyHtml = `<div class="mt-1 pt-1 border-t border-red-900/30 text-[9px] text-red-300"><span class="font-bold text-red-400">⚖️ اللاعب المظلوم:</span> انشك بيه من (${penInfo.count}) وهم: ${voters} (-1 نقطة)</div>`;
+                    penaltyHtml = `<div class="mt-1 pt-1 border-t border-red-900/30 text-[0.625rem] text-red-300"><span class="font-bold text-red-400">⚖️ اللاعب المظلوم:</span> انشك بيه من (${penInfo.count}) وهم: ${voters} (-1 نقطة)</div>`;
                 }
                 insidersHtml += `
                     <div class="bg-slate-900/60 border border-slate-800 p-2 rounded-lg flex flex-col text-right text-xs">
                         <div class="flex justify-between items-center">
                             <div><h4 class="font-extrabold text-indigo-400 text-xs">${p.name}</h4>
-                            <p class="text-[9px] text-slate-300">صح: <span class="text-emerald-400">${stats.correct}</span> | غلط: <span class="text-red-400">${stats.wrong}</span></p></div>
+                            <p class="text-[0.625rem] text-slate-300">صح: <span class="text-emerald-400">${stats.correct}</span> | غلط: <span class="text-red-400">${stats.wrong}</span></p></div>
                             <div class="text-left"><span class="${points >= 0 ? 'text-emerald-400' : 'text-red-400'} font-black text-xs block" dir="ltr">${points > 0 ? '+' : ''}${points} ن</span></div>
                         </div>
                         ${penaltyHtml}
@@ -1329,7 +1908,7 @@
                 scoreboardHtml += `
                     <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60 text-xs">
                         <div class="flex items-center gap-1.5 w-1/2">
-                            <span class="text-[10px] font-black text-slate-500 w-3 shrink-0">${idx + 1}</span>
+                            <span class="text-[0.625rem] font-black text-slate-500 w-3 shrink-0">${idx + 1}</span>
                             <button onclick="openHistoryModal(${p.id})" class="font-bold text-slate-200 hover:text-indigo-300 transition underline decoration-slate-600 underline-offset-4 truncate text-right w-full" title="اضغط لرؤية السجل">${p.name} ${badge}</button>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
@@ -1346,15 +1925,15 @@
                 <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden min-h-0">
                     <div class="space-y-2 flex-1 flex flex-col overflow-hidden min-h-0">
                         <div class="bg-gradient-to-r from-violet-950 to-indigo-950 p-2.5 rounded-xl border border-violet-800/40 text-center shrink-0">
-                            <span class="text-[9px] text-slate-400 block">الكلمة كانت:</span>
+                            <span class="text-[0.625rem] text-slate-400 block">الكلمة كانت:</span>
                             <span class="text-xl sm:text-2xl font-black text-yellow-400 block">"${results.secretWord}"</span>
                         </div>
                         
                         <div id="summaryScrollArea" class="space-y-1.5 overflow-y-auto flex-1 pr-0.5 min-h-[30vh]">
-                            <div class="space-y-1"><h3 class="text-[10px] font-bold text-slate-400">🕵️‍♂️ نتائج برا السالفة:</h3><div class="space-y-1">${outsidersHtml}</div></div>
-                            <div class="space-y-1"><h3 class="text-[10px] font-bold text-slate-400">💬 نتائج داخل السالفة:</h3><div class="space-y-1">${insidersHtml}</div></div>
+                            <div class="space-y-1"><h3 class="text-[0.625rem] font-bold text-slate-400">🕵️‍♂️ نتائج برا السالفة:</h3><div class="space-y-1">${outsidersHtml}</div></div>
+                            <div class="space-y-1"><h3 class="text-[0.625rem] font-bold text-slate-400">💬 نتائج داخل السالفة:</h3><div class="space-y-1">${insidersHtml}</div></div>
                             <div class="glass-panel p-2.5 rounded-xl border border-slate-800 space-y-1">
-                                <h3 class="text-[10px] font-bold text-yellow-400 border-b border-slate-800 pb-1 flex justify-between"><span>لوحة الصدارة والترتيب</span></h3>
+                                <h3 class="text-[0.625rem] font-bold text-yellow-400 border-b border-slate-800 pb-1 flex justify-between"><span>لوحة الصدارة والترتيب</span></h3>
                                 <div class="space-y-0.5">${scoreboardHtml}</div>
                             </div>
                         </div>
