@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>لعبة برا السالفة | الإصدار 3.0</title>
+    <title>لعبة برا السالفة | الإصدار 4.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -39,7 +39,7 @@
         
         <div class="flex items-center gap-1.5 cursor-pointer" onclick="executeGoHomeAction()">
             <span class="text-xl">🤫</span>
-            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v3.0</span></h1>
+            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v4.0</span></h1>
         </div>
         
         <button onclick="openQuickMenu()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition text-base" title="القائمة السريعة">⚙️</button>
@@ -50,9 +50,51 @@
     </main>
 
     <footer class="w-full max-w-md mx-auto text-center py-1 text-[0.6rem] text-slate-600 shrink-0">
-        لعبة برا السالفة - الإصدار 3.0 &copy; 2026
+        لعبة برا السالفة - الإصدار 4.0 &copy; 2026
     </footer>
 
+    <!-- منبثقة إعدادات المقلب السري المتقدمة -->
+    <div id="prankConfigModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[120] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl flex flex-col">
+            <div class="flex justify-between items-center mb-1 shrink-0">
+                <h3 class="text-sm font-black text-red-400">🤫 إعدادات المقلب السري المتقدم</h3>
+                <button onclick="closePrankConfig()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="space-y-1">
+                    <label class="text-[0.6875rem] font-bold text-slate-300 block">اختر نوع المقلب السري:</label>
+                    <select id="prankTypeSelect" onchange="togglePrankWordsVisibility()" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 focus:outline-none">
+                        <option value="different_words" selected>كل لاعب كلمة مختلفة 🎭 (تشتيت وبلبلة)</option>
+                        <option value="all_outsiders">الكل برا السالفة 🥷 (الجميع تائهون)</option>
+                        <option value="reverse_mode">المقلب العكسي 🔄 (البرا السالفة هم الأغلبية)</option>
+                    </select>
+                </div>
+
+                <div id="prankWordCountContainer" class="space-y-1">
+                    <label class="text-[0.6875rem] font-bold text-slate-300 block">عدد الكلمات المختلفة للتوزيع بالتساوي:</label>
+                    <select id="prankWordCountSelect" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 focus:outline-none">
+                        <option value="2">كلمتين فقط (توزيع ثنائي)</option>
+                        <option value="3" selected>3 كلمات مختلفة</option>
+                        <option value="4">4 كلمات مختلفة</option>
+                        <option value="5">5 كلمات مختلفة</option>
+                    </select>
+                    <p class="text-[0.55rem] text-slate-500">يقوم النظام بتوزيع اللاعبين بالتساوي على هذه الكلمات لتوليد نقاش حماسي كوميدي!</p>
+                </div>
+
+                <div class="bg-red-950/30 border border-red-900/30 p-2.5 rounded-lg">
+                    <p class="text-[0.625rem] text-red-300 leading-relaxed">💡 جولة المقلب ستعمل <b>لمرة واحدة فقط</b> لتجنب كشف اللعبة، وبعد انتهاء الجولة والعودة للإعدادات يعود اللعب تلقائياً للوضع الطبيعي.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-2 shrink-0 pt-2">
+                <button onclick="closePrankConfig()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
+                <button onclick="startPrankWithConfig()" class="flex-[2] py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-xl text-xs font-black transition shadow-lg">تفعيل وبدء الجولة 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- منبثقة القائمة السريعة -->
     <div id="quickMenuModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-3 shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-1 shrink-0">
@@ -61,7 +103,6 @@
             </div>
             
             <div class="overflow-y-auto space-y-3 pr-1 pb-2 min-h-0">
-                <!-- إعدادات المظهر والخطوط -->
                 <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 space-y-3">
                     <h4 class="text-[0.625rem] font-bold text-slate-400 border-b border-slate-700 pb-1">إعدادات المظهر 🎨</h4>
                     
@@ -89,7 +130,6 @@
                     </label>
                 </div>
 
-                <!-- إعدادات الجولة والقوانين المنقولة -->
                 <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 space-y-3">
                     <h4 class="text-[0.625rem] font-bold text-slate-400 border-b border-slate-700 pb-1">إعدادات وقوانين الجولة 🛠️</h4>
                     
@@ -120,7 +160,7 @@
                 </div>
 
                 <button onclick="openQuickPlayerManager()" class="w-full py-2.5 bg-indigo-950/50 hover:bg-indigo-900/50 border border-indigo-900 transition text-indigo-300 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
-                    <span>👥</span> تعديل اللاعبين السريع
+                    <span>👥</span> إدارة اللاعبين والتعليق
                 </button>
                 <button onclick="executeGoHomeAction()" class="w-full py-2.5 bg-red-950/50 hover:bg-red-900/50 border border-red-900 transition text-red-400 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
                     <span>🏠</span> إنهاء والعودة للرئيسية
@@ -129,10 +169,11 @@
         </div>
     </div>
 
+    <!-- منبثقة إدارة اللاعبين وتعليقهم -->
     <div id="quickPlayerManagerModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[90] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm max-h-[85vh] flex flex-col shadow-2xl">
             <div class="flex justify-between items-center mb-3 shrink-0">
-                <h3 class="text-sm font-bold text-white">إدارة اللاعبين 👥</h3>
+                <h3 class="text-sm font-bold text-white">إدارة وتعليق اللاعبين 👥</h3>
                 <button onclick="closeQuickPlayerManager()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
             </div>
             
@@ -141,8 +182,8 @@
                 <button onclick="addQuickPlayer()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold transition text-xs shadow shrink-0">إضافة +</button>
             </div>
             
-            <p id="quickPlayerWarning" class="hidden text-[0.625rem] text-yellow-400 bg-yellow-900/30 border border-yellow-800 p-1.5 rounded mb-2 text-center shrink-0">⚠️ الجولة نشطة حالياً: لا يمكن حذف لاعبين، يمكنك التعديل والترتيب فقط.</p>
-            <p class="text-[0.625rem] text-slate-500 mb-1 shrink-0 text-center">اسحب ☰ لترتيب اللاعبين</p>
+            <p id="quickPlayerWarning" class="hidden text-[0.625rem] text-yellow-400 bg-yellow-900/30 border border-yellow-800 p-1.5 rounded mb-2 text-center shrink-0">⚠️ الجولة نشطة حالياً: يمكنك تعليق/إظهار اللاعبين وتعديلهم والترتيب فقط.</p>
+            <p class="text-[0.625rem] text-slate-500 mb-1 shrink-0 text-center">اسحب ☰ لترتيب اللاعبين | اضغط 👁️ لتعليق/إظهار اللاعب</p>
 
             <div id="quickPlayersList" class="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-[50vh]">
                 <!-- سيتم تعبئتها ديناميكياً -->
@@ -180,15 +221,21 @@
         </div>
     </div>
 
+    <!-- منبثقة الصدارة السريعة -->
     <div id="quickLeaderboardModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-xs shadow-2xl flex flex-col max-h-[70vh]">
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-xs shadow-2xl flex flex-col max-h-[75vh]">
             <div class="flex justify-between items-center mb-3 shrink-0">
                 <h3 class="text-sm font-bold text-yellow-400">النقاط الحالية 🏆</h3>
                 <button onclick="closeQuickLeaderboard()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
             </div>
             <p class="text-[0.625rem] text-slate-400 text-center mb-2 border-b border-slate-800 pb-1">اضغط على اسم اللاعب لرؤية سجله</p>
+            
             <div id="quickLeaderboardContent" class="flex-1 overflow-y-auto space-y-1 pr-1 min-h-0">
             </div>
+
+            <button onclick="navigateToResultsFromLeaderboard()" class="w-full mt-3 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow shrink-0">
+                <span>📊</span> الانتقال لنتائج الجولة الأخيرة
+            </button>
         </div>
     </div>
 
@@ -282,14 +329,14 @@
     </div>
 
     <script>
-        // قاعدة كلمات معربة ومصححة بالكامل خالية من المترادفات والكلمات الإنجليزية المكتوبة بحروف أجنبية
+        // قاعدة الكلمات العراقية المنقحة والخالية من أي تكرار أو كلمات أجنبية
         const WORD_DATABASE = {
-            food: ["دولمة", "باجة", "مسكوف", "كاهي وقيمر", "كليجة", "صمون حجري", "تشريب دجاج", "قوزي عراقي", "زردة", "تمن ومرق", "فلافل وعمبة", "طرشي نجفي", "دهينة", "شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "خبز تنور", "بورك", "كباب عراقي", "تكة لحم", "معلاك مشوي", "مخلمة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لفة فلافل", "طماطة مقلية", "باذنجان مقلي", "سمك زبيدي", "ربيان بصراوي", "صبورة مشوية", "بامية", "فاصوليا يابسة", "مركة شجر", "مركة بتيتة", "مطبك سمك", "برياني عراقي", "مقلوبة", "شوربة عدس", "ماش", "هريسة", "حلاوة تمر", "تمر خستاوي", "رقي", "بطيخ سامراء", "نومي بصرة", "كص دجاج", "كص لحم", "عروك طاوة", "كفتة", "بيتزا", "برغر", "صاج", "لبن أربيل", "قيمر سدة", "جبن عرب", "لبلبي", "باقلاء بالدهن", "شلغم مطبوخ", "لوزينة", "من السما", "عسل طبيعي", "زلاطة", "جاجيك", "مقبلات", "حمص بطحينة", "متبل", "بابا غنوج", "زيتون", "بصل أخضر", "فجل", "كرفس", "ريحان", "نعناع", "طرشي مدبس", "مدكوكة", "تمرية", "تمر هند", "كرزات", "حب شمسي", "حب رقي", "فستق حلبي", "لوز", "جوز", "كاجو", "مكروطة", "بسكت", "شوكولاتة", "جيلاتين", "كيكة", "عصير برتقال", "شاي حامض"],
-            animals: ["واوي", "بومة", "قط بري", "بزونة", "صخيلة", "طلي", "دجاجة", "ديج", "بطة", "وزة", "زرزور", "فاختة", "بلبل", "حمامة", "زاجل", "مطي", "هايشة", "عجل", "جاموسة", "خروف", "نعجة", "جلب", "ذيب", "ثعلب", "أسد", "فهد", "دب", "فيل", "زرافة", "قرد", "سنجاب", "أرنب", "غزال", "طير حب", "مينا", "ببغاء", "طاووس", "نعامة", "صقر", "نسر", "غراب", "خفاش", "تمساح", "سلحفاة", "حية", "دودة", "جريذي", "فارة", "بريعصي", "سحلية", "ضفدع", "سمكة", "حوت", "دولفين", "أخطبوط", "قنديل بحر", "نجم بحر", "سرطان", "دودة قز", "فراشة", "زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "حشرة", "نملة", "أبو جنيب", "دعسوقة", "خنفساء", "حلزون", "بطريق", "فقمة", "دب قطبي", "كنغر", "كوالا", "باندا", "حمار وحشي"],
+            food: ["دولمة", "باجة", "مسكوف", "كاهي وقيمر", "كليجة", "صمون حجري", "تشريب دجاج", "قوزي عراقي", "زردة", "تمن ومرق", "فلافل وعمبة", "طرشي نجفي", "دهينة", "شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "خبز تنور", "بورك", "كباب عراقي", "تكة لحم", "معلاك مشوي", "مخلمة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لفة فلافل", "طماطة مقلية", "باذنجان مقلي", "سمك زبيدي", "ربيان بصراوي", "صبورة مشوية", "بامية", "فاصوليا يابسة", "مركة شجر", "مركة بتيتة", "مطبك سمك", "برياني عراقي", "مقلوبة", "شوربة عدس", "ماش", "هريسة", "حلاوة تمر", "تمر خستاوي", "رقي", "بطيخ سامراء", "نومي بصرة", "كص دجاج", "كص لحم", "عروك طاوة", "كفتة", "لبن أربيل", "قيمر سدة", "جبن عرب", "لبلبي", "باقلاء بالدهن", "شلغم مطبوخ", "لوزينة", "من السما", "عسل طبيعي", "زلاطة", "جاجيك", "مقبلات", "حمص بطحينة", "متبل", "بابا غنوج", "زيتون", "بصل أخضر", "فجل", "كرفس", "ريحان", "نعناع", "طرشي مدبس", "مدكوكة", "تمرية", "تمر هند", "كرزات", "حب شمسي", "حب رقي", "فستق حلبي", "لوز", "جوز", "كاجو", "مكروطة", "بسكت", "شوكولاتة", "جيلاتين", "كيكة", "عصير برتقال", "شاي حامض"],
+            animals: ["واوي", "بومة", "قط بري", "بزونة", "صخيلة", "طلي", "دجاجة", "ديج", "بطة", "وزة", "زرزور", "فاختة", "بلبل", "حمامة", "زاجل", "مطي", "هايشة", "عجل", "جاموسة", "خروف", "نعجة", "جلب", "ذيب", "ثعلب", "أسد", "فهد", "دب", "فيل", "زرافة", "قرد", "سنجاب", "أرنب", "غزال", "طير حب", "مينا", "ببغاء", "طاووس", "نعامة", "صقر", "نسر", "غراب", "خفاش", "تمساح", "سلحفاة", "حية", "دودة", "جريذي", "فارة", "بريعصي", "sحلية", "ضفدع", "سمكة", "حوت", "دولفين", "أخطبوط", "قنديل بحر", "نجم بحر", "سرطان", "دودة قز", "فراشة", "زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "حشرة", "نملة", "أبو جنيب", "دعسوقة", "خنفساء", "حلزون", "بطريق", "فقمة", "دب قطبي", "كنغر", "كوالا", "باندا", "حمار وحشي"],
             places: ["بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء", "ديوانية", "سماوة", "ناصرية", "عمارة", "كوت", "بعقوبة", "تكريت", "رمادي", "فلوجة", "زاخو", "حلبجة", "شارع المتنبي", "نصب الشهيد", "ساحة التحرير", "باب الشرقي", "كرادة", "منصور", "أعظمية", "كاظمية", "أبو نواس", "شارع الرشيد", "قلعة أربيل", "زقورة أور", "بابل الأثرية", "ملوية سامراء", "طاق كسرى", "هور الحويزة", "جبل كورك", "شلال كلي علي بك", "سد دوكان", "مرقد الإمام علي", "مرقد الإمام الحسين", "مرقد الكاظمين", "الحضرة القادرية", "جامع أبو حنيفة", "كنيسة النجاة", "سوق الشورجة", "سوق الصفافير", "سوق الغزل", "مطار بغداد", "مطار أربيل", "ميناء أم قصر", "جسر الجادرية", "جسر المعلق", "جسر الجمهورية", "نهر دجلة", "نهر الفرات", "شط العرب", "الأهوار", "صحراء السماوة", "لندن", "باريس", "روما", "مدريد", "برلين", "نيويورك", "طوكيو", "بكين", "موسكو", "إسطنبول", "دبي", "رياض", "قاهرة", "عمان", "بيروت", "دمشق", "كويت", "دوحة", "منامة", "أبو ظبي", "مستشفى", "مدرسة", "جامعة بغداد", "الجامعة المستنصرية", "نادي رياضي", "ملعب الشعب", "ملعب جذع النخلة", "سينما", "مول", "سوبر ماركت", "مطعم", "فندق", "حديقة الزوراء", "مدينة العاب", "المتحف العراقي", "المسرح الوطني"],
             household: ["مبردة", "صوبة", "قنفة", "جرباية", "خاشوكة", "جطل", "ماعون", "استكان", "قوري", "كتلي", "سماور", "بطل مي", "قنينة", "زولية", "بردة", "بنكة", "مكناسة", "طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير كهرباء", "بلك كهرباء", "شاشة تلفزيون", "ثلاجة", "مجمدة", "طباخ", "فرن", "تنور", "غسالة", "كاوية", "ميز", "كرسي", "كنتور", "مراية", "دوش", "شطافة", "مغسلة", "بوري ماء", "صوندة", "خاولي", "ليفة", "صابونة", "شامبو", "معجون أسنان", "مشط", "قراصة شعر", "ماشة", "مكياج", "عطر", "محبس", "ساعة يد", "قلادة", "سوار", "حقيبة", "محفظة", "نظارة", "قندرة", "نعال", "جواريب", "سترة قماش", "قميص", "دشداشة", "عباية", "شيلة", "فوطة", "عكال", "يشماغ", "غترة", "سلة مهملات", "دلة قهوة", "فنجان", "صينية", "ترمس", "جذرية", "طاوه", "مصفي", "جفجير", "لوح تقطيع", "مقص", "قفل حديد"],
             jobs: ["فيتر سيارات", "صباغ جدران", "حلاق", "مضمد", "طبيب", "مهندس", "محامي", "قاضي", "معلم", "مدرس", "مدير", "شرطي", "رجل مرور", "جندي", "ضابط", "حارس أمني", "فراش", "نجار", "حداد", "سباك", "كهربائي", "خياط", "قصاب", "خباز", "بقال", "عطار", "صائغ ذهب", "مصلح أجهزة", "صيانة هواتف", "سائق أجرة", "كابتن طيار", "مضيف طيران", "بحار", "طباخ رئيسي", "مصور", "مخرج", "ممثل", "مغني", "رسام", "خطاط", "كاتب", "شاعر", "صحفي", "مذيع", "لاعب كرة قدم", "مدرب", "حكم", "منقذ سباحة", "غواص", "فلاح", "راعي أغنام", "طبيب بيطري", "صيدلاني", "محلل مختبر", "طبيب أسنان", "مبرمج حاسوب", "مصمم جرافيك", "محاسب", "موظف بنك", "مندوب مبيعات", "سكرتير", "مرشد سياحي", "حارس شخصي", "مراسل صحفي", "لحام حديد", "عامل نظافة", "إسكافي", "دلال عقارات", "مترجم لغات", "مؤذن جامع"],
-            adult12: ["لوكي متملق", "كلاوجي مخادع", "علاس جاسوس", "قفاص محتال", "حواسم فوضوي", "لغف نهب سري", "جكمجة درج سيارة", "طكوكي غني فجأة", "ملطلط تافه", "صاك وسيم جدا", "صاكة جميلة", "زاحف ملاحق للفتيات", "حديقة أعزب مفلس", "طاكات ناجح جدا", "بسطال حذاء عسكري", "لزكة ملح جدا", "عقجة تجاعيد", "خروف تابع لغيره", "مكبل مرتبط عاطفيا", "سنكل أعزب تماما", "جفص اخطأ بالكلام", "مطفي غير مركز", "مخربط فوضوي الشكل", "عايق متمرد", "طايح حظه قليل الحظ", "دايح تائه بالشارع", "سرسري قليل الادب", "ادبسز غير مؤدب", "قشمر مغفل", "زعطوط طفل التصرفات", "خفيف طائش"],
+            adult12: ["لوكي متملق", "كلاوجي مخادع", "علاس جاسوس", "قفاص محتال", "حواسم فوضوي", "لغف نهب سري", "جكمجة درج سيارة", "طكوكي غني فجأة", "ملطلط تافه", "صاك وسيم جدا", "صاكة جميلة", "زاحف ملاحق", "حديقة أعزب مفلس", "طاكات ناجح جدا", "بسطال حذاء", "لزكة ملح جدا", "عقجة تجاعيد", "خروف تابع", "مكبل مرتبط", "سنكل أعزب", "جفص اخطأ", "مطفي غير مركز", "مخربط فوضوي", "عايق متمرد", "طايح حظه", "دايح تائه", "سرسري قليل الادب", "ادبسز غير مؤدب", "قشمر مغفل", "زعطوط طفل", "خفيف طائش"],
             bodyParts: ["عين", "خشم", "حلق", "أذن", "رأس", "شعر", "لسان", "أسنان", "بلعوم", "إيد", "رجل", "ركبة", "بطن", "ظهر", "صدر", "قلب", "رئة", "كبد", "كلية", "أصبع", "جفن", "حاجب", "رقبة", "كتف"]
         };
 
@@ -298,9 +345,9 @@
             ["صقر", "نسر", "غراب", "بومة", "طاووس", "ببغاء", "مينا", "زاجل", "حمامة", "زرزور", "بلبل", "فاختة", "طير حب"],
             ["أسد", "فهد", "ذيب", "واوي", "ثعلب", "دب", "دب قطبي", "قط بري"],
             ["بزونة", "جلب", "مطي", "هايشة", "خروف", "طلي", "نعجة"],
-            ["سمكة", "زبيدي", "شبوط", "كطان", "بني", "حوت", "دولفين", "أخطبوط", "ربيان بصراوي"],
+            ["سمكة", "زبيدي", "حوت", "دولفين", "أخطبوط", "ربيان بصراوي"],
             ["شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "عصير برتقال", "شاي حامض"],
-            ["بيتزا", "برغر", "صاج", "لفة فلافل", "كص دجاج", "كص لحم", "فلافل وعمبة", "بورك"],
+            ["لفة فلافل", "كص دجاج", "كص لحم", "فلافل وعمبة", "بورك"],
             ["دولمة", "باجة", "مسكوف", "تشريب دجاج", "قوزي عراقي", "مطبك سمك", "برياني عراقي", "مقلوبة"],
             ["كليجة", "زردة", "دهينة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لوزينة", "من السما", "مكروطة", "بسكت", "كيكة"],
             ["بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء", "ديوانية", "ناصرية"],
@@ -330,7 +377,7 @@
         const MAX_HISTORY_LEN = 50;
 
         const STATE = {
-            version: '3.0', 
+            version: '4.0', 
             fontFamily: 'Cairo',
             fontSize: 16, 
             perfectSneakBonus: false,
@@ -339,11 +386,11 @@
             timeoutPenaltyChoice: true, 
             rejectOutsiderEnabled: true, 
             players: [
-                { id: 1, name: 'حسين', score: 0, history: [], outsiderStreak: 0 },
-                { id: 2, name: 'بهاء', score: 0, history: [], outsiderStreak: 0 },
-                { id: 3, name: 'توني', score: 0, history: [], outsiderStreak: 0 },
-                { id: 4, name: 'فريق', score: 0, history: [], outsiderStreak: 0 },
-                { id: 5, name: 'فاضل', score: 0, history: [], outsiderStreak: 0 }
+                { id: 1, name: 'حسين', score: 0, history: [], outsiderStreak: 0, hidden: false },
+                { id: 2, name: 'بهاء', score: 0, history: [], outsiderStreak: 0, hidden: false },
+                { id: 3, name: 'توني', score: 0, history: [], outsiderStreak: 0, hidden: false },
+                { id: 4, name: 'فريق', score: 0, history: [], outsiderStreak: 0, hidden: false },
+                { id: 5, name: 'فاضل', score: 0, history: [], outsiderStreak: 0, hidden: false }
             ],
             selectedCategory: 'general',
             outsidersCountSetting: 'random', 
@@ -353,12 +400,16 @@
                 votes: {}, outsiderGuesses: {}, outsiderOptionsCache: {}, 
                 currentVotingPlayerIdx: 0, votingOrder: [], currentOutsiderGuessIdx: 0,
                 selectedSuspects: [], forgotRolePlayerId: null,
-                isPrankMode: false, prankWords: {}, activeTimerVoterId: null, votingTimerRemaining: 30,
+                isPrankMode: false, prankType: 'different_words', prankWordCount: 3, prankWords: {}, activeTimerVoterId: null, votingTimerRemaining: 30,
                 activeTimerOutsiderId: null, guessingTimerRemaining: 60,
                 firstVoterTimerStarted: false, rejectedPlayers: [] 
             },
             screen: 'welcome'
         };
+
+        function getActivePlayers() {
+            return STATE.players.filter(p => !p.hidden);
+        }
 
         function playTimerSound() {
             try {
@@ -388,7 +439,6 @@
             const sizeSel = document.getElementById('fontSizeSelect');
             if(sizeSel) sizeSel.value = STATE.fontSize.toString();
 
-            // تزامن حقول التفعيل في القائمة السريعة
             const sneak = document.getElementById('sneakBonusToggle');
             if(sneak) sneak.checked = STATE.perfectSneakBonus;
 
@@ -406,7 +456,7 @@
         }
 
         function loadState() {
-            const saved = localStorage.getItem('barrasalfa_iq_state_v30'); 
+            const saved = localStorage.getItem('barrasalfa_iq_state_v40'); 
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
@@ -418,7 +468,7 @@
                     }
                     if (parsed.players && parsed.players.length >= 3) {
                         STATE.players = parsed.players.map(p => ({
-                            ...p, history: p.history || [], outsiderStreak: p.outsiderStreak || 0
+                            ...p, history: p.history || [], outsiderStreak: p.outsiderStreak || 0, hidden: p.hidden || false
                         }));
                     }
                     if (parsed.selectedCategory) STATE.selectedCategory = parsed.selectedCategory;
@@ -436,7 +486,7 @@
         }
 
         function saveState() {
-            localStorage.setItem('barrasalfa_iq_state_v30', JSON.stringify({
+            localStorage.setItem('barrasalfa_iq_state_v40', JSON.stringify({
                 playedWords: STATE.playedWords, players: STATE.players,
                 selectedCategory: STATE.selectedCategory, outsidersCountSetting: STATE.outsidersCountSetting,
                 fontFamily: STATE.fontFamily, fontSize: STATE.fontSize, perfectSneakBonus: STATE.perfectSneakBonus,
@@ -493,6 +543,24 @@
             if(!isGameActive()) render();
         }
 
+        function togglePlayerVisibility(id, fromQuick) {
+            const player = STATE.players.find(p => p.id === id);
+            if (player) {
+                const activeCount = getActivePlayers().length;
+                if (!player.hidden && activeCount <= 3) {
+                    alertCustom("⚠️ يجب إبقاء 3 لاعبين نشطين على الأقل للعب!");
+                    return;
+                }
+                player.hidden = !player.hidden;
+                saveState();
+                if (fromQuick) {
+                    renderQuickPlayersList();
+                } else {
+                    render();
+                }
+            }
+        }
+
         function renderQuickPlayersList() {
             const container = document.getElementById('quickPlayersList');
             let html = '';
@@ -504,9 +572,12 @@
                         <div class="flex items-center gap-2 w-1/2">
                             <span class="sort-handle text-slate-500 text-base cursor-grab active:cursor-grabbing px-1 py-1" title="اسحب للترتيب">☰</span>
                             <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[0.625rem] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
-                            <span class="font-bold text-slate-200 text-xs truncate" title="${p.name}">${p.name}</span>
+                            <span class="font-bold text-slate-200 text-xs truncate ${p.hidden ? 'line-through text-slate-500' : ''}" title="${p.name}">${p.name}</span>
                         </div>
                         <div class="flex gap-0.5 shrink-0 bg-slate-950/50 rounded-lg p-0.5 border border-slate-800/50">
+                            <button onclick="togglePlayerVisibility(${p.id}, true)" class="px-2 py-1 text-[0.625rem] rounded hover:bg-slate-800 transition ${p.hidden ? 'text-red-400 font-black bg-red-950/20' : 'text-emerald-400'}" title="${p.hidden ? 'مخفي مؤقتاً (اضغط للتفعيل)' : 'نشط (اضغط للتعليق)'}">
+                                ${p.hidden ? '🙈 مخفي' : '👀 نشط'}
+                            </button>
                             <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[0.625rem]">✏️</button>
                             ${!active ? `<button onclick="removePlayer(${p.id}, true)" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[0.625rem]">❌</button>` : ''}
                         </div>
@@ -547,7 +618,7 @@
             if (STATE.players.some(p => p.name.toLowerCase() === name.toLowerCase())) { alertCustom("الاسم موجود بالفعل!"); return; }
             
             const newId = STATE.players.length > 0 ? Math.max(...STATE.players.map(p => p.id)) + 1 : 1;
-            STATE.players.push({ id: newId, name: name, score: 0, history: [], outsiderStreak: 0 });
+            STATE.players.push({ id: newId, name: name, score: 0, history: [], outsiderStreak: 0, hidden: false });
             input.value = ''; saveState(); renderQuickPlayersList();
         }
 
@@ -611,11 +682,13 @@
             let html = '';
             sortedPlayers.forEach((p, idx) => {
                 let badge = idx === 0 ? '👑' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+                const isHidden = p.hidden;
+                const hiddenBadge = isHidden ? ' <span class="text-[0.625rem] text-red-400 bg-red-950/20 border border-red-900/30 px-1 py-0.5 rounded">مخفي 🙈</span>' : '';
                 html += `
                     <div class="flex justify-between items-center py-2 border-b border-slate-700/50 text-sm">
                         <button onclick="openHistoryFromLeaderboard(${p.id})" class="font-bold text-slate-200 hover:text-indigo-400 text-right w-full flex gap-1 items-center">
                             <span class="text-[0.625rem] text-slate-500 w-3">${idx + 1}.</span> 
-                            <span>${p.name} ${badge}</span>
+                            <span class="${p.hidden ? 'line-through text-slate-500 font-normal' : ''}">${p.name} ${badge} ${hiddenBadge}</span>
                         </button>
                         <span class="font-black text-yellow-400 ml-2 shrink-0">${p.score}</span>
                     </div>
@@ -627,6 +700,15 @@
         function closeQuickLeaderboard() { document.getElementById('quickLeaderboardModal').classList.add('hidden'); }
 
         function openHistoryFromLeaderboard(id) { closeQuickLeaderboard(); openHistoryModal(id); }
+
+        function navigateToResultsFromLeaderboard() {
+            closeQuickLeaderboard();
+            if (roundResultsCache && roundResultsCache.secretWord) {
+                goToScreen('summary');
+            } else {
+                alertCustom("⚠️ لا توجد نتائج جولة أخيرة لعرضها حالياً! ابدأ اللعب أولاً.");
+            }
+        }
 
         function selectSecretWordForCategory(catKey) {
             const allWords = WORD_DATABASE[catKey];
@@ -682,12 +764,12 @@
             prankHoldInterval = setInterval(() => {
                 counter += 100;
                 const percent = Math.min(100, (counter / 3000) * 100);
-                btn.innerHTML = `مقلب.. ${Math.round(3 - counter/1000)}ث 🤫`;
-                btn.style.background = `linear-gradient(to left, rgba(239, 68, 68, 0.4) ${percent}%, rgb(15, 23, 42) ${percent}%)`;
                 
                 if (counter >= 3000) {
                     clearInterval(prankHoldInterval);
                     prankTriggered = true;
+                    btn.innerHTML = 'عشوائي';
+                    btn.style.background = '';
                     triggerPrankMode();
                 }
             }, 100);
@@ -708,20 +790,78 @@
         }
 
         function triggerPrankMode() {
-            alertCustom("🤫 تم تفعيل وضع المقلب السري! ابدأ اللعب دون علم اللاعبين.");
+            document.getElementById('prankConfigModal').classList.remove('hidden');
+            togglePrankWordsVisibility();
+        }
+
+        function closePrankConfig() {
+            document.getElementById('prankConfigModal').classList.add('hidden');
+        }
+
+        function togglePrankWordsVisibility() {
+            const type = document.getElementById('prankTypeSelect').value;
+            const container = document.getElementById('prankWordCountContainer');
+            if (type === 'different_words') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function startPrankWithConfig() {
+            const type = document.getElementById('prankTypeSelect').value;
+            const wordCount = parseInt(document.getElementById('prankWordCountSelect').value) || 3;
+            
             STATE.currentRound.isPrankMode = true;
+            STATE.currentRound.prankType = type;
+            STATE.currentRound.prankWordCount = wordCount;
             STATE.outsidersCountSetting = 'prank';
+            
+            closePrankConfig();
             saveState();
             startNewRound();
         }
 
         function startNewRound() {
+            const activePlayers = getActivePlayers();
+            const playerCount = activePlayers.length;
+
+            if (playerCount < 3) {
+                alertCustom("⚠️ لا يمكن بدء الجولة! يجب تفعيل 3 لاعبين نشطين على الأقل.");
+                return;
+            }
+
             let numOutsiders = 1;
-            const playerCount = STATE.players.length;
+            const prankWords = {};
+            let chosenOutsiders = [];
+            let word = '';
 
             if (STATE.currentRound.isPrankMode || STATE.outsidersCountSetting === 'prank') {
                 STATE.currentRound.isPrankMode = true;
-                STATE.currentRound.outsiders = [];
+                const pType = STATE.currentRound.prankType || 'different_words';
+                const pCount = STATE.currentRound.prankWordCount || 3;
+                
+                word = selectSecretWordForCategory(STATE.selectedCategory);
+
+                if (pType === 'all_outsiders') {
+                    chosenOutsiders = activePlayers.map(p => p.id);
+                    word = 'الكل خارج السالفة! 🥷';
+                } else if (pType === 'different_words') {
+                    chosenOutsiders = []; 
+                    const categoryWords = [...WORD_DATABASE[STATE.selectedCategory]].sort(() => Math.random() - 0.5);
+                    const selectedPrankWords = categoryWords.slice(0, Math.min(pCount, categoryWords.length));
+                    
+                    activePlayers.forEach((p, idx) => {
+                        prankWords[p.id] = selectedPrankWords[idx % selectedPrankWords.length];
+                    });
+                } else if (pType === 'reverse_mode') {
+                    const numInsiders = playerCount >= 5 ? 2 : 1;
+                    const shuffledActive = [...activePlayers].sort(() => Math.random() - 0.5);
+                    const insiderPlayers = shuffledActive.slice(0, numInsiders);
+                    const outsiderPlayers = shuffledActive.slice(numInsiders);
+                    
+                    chosenOutsiders = outsiderPlayers.map(p => p.id);
+                }
             } else {
                 STATE.currentRound.isPrankMode = false;
                 if (STATE.outsidersCountSetting === 'random') {
@@ -731,12 +871,9 @@
                     numOutsiders = parseInt(STATE.outsidersCountSetting, 10);
                 }
                 if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
-            }
 
-            let chosenOutsiders = [];
-            if (!STATE.currentRound.isPrankMode) {
-                let eligibleForOutsider = STATE.players.filter(p => (p.outsiderStreak || 0) < 2).map(p => p.id);
-                if (eligibleForOutsider.length < numOutsiders) eligibleForOutsider = STATE.players.map(p => p.id);
+                let eligibleForOutsider = activePlayers.filter(p => (p.outsiderStreak || 0) < 2).map(p => p.id);
+                if (eligibleForOutsider.length < numOutsiders) eligibleForOutsider = activePlayers.map(p => p.id);
 
                 const shuffledIds = [...eligibleForOutsider].sort(() => Math.random() - 0.5);
                 chosenOutsiders = shuffledIds.slice(0, numOutsiders);
@@ -745,9 +882,11 @@
                     if(chosenOutsiders.includes(p.id)) p.outsiderStreak = (p.outsiderStreak || 0) + 1;
                     else p.outsiderStreak = 0;
                 });
+
+                word = selectSecretWordForCategory(STATE.selectedCategory);
             }
 
-            const playerIndices = STATE.players.map(p => p.id);
+            const playerIndices = activePlayers.map(p => p.id);
             let votingOrder = [...playerIndices].sort(() => Math.random() - 0.5);
             
             if (!STATE.currentRound.isPrankMode) {
@@ -756,22 +895,14 @@
                 }
             }
             
-            const word = selectSecretWordForCategory(STATE.selectedCategory);
-
-            const prankWords = {};
-            if (STATE.currentRound.isPrankMode) {
-                const categoryWords = [...WORD_DATABASE[STATE.selectedCategory]].sort(() => Math.random() - 0.5);
-                STATE.players.forEach((p, idx) => {
-                    prankWords[p.id] = categoryWords[idx % categoryWords.length];
-                });
-            }
-
             STATE.currentRound = {
                 secretWord: word, outsiders: chosenOutsiders, activeRevealerIdx: 0,
                 votes: {}, outsiderGuesses: {}, outsiderOptionsCache: {},
                 currentVotingPlayerIdx: 0, votingOrder: votingOrder, currentOutsiderGuessIdx: 0,
                 selectedSuspects: [], forgotRolePlayerId: null,
                 isPrankMode: STATE.currentRound.isPrankMode,
+                prankType: STATE.currentRound.prankType,
+                prankWordCount: STATE.currentRound.prankWordCount,
                 prankWords: prankWords,
                 activeTimerVoterId: null, votingTimerRemaining: 30,
                 activeTimerOutsiderId: null, guessingTimerRemaining: 60,
@@ -855,9 +986,12 @@
                         <div class="flex items-center gap-2 w-1/2">
                             <span class="sort-handle text-slate-500 text-base cursor-grab active:cursor-grabbing px-1 py-1" title="اسحب للترتيب">☰</span>
                             <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[0.625rem] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
-                            <span class="font-bold text-slate-200 text-xs truncate" title="${p.name}">${p.name}</span>
+                            <span class="font-bold text-slate-200 text-xs truncate ${p.hidden ? 'line-through text-slate-500' : ''}" title="${p.name}">${p.name}</span>
                         </div>
                         <div class="flex gap-0.5 shrink-0 bg-slate-950/50 rounded-lg p-0.5 border border-slate-800/50">
+                            <button onclick="togglePlayerVisibility(${p.id}, false)" class="px-2 py-1 text-[0.625rem] rounded hover:bg-slate-800 transition ${p.hidden ? 'text-red-400 font-bold bg-red-950/20' : 'text-emerald-400'}">
+                                ${p.hidden ? '🙈 مخفي' : '👀 نشط'}
+                            </button>
                             <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[0.625rem]">✏️</button>
                             <button onclick="removePlayer(${p.id}, false)" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[0.625rem]">❌</button>
                         </div>
@@ -869,11 +1003,11 @@
                 <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
                     <div class="space-y-3 flex-1">
                         <div class="flex items-center justify-between shrink-0">
-                            <h2 class="text-xs sm:text-sm font-bold text-slate-200">ترتيب اللاعبين 👥 <span class="text-[0.625rem] text-slate-500 font-normal">(اسحب ☰ للترتيب)</span></h2>
-                            <span class="text-[0.625rem] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">الحد الأدنى: 3</span>
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-200">ترتيب وإعداد اللاعبين 👥 <span class="text-[0.625rem] text-slate-500 font-normal">(اسحب ☰ للترتيب)</span></h2>
+                            <span class="text-[0.625rem] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">نشطين: ${getActivePlayers().length}</span>
                         </div>
                         <div class="flex gap-1.5 shrink-0">
-                            <input id="playerNameInput" type="text" placeholder="اكتب اسم جديد..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addPlayer()">
+                            <input id="playerNameInput" type="text" placeholder="اكتب اسم لاعب جديد..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addPlayer()">
                             <button onclick="addPlayer()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold transition text-xs shadow shrink-0">إضافة +</button>
                         </div>
                         <div id="players-list-container" class="space-y-1.5">${playersHtml}</div>
@@ -885,7 +1019,7 @@
                 </div>
             `;
             const nextBtn = document.getElementById('nextToSettingsBtn');
-            if (STATE.players.length < 3) nextBtn.disabled = true;
+            if (getActivePlayers().length < 3) nextBtn.disabled = true;
 
             const listElement = document.getElementById('players-list-container');
             if (listElement && typeof Sortable !== 'undefined') {
@@ -935,7 +1069,7 @@
                 `;
             });
 
-            const maxAllowedOutsiders = Math.max(1, Math.min(3, STATE.players.length - 2));
+            const maxAllowedOutsiders = Math.max(1, Math.min(3, getActivePlayers().length - 2));
             
             container.innerHTML = `
                 <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
@@ -991,7 +1125,7 @@
             if (STATE.players.length >= 15) { alertCustom("الحد الأقصى 15 لاعب!"); return; }
             if (STATE.players.some(p => p.name.toLowerCase() === name.toLowerCase())) { alertCustom("الاسم مستخدم!"); return; }
             const newId = STATE.players.length > 0 ? Math.max(...STATE.players.map(p => p.id)) + 1 : 1;
-            STATE.players.push({ id: newId, name: name, score: 0, history: [], outsiderStreak: 0 });
+            STATE.players.push({ id: newId, name: name, score: 0, history: [], outsiderStreak: 0, hidden: false });
             input.value = ''; saveState(); render();
         }
 
@@ -1048,12 +1182,12 @@
             document.getElementById('confirmResetBtn').disabled = (input !== currentResetPin);
         }
         function executeReset() {
-            STATE.players.forEach(p => { p.score = 0; p.history = []; p.outsiderStreak = 0; });
+            STATE.players.forEach(p => { p.score = 0; p.history = []; p.outsiderStreak = 0; p.hidden = false; });
             saveState(); closeConfirmReset(); goToScreen('setup');
         }
 
         function goToSettings() {
-            if (STATE.players.length < 3) { alertCustom("أقل شي 3 لاعبين!"); return; }
+            if (getActivePlayers().length < 3) { alertCustom("أقل شي 3 لاعبين نشطين!"); return; }
             goToScreen('settings');
         }
 
@@ -1064,7 +1198,7 @@
         function selectOutsidersCountSetting(val) { STATE.outsidersCountSetting = val; saveState(); render(); }
 
         function renderPassToPlayerScreen(container) {
-            const currentPlayer = STATE.players[STATE.currentRound.activeRevealerIdx];
+            const currentPlayer = getActivePlayers()[STATE.currentRound.activeRevealerIdx];
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center text-center space-y-4 px-1 my-auto max-h-full overflow-y-auto">
                     <span class="text-4xl animate-bounce">📱</span>
@@ -1086,7 +1220,6 @@
             const player = STATE.players.find(p => p.id === playerId);
             if (!player) return;
 
-            // خصم نقطة واحدة
             player.score -= 1;
             player.history.unshift({ 
                 word: '---', 
@@ -1096,14 +1229,13 @@
                 votes: null 
             });
 
-            // إزالة اللاعب من قائمة برا السالفة
             STATE.currentRound.outsiders = STATE.currentRound.outsiders.filter(id => id !== playerId);
             STATE.currentRound.rejectedPlayers.push(playerId);
 
-            // اختيار لاعب آخر لاحق عشوائياً لم يكشف دوره بعد
+            const activePlayers = getActivePlayers();
             const unrevealedPlayerIds = [];
-            for (let i = STATE.currentRound.activeRevealerIdx + 1; i < STATE.players.length; i++) {
-                unrevealedPlayerIds.push(STATE.players[i].id);
+            for (let i = STATE.currentRound.activeRevealerIdx + 1; i < activePlayers.length; i++) {
+                unrevealedPlayerIds.push(activePlayers[i].id);
             }
 
             if (unrevealedPlayerIds.length > 0) {
@@ -1113,12 +1245,12 @@
 
             saveState();
             alertCustom("🔄 تم خصم نقطة واحدة وتغيير دورك سرياً إلى داخل السالفة!");
-            render(); // إعادة رسم الشاشة ليرى أنه الآن "داخل السالفة"
+            render(); 
         }
 
         function renderRevealRoleScreen(container) {
             const playerIndex = STATE.currentRound.activeRevealerIdx;
-            const currentPlayer = STATE.players[playerIndex];
+            const currentPlayer = getActivePlayers()[playerIndex];
             const isOutsider = STATE.currentRound.outsiders.includes(currentPlayer.id);
             const categoryName = CATEGORIES_INFO[STATE.selectedCategory].name;
             
@@ -1126,8 +1258,7 @@
                 ? (STATE.currentRound.prankWords[currentPlayer.id] || STATE.currentRound.secretWord)
                 : STATE.currentRound.secretWord;
 
-            // حساب عدد اللاعبين المتبقين الذين لم يكشفوا أدوارهم بعد
-            const remainingUnrevealed = STATE.players.length - (playerIndex + 1);
+            const remainingUnrevealed = getActivePlayers().length - (playerIndex + 1);
             const canReject = STATE.rejectOutsiderEnabled && isOutsider && (remainingUnrevealed > 3);
 
             const rejectButtonHtml = canReject 
@@ -1163,7 +1294,7 @@
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center justify-between max-w-xs h-full py-2 space-y-3 overflow-y-auto">
                     <div class="text-center w-full shrink-0">
-                        <span class="text-[0.625rem] font-semibold text-slate-500">اللاعب ${playerIndex + 1} من ${STATE.players.length}</span>
+                        <span class="text-[0.625rem] font-semibold text-slate-500">اللاعب ${playerIndex + 1} من ${getActivePlayers().length}</span>
                         <h2 class="text-base font-bold text-slate-200">${currentPlayer.name}</h2>
                     </div>
                     <div class="w-full flex-1 flex flex-col justify-center">${cardContent}</div>
@@ -1175,7 +1306,7 @@
         }
 
         function finishRevealTurn() {
-            if (STATE.currentRound.activeRevealerIdx + 1 < STATE.players.length) {
+            if (STATE.currentRound.activeRevealerIdx + 1 < getActivePlayers().length) {
                 STATE.currentRound.activeRevealerIdx += 1;
                 goToScreen('pass-to-player');
             } else {
@@ -1187,7 +1318,7 @@
 
         function renderForgotRoleSelectScreen(container) {
             let listHtml = '';
-            const sortedPlayers = [...STATE.players].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+            const sortedPlayers = [...getActivePlayers()].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
             sortedPlayers.forEach(p => {
                 listHtml += `
                     <button onclick="initiateForgotRolePass(${p.id})" class="w-full py-2.5 px-3 text-xs font-bold text-slate-200 bg-slate-900 border border-slate-800 rounded-xl text-right hover:bg-slate-800 flex justify-between">
@@ -1272,7 +1403,6 @@
             const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
             const isFirstVoter = (STATE.currentRound.currentVotingPlayerIdx === 0);
 
-            // تفعيل ميزة زر التفعيل اليدوي للاعب الأول فقط
             if (isFirstVoter && !STATE.currentRound.firstVoterTimerStarted) {
                 renderFirstVoterTriggerUI();
                 return;
@@ -1304,7 +1434,6 @@
             const container = document.getElementById('votingTimerContainer');
             if (!container) return;
 
-            // إعادة الهيكل الطبيعي للمؤقت
             container.innerHTML = `
                 <span>⏱️ وقت التصويت المتبقي:</span>
                 <span id="votingTimerDisplay" class="text-sm font-black text-yellow-400">--:--</span>
@@ -1419,13 +1548,13 @@
         }
 
         function advanceVoting() {
-            if (STATE.currentRound.currentVotingPlayerIdx + 1 < STATE.players.length) {
+            if (STATE.currentRound.currentVotingPlayerIdx + 1 < getActivePlayers().length) {
                 STATE.currentRound.currentVotingPlayerIdx += 1;
                 STATE.currentRound.selectedSuspects = [];
                 goToScreen('vote-action');
             } else {
                 STATE.currentRound.activeTimerVoterId = null; 
-                if (STATE.currentRound.isPrankMode) {
+                if (STATE.currentRound.isPrankMode && STATE.currentRound.prankType !== 'reverse_mode') {
                     calculateRoundPoints();
                     goToScreen('summary');
                 } else {
@@ -1440,10 +1569,11 @@
             const currentPlayer = STATE.players.find(p => p.id === voterId);
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
             const isPrank = STATE.currentRound.isPrankMode;
-            const totalOutsiders = isPrank ? 1 : STATE.currentRound.outsiders.length;
+            const prankType = STATE.currentRound.prankType;
+            const totalOutsiders = isPrank ? (prankType === 'reverse_mode' ? STATE.currentRound.outsiders.length : 1) : STATE.currentRound.outsiders.length;
             let candidatesHtml = '';
             
-            const candidates = STATE.players.filter(p => p.id !== currentPlayer.id);
+            const candidates = getActivePlayers().filter(p => p.id !== currentPlayer.id);
             candidates.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
 
             candidates.forEach(p => {
@@ -1462,10 +1592,10 @@
             });
 
             let rulesInstructionHtml = '';
-            if (isPrank) {
-                rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">اختار مشتبه واحد تعتقد هو برا السالفة!</p>`;
-            } else if (isRandomSetting) {
-                rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">عدد "برا السالفة" عشوائي، اختار منو تشك بيهم!</p>`;
+            const isFlexibleVoting = isPrank || isRandomSetting || prankType === 'reverse_mode';
+
+            if (isFlexibleVoting) {
+                rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">تصويت مرن! اختر من 1 إلى 3 مشتبه بهم كحد أقصى تعتقد أنهم برا السالفة.</p>`;
             } else {
                 rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">لازم تختار بالضبط: <span id="maxOutsidersRuleText">${totalOutsiders}</span> (المختار حالياً: <span id="selectedSuspectsCount">${STATE.currentRound.selectedSuspects.length}</span>)</p>`;
             }
@@ -1509,15 +1639,17 @@
             const sId = parseInt(suspectId);
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
             const isPrank = STATE.currentRound.isPrankMode;
-            const totalOutsiders = isPrank ? 1 : STATE.currentRound.outsiders.length;
-            const maxSelections = (isRandomSetting && !isPrank) ? Math.max(1, Math.min(3, STATE.players.length - 2)) : totalOutsiders;
+            const prankType = STATE.currentRound.prankType;
+            const totalOutsiders = isPrank ? (prankType === 'reverse_mode' ? STATE.currentRound.outsiders.length : 1) : STATE.currentRound.outsiders.length;
+            const isFlexibleVoting = isPrank || isRandomSetting || prankType === 'reverse_mode';
+            const maxSelections = isFlexibleVoting ? Math.max(1, Math.min(3, getActivePlayers().length - 2)) : totalOutsiders;
 
             const index = STATE.currentRound.selectedSuspects.indexOf(sId);
             if (index > -1) {
                 STATE.currentRound.selectedSuspects.splice(index, 1);
             } else {
                 if (STATE.currentRound.selectedSuspects.length >= maxSelections) {
-                    alertCustom(isRandomSetting ? "الحد الأقصى للمشتبه بهم!" : `تكدر تختار ${totalOutsiders} كحد أقصى!`);
+                    alertCustom(isFlexibleVoting ? "الحد الأقصى للمشتبه بهم!" : `تكدر تختار ${totalOutsiders} كحد أقصى!`);
                     return;
                 }
                 STATE.currentRound.selectedSuspects.push(sId);
@@ -1579,13 +1711,14 @@
             const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
             const isPrank = STATE.currentRound.isPrankMode;
-            const totalOutsiders = isPrank ? 1 : STATE.currentRound.outsiders.length;
+            const prankType = STATE.currentRound.prankType;
+            const totalOutsiders = isPrank ? (prankType === 'reverse_mode' ? STATE.currentRound.outsiders.length : 1) : STATE.currentRound.outsiders.length;
+            const isFlexibleVoting = isPrank || isRandomSetting || prankType === 'reverse_mode';
 
-            if (isPrank) {
+            if (isFlexibleVoting) {
                 if (STATE.currentRound.selectedSuspects.length === 0) { alertCustom("اختار لاعب واحد على الأقل يشك بي!"); return; }
             } else {
-                if (isRandomSetting && STATE.currentRound.selectedSuspects.length === 0) { alertCustom("اختار لاعب واحد على الأقل يشك بي!"); return; }
-                if (!isRandomSetting && STATE.currentRound.selectedSuspects.length !== totalOutsiders) { alertCustom(`لازم تصوت على ${totalOutsiders} لاعبين بالضبط!`); return; }
+                if (STATE.currentRound.selectedSuspects.length !== totalOutsiders) { alertCustom(`لازم تصوت على ${totalOutsiders} لاعبين بالضبط!`); return; }
             }
 
             STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
@@ -1755,38 +1888,57 @@
             const secret = STATE.currentRound.secretWord;
             const outsiders = STATE.currentRound.outsiders;
             const isPrank = STATE.currentRound.isPrankMode;
+            const prankType = STATE.currentRound.prankType;
+            const activePlayers = getActivePlayers();
 
-            if (isPrank) {
+            const isActualPrankScoring = isPrank && (prankType === 'all_outsiders' || prankType === 'different_words');
+
+            if (isActualPrankScoring) {
                 const playerRoundPoints = {};
                 const votedStatsFlags = {};
                 const guessSuccessFlags = {};
                 const insidePlayerPenalties = {};
 
-                STATE.players.forEach(p => {
+                activePlayers.forEach(p => {
                     playerRoundPoints[p.id] = 0; 
                     votedStatsFlags[p.id] = { correct: 0, wrong: 0 };
                     guessSuccessFlags[p.id] = false;
-                    const word = STATE.currentRound.prankWords[p.id] || 'مجهول';
+                    
+                    let displayRole = 'مقلب 🤫';
+                    let displayWord = '---';
+                    let desc = 'جولة مقلب للمزاح والضحك';
+
+                    if (prankType === 'all_outsiders') {
+                        displayRole = 'برا السالفة (مقلب 🤫)';
+                        displayWord = 'الكل برا السالفة!';
+                        desc = 'مقلب الكل برا السالفة! الجميع تاهوا معاً 🥷';
+                    } else if (prankType === 'different_words') {
+                        displayRole = 'داخل السالفة (مقلب 🤫)';
+                        displayWord = STATE.currentRound.prankWords[p.id] || 'مجهول';
+                        desc = `مقلب تشتيت الكلمات! كلمتك كانت: "${displayWord}" 🎭`;
+                    }
                     
                     p.history.unshift({ 
-                        word: word, 
-                        role: 'داخل السالفة (مقلب 🤫)', 
+                        word: displayWord, 
+                        role: displayRole, 
                         points: 0, 
-                        desc: 'جولة مقلب للمزاح والضحك', 
+                        desc: desc, 
                         votes: (STATE.currentRound.votes[p.id] || []).map(vId => STATE.players.find(x => x.id === vId)?.name || 'مجهول').join('، ')
                     });
                 });
 
                 roundResultsCache = { 
                     isPrankMode: true,
-                    secretWord: 'مقلب! كل واحد كلمة', 
-                    outsiders: [], 
+                    prankType: prankType,
+                    secretWord: prankType === 'all_outsiders' ? 'الكل برا السالفة!' : 'توزيع كلمات مختلفة 🎭', 
+                    outsiders: prankType === 'all_outsiders' ? activePlayers.map(p => p.id) : [], 
                     playerRoundPoints, 
                     votedStatsFlags, 
                     guessSuccessFlags, 
                     outsiderGuessesCache: {}, 
                     outsiderOptionsSaved: {}, 
-                    insidePlayerPenalties 
+                    insidePlayerPenalties,
+                    activePlayerIds: activePlayers.map(p => p.id)
                 };
                 saveState();
                 return;
@@ -1795,16 +1947,21 @@
             const playerRoundPoints = {}, votedStatsFlags = {}, guessSuccessFlags = {}, insidePlayerPenalties = {};
             const outsiderGuessesCache = { ...STATE.currentRound.outsiderGuesses };
             const outsiderOptionsSaved = { ...STATE.currentRound.outsiderOptionsCache };
-            const penaltyThreshold = Math.floor(STATE.players.length / 2) + 1; 
+            const penaltyThreshold = Math.floor(activePlayers.length / 2) + 1; 
             
             const votesReceived = {};
-            STATE.players.forEach(p => votesReceived[p.id] = { count: 0, byIds: [] });
+            activePlayers.forEach(p => votesReceived[p.id] = { count: 0, byIds: [] });
             Object.entries(STATE.currentRound.votes).forEach(([voterIdStr, votedForIds]) => {
                 const voterId = parseInt(voterIdStr);
-                votedForIds.forEach(targetId => { votesReceived[targetId].count++; votesReceived[targetId].byIds.push(voterId); });
+                votedForIds.forEach(targetId => { 
+                    if(votesReceived[targetId]) {
+                        votesReceived[targetId].count++; 
+                        votesReceived[targetId].byIds.push(voterId); 
+                    }
+                });
             });
 
-            STATE.players.forEach(p => {
+            activePlayers.forEach(p => {
                 const pVotes = STATE.currentRound.votes[p.id] || [];
                 const isOutsider = outsiders.includes(p.id);
                 let pointsEarned = 0, correctVotes = 0, wrongVotes = 0, historyDescLines = [];
@@ -1840,7 +1997,7 @@
             });
 
             STATE.players.forEach(p => { if(p.history.length > MAX_HISTORY_LEN) p.history = p.history.slice(0, MAX_HISTORY_LEN); });
-            roundResultsCache = { isPrankMode: false, secretWord: secret, outsiders: [...outsiders], playerRoundPoints, votedStatsFlags, guessSuccessFlags, outsiderGuessesCache, outsiderOptionsSaved, insidePlayerPenalties };
+            roundResultsCache = { isPrankMode: false, secretWord: secret, outsiders: [...outsiders], playerRoundPoints, votedStatsFlags, guessSuccessFlags, outsiderGuessesCache, outsiderOptionsSaved, insidePlayerPenalties, activePlayerIds: activePlayers.map(p => p.id) };
             saveState();
         }
 
@@ -1911,27 +2068,38 @@
             const originalText = btn.innerHTML;
             btn.innerHTML = '⏳ جاري تصدير الملف...';
             btn.disabled = true;
+
+            const originalStyle = element.getAttribute('style') || '';
+            
+            element.style.maxHeight = 'none';
+            element.style.height = 'auto';
+            element.style.overflow = 'visible';
+            element.style.paddingBottom = '36px'; 
             
             setTimeout(() => {
                 html2canvas(element, {
-                    backgroundColor: '#111827', 
+                    backgroundColor: '#090d16', 
                     scale: 2, 
                     logging: false,
-                    useCORS: true
+                    useCORS: true,
+                    windowWidth: element.scrollWidth,
+                    windowHeight: element.scrollHeight
                 }).then(canvas => {
                     try {
                         const link = document.createElement('a');
-                        link.download = `نتائج_برا_السالفة_v3.0.png`;
+                        link.download = `نتائج_برا_السالفة_v4.0.png`;
                         link.href = canvas.toDataURL('image/png');
                         link.click();
                     } catch (err) {
                         alertCustom("خطأ أثناء تحضير ملف الصورة!");
                     } finally {
+                        element.setAttribute('style', originalStyle);
                         btn.innerHTML = originalText;
                         btn.disabled = false;
                     }
                 }).catch(err => {
                     alertCustom("عذراً، تعذر تصدير لقطة النتائج!");
+                    element.setAttribute('style', originalStyle);
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 });
@@ -1940,16 +2108,25 @@
 
         function renderSummaryScreen(container) {
             const results = roundResultsCache;
+            const activeRoundPlayerIds = results.activePlayerIds || getActivePlayers().map(p => p.id);
 
             if (results.isPrankMode) {
                 let prankDetailHtml = '';
-                STATE.players.forEach(p => {
-                    const word = STATE.currentRound.prankWords[p.id] || 'مجهول';
+                activeRoundPlayerIds.forEach(pId => {
+                    const p = STATE.players.find(x => x.id === pId);
+                    if(!p) return;
+                    let wordDisplay = 'مجهول';
+                    if (results.prankType === 'all_outsiders') {
+                        wordDisplay = 'الكل برا السالفة!';
+                    } else {
+                        wordDisplay = STATE.currentRound.prankWords[p.id] || 'مجهول';
+                    }
+                    
                     prankDetailHtml += `
                         <div class="bg-violet-950/20 border border-violet-800/40 p-2.5 rounded-lg flex justify-between items-center text-right text-xs">
                             <div>
                                 <span class="font-extrabold text-violet-400">${p.name}</span>
-                                <p class="text-[0.625rem] text-slate-300">الكلمة اللي طلعتله جانت: <span class="font-bold text-yellow-400">"${word}"</span></p>
+                                <p class="text-[0.625rem] text-slate-300">الكلمة اللي طلعتله جانت: <span class="font-bold text-yellow-400">"${wordDisplay}"</span></p>
                             </div>
                             <span class="text-slate-500 font-bold text-[0.625rem]">مقلب 🤫</span>
                         </div>
@@ -1960,8 +2137,8 @@
                     <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
                         <div class="space-y-3 flex-1">
                             <div class="bg-gradient-to-r from-red-950 to-amber-950 p-3 rounded-xl border border-red-800/40 text-center shrink-0">
-                                <span class="text-xs text-yellow-400 font-bold block mb-1">🤫 مقلب! السالفة جانت محروقة والكل برا السالفة!</span>
-                                <span class="text-[0.625rem] text-slate-300 block">ما جان اكو أي شخص برا السالفة حقيقي، الكل جانت تطلعله كلمات مختلفة تماماً والهدف هو المتعة والضحك! (النقاط لم تتأثر)</span>
+                                <span class="text-xs text-yellow-400 font-bold block mb-1">🤫 مقلب سري! السالفة جانت محروقة!</span>
+                                <span class="text-[0.625rem] text-slate-300 block">لقد كان مقلباً فكاهياً لإثارة البلبلة والضحك والجميع كانوا خارج التغطية أو بكلمات مشتتة! (النقاط لم تتأثر في جولة المقلب)</span>
                             </div>
                             
                             <div id="summaryScrollArea" class="space-y-2 rounded-xl p-2 bg-slate-900 border border-slate-800">
@@ -1982,6 +2159,7 @@
             let outsidersHtml = '';
             results.outsiders.forEach(oId => {
                 const player = STATE.players.find(p => p.id === oId);
+                if (!player) return;
                 const isGuessed = results.guessSuccessFlags[oId];
                 const points = results.playerRoundPoints[oId];
                 const stats = results.votedStatsFlags[oId];
@@ -2004,13 +2182,15 @@
             });
 
             let insidersHtml = '';
-            STATE.players.forEach(p => {
-                if (results.outsiders.includes(p.id)) return;
-                const stats = results.votedStatsFlags[p.id];
-                const points = results.playerRoundPoints[p.id];
+            activeRoundPlayerIds.forEach(pId => {
+                if (results.outsiders.includes(pId)) return;
+                const p = STATE.players.find(x => x.id === pId);
+                if (!p) return;
+                const stats = results.votedStatsFlags[pId];
+                const points = results.playerRoundPoints[pId];
                 let penaltyHtml = '';
-                if(results.insidePlayerPenalties[p.id]) {
-                    const penInfo = results.insidePlayerPenalties[p.id];
+                if(results.insidePlayerPenalties[pId]) {
+                    const penInfo = results.insidePlayerPenalties[pId];
                     const voters = penInfo.byIds.map(id => STATE.players.find(x=>x.id===id)?.name).join('، ');
                     penaltyHtml = `<div class="mt-1 pt-1 border-t border-red-900/30 text-[0.625rem] text-red-300"><span class="font-bold text-red-400">⚖️ اللاعب المظلوم:</span> انشك بيه من (${penInfo.count}) وهم: ${voters} (-1 نقطة)</div>`;
                 }
@@ -2029,11 +2209,14 @@
             let scoreboardHtml = '';
             sortedPlayers.forEach((p, idx) => {
                 let badge = idx === 0 ? '👑' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+                const isHidden = p.hidden;
                 scoreboardHtml += `
                     <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60 text-xs">
                         <div class="flex items-center gap-1.5 w-1/2">
                             <span class="text-[0.625rem] font-black text-slate-500 w-3 shrink-0">${idx + 1}</span>
-                            <button onclick="openHistoryModal(${p.id})" class="font-bold text-slate-200 hover:text-indigo-300 transition underline decoration-slate-600 underline-offset-4 truncate text-right w-full" title="اضغط لرؤية السجل">${p.name} ${badge}</button>
+                            <button onclick="openHistoryModal(${p.id})" class="font-bold text-slate-200 hover:text-indigo-300 transition underline decoration-slate-600 underline-offset-4 truncate text-right w-full ${isHidden ? 'line-through text-slate-500 font-normal' : ''}" title="اضغط لرؤية السجل">
+                                ${p.name} ${badge} ${isHidden ? '<span class="text-[0.55rem] text-red-400 bg-red-950/20 border border-red-900/20 px-1 py-0.2 rounded font-normal">مخفي</span>' : ''}
+                            </button>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
                             <div class="flex gap-0.5 bg-slate-900 border border-slate-700/50 rounded p-0.5">
@@ -2057,7 +2240,7 @@
                             <div class="space-y-1"><h3 class="text-[0.625rem] font-bold text-slate-400">🕵️‍♂️ نتائج برا السالفة:</h3><div class="space-y-1">${outsidersHtml}</div></div>
                             <div class="space-y-1"><h3 class="text-[0.625rem] font-bold text-slate-400">💬 نتائج داخل السالفة:</h3><div class="space-y-1">${insidersHtml}</div></div>
                             <div class="glass-panel p-2.5 rounded-xl border border-slate-800 space-y-1">
-                                <h3 class="text-[0.625rem] font-bold text-yellow-400 border-b border-slate-800 pb-1 flex justify-between"><span>لوحة الصدارة والترتيب</span></h3>
+                                <h3 class="text-[0.625rem] font-bold text-yellow-400 border-b border-slate-800 pb-1 flex justify-between"><span>لوحة الصدارة والترتيب الشامل</span></h3>
                                 <div class="space-y-0.5">${scoreboardHtml}</div>
                             </div>
                         </div>
