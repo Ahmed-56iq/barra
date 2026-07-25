@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>لعبة برا السالفة | النسخة العراقية</title>
+    <title>لعبة برا السالفة | الإصدار 4.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&family=Almarai:wght@400;700;800&family=Changa:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Cairo', sans-serif;
             background: radial-gradient(circle at center, #1e1b4b 0%, #030712 100%);
             overscroll-behavior: none;
+            transition: font-size 0.3s ease; 
         }
         .glow-purple { box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
         .glow-gold { box-shadow: 0 0 15px rgba(234, 179, 8, 0.25); }
@@ -23,27 +25,221 @@
         }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
+        
+        @keyframes slideDown { from { transform: translate(-50%, -100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .toast-enter { animation: slideDown 0.3s forwards; }
+        .sort-handle { touch-action: none; cursor: grab; }
+        .sort-handle:active { cursor: grabbing; }
     </style>
 </head>
 <body class="h-[100dvh] text-slate-100 flex flex-col justify-between overflow-hidden p-3 pb-8 sm:pb-3 select-none">
 
-    <header class="w-full max-w-md mx-auto flex justify-center items-center mb-1 shrink-0 z-10">
-        <div class="flex items-center gap-1.5">
+    <header class="w-full max-w-md mx-auto flex justify-between items-center mb-1 shrink-0 z-10 bg-slate-900/50 p-2 rounded-xl border border-slate-800">
+        <button onclick="openQuickLeaderboard()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition text-base" title="عرض النقاط">🏆</button>
+        
+        <div class="flex items-center gap-1.5 cursor-pointer" onclick="executeGoHomeAction()">
             <span class="text-xl">🤫</span>
-            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[10px] text-slate-400 font-normal ml-1 tracking-widest">v2.1</span></h1>
+            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v4.0</span></h1>
         </div>
+        
+        <button onclick="openQuickMenu()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition text-base" title="القائمة السريعة">⚙️</button>
     </header>
 
-    <main id="app" class="w-full max-w-md mx-auto flex-1 flex flex-col justify-center items-center overflow-hidden">
-        <!-- سيتم تعبئة المحتوى ديناميكياً بواسطة JavaScript -->
+    <main id="app" class="w-full max-w-md mx-auto flex-1 flex flex-col justify-center items-center overflow-hidden min-h-0">
+        <!-- يتم توليد المحتوى ديناميكياً -->
     </main>
 
-    <footer class="w-full max-w-md mx-auto text-center py-1 text-[9px] text-slate-600 shrink-0">
-        لعبة برا السالفة - النسخة العراقية المحدثة &copy; 2026
+    <footer class="w-full max-w-md mx-auto text-center py-1 text-[0.6rem] text-slate-600 shrink-0">
+        لعبة برا السالفة - الإصدار 4.0 &copy; 2026
     </footer>
 
-    <!-- نافذة تعديل الاسم -->
-    <div id="customModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <!-- منبثقة إعدادات المقلب السري المتقدمة -->
+    <div id="prankConfigModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[120] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl flex flex-col">
+            <div class="flex justify-between items-center mb-1 shrink-0">
+                <h3 class="text-sm font-black text-red-400">🤫 إعدادات المقلب السري المتقدم</h3>
+                <button onclick="closePrankConfig()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="space-y-1">
+                    <label class="text-[0.6875rem] font-bold text-slate-300 block">اختر نوع المقلب السري:</label>
+                    <select id="prankTypeSelect" onchange="togglePrankWordsVisibility()" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 focus:outline-none">
+                        <option value="different_words" selected>كل لاعب كلمة مختلفة 🎭 (تشتيت وبلبلة)</option>
+                        <option value="all_outsiders">الكل برا السالفة 🥷 (الجميع تائهون)</option>
+                        <option value="reverse_mode">المقلب العكسي 🔄 (البرا السالفة هم الأغلبية)</option>
+                    </select>
+                </div>
+
+                <div id="prankWordCountContainer" class="space-y-1">
+                    <label class="text-[0.6875rem] font-bold text-slate-300 block">عدد الكلمات المختلفة للتوزيع بالتساوي:</label>
+                    <select id="prankWordCountSelect" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 focus:outline-none">
+                        <option value="2">كلمتين فقط (توزيع ثنائي)</option>
+                        <option value="3" selected>3 كلمات مختلفة</option>
+                        <option value="4">4 كلمات مختلفة</option>
+                        <option value="5">5 كلمات مختلفة</option>
+                    </select>
+                    <p class="text-[0.55rem] text-slate-500">يقوم النظام بتوزيع اللاعبين بالتساوي على هذه الكلمات لتوليد نقاش حماسي كوميدي!</p>
+                </div>
+
+                <div class="bg-red-950/30 border border-red-900/30 p-2.5 rounded-lg">
+                    <p class="text-[0.625rem] text-red-300 leading-relaxed">💡 جولة المقلب ستعمل <b>لمرة واحدة فقط</b> لتجنب كشف اللعبة، وبعد انتهاء الجولة والعودة للإعدادات يعود اللعب تلقائياً للوضع الطبيعي.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-2 shrink-0 pt-2">
+                <button onclick="closePrankConfig()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
+                <button onclick="startPrankWithConfig()" class="flex-[2] py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-xl text-xs font-black transition shadow-lg">تفعيل وبدء الجولة 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- منبثقة القائمة السريعة -->
+    <div id="quickMenuModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-3 shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-1 shrink-0">
+                <h3 class="text-sm font-bold text-white">القائمة السريعة ⚡</h3>
+                <button onclick="closeQuickMenu()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            
+            <div class="overflow-y-auto space-y-3 pr-1 pb-2 min-h-0">
+                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 space-y-3">
+                    <h4 class="text-[0.625rem] font-bold text-slate-400 border-b border-slate-700 pb-1">إعدادات المظهر 🎨</h4>
+                    
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between">
+                        <span>نوع الخط 🔠</span>
+                        <select onchange="changeFont(this.value)" id="fontFamilySelect" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none">
+                            <option value="Cairo">كايرو</option>
+                            <option value="Tajawal">تجول</option>
+                            <option value="Almarai">المراعي</option>
+                            <option value="Changa">تشانجا</option>
+                        </select>
+                    </label>
+                    
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between border-t border-slate-700/50 pt-2">
+                        <span>حجم الخط 🔍</span>
+                        <select onchange="changeFontSize(this.value)" id="fontSizeSelect" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none">
+                            <option value="12">12</option>
+                            <option value="14">14</option>
+                            <option value="16">16 (الافتراضي)</option>
+                            <option value="18">18</option>
+                            <option value="20">20</option>
+                            <option value="22">22</option>
+                            <option value="24">24</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 space-y-3">
+                    <h4 class="text-[0.625rem] font-bold text-slate-400 border-b border-slate-700 pb-1">إعدادات وقوانين الجولة 🛠️</h4>
+                    
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer gap-2">
+                        <span>نقطة تخفي للي برا السالفة؟ 🥷<br><span class="text-[0.6rem] text-slate-500 font-normal">اذا لم يشك به أحد ينال نقطة إضافية</span></span>
+                        <input type="checkbox" id="sneakBonusToggle" onchange="toggleSneakBonus(this.checked)" class="w-5 h-5 accent-yellow-500 shrink-0">
+                    </label>
+                    
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer border-t border-slate-700/50 pt-2 gap-2">
+                        <span>مؤقت التصويت 🗳️<br><span class="text-[0.6rem] text-slate-500 font-normal">منح 60 ثانية للأول و30 ثانية للبقية</span></span>
+                        <input type="checkbox" id="voteTimerToggle" onchange="toggleVoteTimer(this.checked)" class="w-5 h-5 accent-indigo-500 shrink-0">
+                    </label>
+                    
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer border-t border-slate-700/50 pt-2 gap-2">
+                        <span>خيارات انتهاء مؤقت التصويت ⚠️<br><span class="text-[0.6rem] text-slate-500 font-normal">تخيير اللاعب بين اعتماد الأصوات أو الخصم</span></span>
+                        <input type="checkbox" id="timeoutPenaltyToggle" onchange="toggleTimeoutPenaltyChoice(this.checked)" class="w-5 h-5 accent-indigo-500 shrink-0">
+                    </label>
+
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer border-t border-slate-700/50 pt-2 gap-2">
+                        <span>مؤقت التخمين 🎯<br><span class="text-[0.6rem] text-slate-500 font-normal">منح 60 ثانية للاعب التائه ليتوقع الكلمة</span></span>
+                        <input type="checkbox" id="guessTimerToggle" onchange="toggleGuessTimer(this.checked)" class="w-5 h-5 accent-indigo-500 shrink-0">
+                    </label>
+
+                    <label class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer border-t border-slate-700/50 pt-2 gap-2">
+                        <span>رفض دور برا السالفة والمقايضة 🔄<br><span class="text-[0.6rem] text-slate-500 font-normal">السماح بمقايضة الدور بمقابل خصم نقطة واحدة</span></span>
+                        <input type="checkbox" id="rejectOutsiderToggle" onchange="toggleRejectOutsider(this.checked)" class="w-5 h-5 accent-yellow-500 shrink-0">
+                    </label>
+                </div>
+
+                <button onclick="openQuickPlayerManager()" class="w-full py-2.5 bg-indigo-950/50 hover:bg-indigo-900/50 border border-indigo-900 transition text-indigo-300 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
+                    <span>👥</span> إدارة اللاعبين والتعليق
+                </button>
+                <button onclick="executeGoHomeAction()" class="w-full py-2.5 bg-red-950/50 hover:bg-red-900/50 border border-red-900 transition text-red-400 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
+                    <span>🏠</span> إنهاء والعودة للرئيسية
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- منبثقة إدارة اللاعبين وتعليقهم -->
+    <div id="quickPlayerManagerModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[90] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-3 shrink-0">
+                <h3 class="text-sm font-bold text-white">إدارة وتعليق اللاعبين 👥</h3>
+                <button onclick="closeQuickPlayerManager()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            
+            <div class="flex gap-1.5 shrink-0 mb-3">
+                <input id="quickPlayerNameInput" type="text" placeholder="اسم لاعب جديد..." class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addQuickPlayer()">
+                <button onclick="addQuickPlayer()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold transition text-xs shadow shrink-0">إضافة +</button>
+            </div>
+            
+            <p id="quickPlayerWarning" class="hidden text-[0.625rem] text-yellow-400 bg-yellow-900/30 border border-yellow-800 p-1.5 rounded mb-2 text-center shrink-0">⚠️ الجولة نشطة حالياً: يمكنك تعليق/إظهار اللاعبين وتعديلهم والترتيب فقط.</p>
+            <p class="text-[0.625rem] text-slate-500 mb-1 shrink-0 text-center">اسحب ☰ لترتيب اللاعبين | اضغط 👁️ لتعليق/إظهار اللاعب</p>
+
+            <div id="quickPlayersList" class="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-[50vh]">
+                <!-- سيتم تعبئتها ديناميكياً -->
+            </div>
+        </div>
+    </div>
+
+    <div id="categoryWordsModal" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[75] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-2 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span id="catWordsIcon" class="text-xl">📚</span>
+                    <div>
+                        <h3 id="catWordsTitle" class="text-sm font-bold text-white">كلمات الفئة</h3>
+                        <p class="text-[0.625rem] text-slate-400">الكلمات المظللة ظهرت مسبقاً</p>
+                    </div>
+                </div>
+                <button onclick="closeCategoryWordsModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            
+            <div class="bg-slate-950/50 p-2 rounded-lg border border-slate-800 flex justify-between text-[0.6875rem] text-slate-300 mb-2 shrink-0">
+                <span>إجمالي الكلمات: <b id="catWordsTotal" class="text-indigo-400">0</b></span>
+                <span>المتبقي: <b id="catWordsRemaining" class="text-emerald-400">0</b></span>
+            </div>
+
+            <div class="mb-3 shrink-0">
+                <input id="catWordsSearchInput" type="text" oninput="filterCategoryWords()" placeholder="ابحث عن كلمة معينة... 🔍" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+            </div>
+
+            <div id="catWordsGrid" class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 gap-1.5 content-start">
+                <!-- سيتم تعبئتها ديناميكياً -->
+            </div>
+            
+            <button onclick="closeCategoryWordsModal()" class="w-full mt-3 py-2 bg-slate-800 hover:bg-slate-700 transition text-slate-200 rounded-xl text-xs font-bold shrink-0">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- منبثقة الصدارة السريعة -->
+    <div id="quickLeaderboardModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-xs shadow-2xl flex flex-col max-h-[75vh]">
+            <div class="flex justify-between items-center mb-3 shrink-0">
+                <h3 class="text-sm font-bold text-yellow-400">النقاط الحالية 🏆</h3>
+                <button onclick="closeQuickLeaderboard()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            <p class="text-[0.625rem] text-slate-400 text-center mb-2 border-b border-slate-800 pb-1">اضغط على اسم اللاعب لرؤية سجله</p>
+            
+            <div id="quickLeaderboardContent" class="flex-1 overflow-y-auto space-y-1 pr-1 min-h-0">
+            </div>
+
+            <button onclick="navigateToResultsFromLeaderboard()" class="w-full mt-3 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow shrink-0">
+                <span>📊</span> الانتقال لنتائج الجولة الأخيرة
+            </button>
+        </div>
+    </div>
+
+    <div id="customModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-4 shadow-2xl">
             <h3 class="text-sm font-bold text-white text-center">تعديل اسم اللاعب ✏️</h3>
             <input id="modalInput" type="text" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500 text-center" onkeypress="if(event.key === 'Enter') confirmEdit()">
@@ -54,172 +250,464 @@
         </div>
     </div>
 
-    <!-- نافذة تأكيد الرجوع للرئيسية -->
-    <div id="homeConfirmModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-4 text-center shadow-2xl">
-            <span class="text-4xl block mb-2">🏠</span>
-            <h3 class="text-base font-bold text-white">الرجوع للرئيسية؟</h3>
-            <p class="text-xs text-slate-400">أكيد تريد ترجع للواجهة الرئيسية؟ سيتم إيقاف تحضيرات الجولة الحالية.</p>
-            <div class="flex gap-2 mt-4">
-                <button onclick="closeHomeConfirm()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
-                <button onclick="executeGoHome()" class="flex-1 py-2.5 bg-yellow-600 hover:bg-yellow-500 transition text-white rounded-xl text-xs font-bold">نعم، ارجع</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة تصفير اللعبة -->
-    <div id="confirmModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="homeConfirmModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[85] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-4 text-center shadow-2xl">
             <span class="text-4xl block mb-2">⚠️</span>
-            <h3 class="text-base font-bold text-white">تصفير اللعبة</h3>
-            <p class="text-xs text-slate-400">أكيد تريد تصفر نقاط اللاعبين وتبدي اللعبة من جديد؟</p>
+            <h3 class="text-base font-bold text-white">تنبيه الخروج!</h3>
+            <p class="text-xs text-slate-400">هل أنت متأكد أنك تريد الرجوع للرئيسية؟ سيتم إلغاء الجولة الحالية وتخسر تقدمها.</p>
             <div class="flex gap-2 mt-4">
-                <button onclick="closeConfirmReset()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">لا، تراجع</button>
-                <button onclick="executeReset()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-500 transition text-white rounded-xl text-xs font-bold">نعم، صَفِّر</button>
+                <button onclick="closeHomeConfirm()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
+                <button onclick="executeGoHome()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-500 transition text-white rounded-xl text-xs font-bold">نعم، متأكد</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة سجل اللاعب -->
-    <div id="historyModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="confirmModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-4 text-center shadow-2xl">
+            <span class="text-4xl block mb-2">⚠️</span>
+            <h3 class="text-base font-bold text-white">تصفير اللعبة بالكامل</h3>
+            <p class="text-xs text-slate-400">لتأكيد عملية التصفير، يرجى كتابة الرمز التالي:</p>
+            <div class="bg-slate-950 border border-slate-800 p-2 rounded-lg my-2">
+                <span id="resetPinDisplay" class="text-2xl font-black text-yellow-400 tracking-[0.3em]">12345</span>
+            </div>
+            <input id="resetPinInput" type="number" oninput="checkResetPin()" placeholder="اكتب الرمز هنا..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none text-center tracking-[0.2em]">
+            <div class="flex gap-2 mt-4">
+                <button onclick="closeConfirmReset()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">تراجع</button>
+                <button id="confirmResetBtn" disabled onclick="executeReset()" class="flex-1 py-2.5 bg-red-600 disabled:bg-slate-700 disabled:text-slate-500 hover:bg-red-500 transition text-white rounded-xl text-xs font-bold">تصفير الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[75] flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm h-[80vh] flex flex-col shadow-2xl">
             <div class="flex justify-between items-center mb-3 shrink-0">
                 <h3 id="historyPlayerName" class="text-sm font-black text-white">سجل اللاعب</h3>
                 <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
             </div>
-            <div id="historyContent" class="flex-1 overflow-y-auto space-y-2 pr-1">
-                <!-- سيتم تعبئة السجل هنا -->
+            <div id="historyContent" class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0">
+            </div>
+        </div>
+    </div>
+
+    <div id="outsiderOptionsModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-3 shrink-0">
+                <h3 id="optionsModalTitle" class="text-sm font-black text-white">خيارات اللاعب</h3>
+                <button onclick="closeOutsiderOptionsModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            <div class="mb-2 text-[0.6875rem] flex gap-2 justify-center shrink-0">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 block"></span>الكلمة السرية</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500 block"></span>تخمين خاطئ</span>
+            </div>
+            <div id="optionsModalGrid" class="grid grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto p-1 min-h-0">
+            </div>
+            <button onclick="closeOutsiderOptionsModal()" class="w-full py-2.5 mt-3 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">إغلاق</button>
+        </div>
+    </div>
+
+    <div id="voteTimeoutModal" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[110] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-xs space-y-4 text-center shadow-2xl">
+            <span class="text-4xl block mb-2">⏳</span>
+            <h3 class="text-base font-black text-white">انتهى وقت التصويت!</h3>
+            <p class="text-xs text-slate-400">كيف ترغب بالتعامل مع التصويت المتبقي؟</p>
+            
+            <div class="space-y-2">
+                <button onclick="handleTimeoutChoice('approve')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 transition text-white rounded-xl text-xs font-bold block">
+                    👍 اعتماد اختياراتي الحالية
+                </button>
+                <button onclick="handleTimeoutChoice('penalty-keep-votes')" class="w-full py-2.5 bg-red-600 hover:bg-red-500 transition text-white rounded-xl text-xs font-bold block">
+                    ⚠️ خصم نقطة + اعتماد اختياراتي الحالية
+                </button>
+                <button onclick="handleTimeoutChoice('postpone')" id="timeoutPostponeBtn" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 transition text-white rounded-xl text-xs font-bold block">
+                    ⏰ تأجيل دوري بالتصويت لاحقاً
+                </button>
+                <button onclick="handleTimeoutChoice('empty-no-penalty')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold block">
+                    🕊️ تصويت فارغ بدون خصم نقاط
+                </button>
             </div>
         </div>
     </div>
 
     <script>
+        // قاعدة الكلمات العراقية المنقحة والخالية من أي تكرار أو كلمات أجنبية
         const WORD_DATABASE = {
-            food: [
-                "دولمة", "باجة", "مسكوف", "كاهي وقيمر", "كليجة", "صمون حجري", "تشريب دجاج", "قوزي عراقي", "زردة", "تمن ومرك",
-                "فلافل وعمبة", "طرشي نجفي", "دهينة", "شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "خبز تنور", "بورك", "كباب عراقي",
-                "تكة لحم", "معلاك مشوي", "مخلمة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لفة فلافل", "طماطة مقلية", "باذنجان مقلي",
-                "سمك زبيدي", "ربيان بصراوي", "صبورة مشوية", "بامية", "فاصوليا يابسة", "مركة شجر", "مركة بتيتة", "مطبك سمك", "برياني عراقي", "مقلوبة",
-                "شوربة عدس", "ماش", "هريسة", "حلاوة تمر", "تمر خستاوي", "رقي", "بطيخ سامراء", "نومي بصرة", "كص دجاج", "كص لحم",
-                "عروك طاوة", "كفتة", "بيتزا", "برگر", "صاج", "حليب سباع", "لبن اربيل", "كيمر سدة", "جبن عرب", "لبلبي",
-                "باقلاء بالدهن", "شلغم مطبوخ", "لوزينة", "من السما", "راشي ودبس", "عسل طبيعي", "زلاطة", "جاجيك", "مقبلات", "حمص بطحينة",
-                "متبل", "بابا غنوج", "زيتون", "بصل أخضر", "فجل", "كرفس", "ريحان", "نعناع", "طرشي مدبس", "مدكوكة",
-                "تمرية", "تمر هند", "كرزات", "حب شمسي", "حب رقي", "فستق حلبي", "لوز", "جوز", "كاجو", "مكروطة",
-                "sahoon", "بسكت", "نستلة", "جيلاتين", "كيكة", "عصير برتقال", "عصير نومي دوزي", "شنينة", "لبن عيران", "شاي حامض"
-            ],
-            animals: [
-                "واوي", "ططوة", "عتوي", "بزونة", "صخيلة", "طلي", "دجاجة", "ديج", "بطة", "وزة",
-                "زرزور", "فاختة", "بلبل", "حمامة", "زاجل", "حصان", "زمال", "مطي", "بقرة", "هايشة",
-                "عجل", "جاموسة", "خروف", "نعجة", "كلب", "جلب", "ذيب", "ثعلب", "أسد", "نمر",
-                "فهد", "دب", "فيل", "زرافة", "قرد", "سنجاب", "أرنب", "غزال", "طير حب", "مينا",
-                "ببغاء", "طاووس", "نعامة", "صقر", "نسر", "غراب", "بومة", "خفاش", "تمساح", "سلحفاة",
-                "ركة", "حية", "دودة", "جريذي", "فارة", "بريعصي", "سحلية", "ضفدع", "عكركروك", "سمجة",
-                "جصيص", "زبيدي", "شبوط", "كطان", "بني", "كوسج", "حوت", "دولفين", "أخطبوط", "قنديل بحر",
-                "نجم بحر", "سرطان", "دودة قز", "فراشة", "زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت",
-                "عقرب", "جرادة", "حشرة", "قملة", "برغوث", "نملة", "أبو جنيب", "أم سليمان", "دعسوقة", "خنفساء",
-                "حلزون", "بطريق", "فقمة", "دب قطبي", "كنغر", "كوالا", "باندا", "خرتيت", "حمار وحشي", "قط بري"
-            ],
-            places: [
-                "بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء",
-                "ديوانية", "سماوة", "ناصرية", "عمارة", "كوت", "بعقوبة", "تكريت", "رمادي", "فلوجة", "زاخو",
-                "حلبجة", "شارع المتنبي", "نصب الشهيد", "ساحة التحرير", "باب الشرقي", "كرادة", "منصور", "أعظمية", "كاظمية", "أبو نواس",
-                "شارع الرشيد", "قلعة أربيل", "زقورة أور", "بابل الأثرية", "ملوية سامراء", "طاق كسرى", "هور الحويزة", "جبل كورك", "شلال كلي علي بك", "سد دوكان",
-                "مرقد الإمام علي", "مرقد الإمام الحسين", "مرقد الكاظمين", "الحضرة القادرية", "جامع أبو حنيفة", "كنيسة النجاة", "سوق الشورجة", "سوق الصفافير", "سوق الغزل", "مطار بغداد",
-                "مطار أربيل", "ميناء أم قصر", "جسر الجادرية", "جسر المعلق", "جسر الجمهورية", "نهر دجلة", "نهر الفرات", "شط العرب", "الأهوار", "صحراء السماوة",
-                "بادية الشام", "لندن", "باريس", "روما", "مدريد", "برلين", "نيويورك", "طوكيو", "بكين", "موسكو",
-                "إسطنبول", "دبي", "رياض", "قاهرة", "عمان", "بيروت", "دمشق", "كويت", "دوحة", "منامة",
-                "أبو ظبي", "مستشفى", "مدرسة", "جامعة بغداد", "الجامعة المستنصرية", "نادي رياضي", "ملعب الشعب", "ملعب جذع النخلة", "سينما", "مول",
-                "أسواق", "سوبر ماركت", "مطعم", "كهوة (مقهى)", "فندق", "متنزه", "حديقة الزوراء", "مدينة العاب", "المتحف العراقي", "المسرح الوطني"
-            ],
-            household: [
-                "مبردة", "صوبة", "قنفة", "جرباية", "خاشوكة", "جطل", "ماعون", "استكان", "قوري", "كتلي",
-                "سماور", "بطل", "تشيز", "زولية", "بردة", "بنكة", "مكناسة", "طبر", "جاكوج", "درنفيس",
-                "سبانة", "بلايس", "واير", "بلك", "سويج", "كلوب", "شاشة", "ثلاجة", "مجمدة", "طباخ",
-                "فرن", "تنور", "غسالة", "كاوية", "ميز", "كرسي", "كنتور", "ميز تواليت", "مراية", "دوش",
-                "شطافة", "مغسلة", "بوري", "صوندة", "خاولي", "منشفة", "ليفة", "صابونة", "شامبو", "معجون أسنان",
-                "فرجة", "مشط", "قراصة", "ماشة", "مكياج", "حمرة", "عطر", "محبس", "ساعة", "كلادة",
-                "سوار", "تراجي", "جنطة", "محفظة", "نظارة", "حذاء", "قندرة", "نعال", "جواريب", "تشاكيت",
-                "قمصلة", "بنطرون", "قميص", "تيشيرت", "دشداشة", "عباية", "شيلة", "فوطة", "عكال", "يشماغ",
-                "غترة", "سلة زبل", "وصلة مسح", "مكناسة يدوية", "سطل", "طشت", "دلة قهوة", "فنجان", "صينية", "ترمس",
-                "حافظة طعام", "جذرية", "طاوه", "مصفي", "جفجير", "مجراشة", "شيبك", "لوح كص", "مقص", "قفل"
-            ],
-            jobs: [
-                "بنجرجي", "فيتر", "صباغ", "سايق", "خلفة", "عمالة", "حلاق", "مضمد", "دكتور", "مهندس",
-                "محامي", "قاضي", "معلم", "مدرس", "مدير", "شرطي", "مرور", "جيشي", "ضابط", "حارس",
-                "بواب", "فراش", "نجار", "حداد", "بوريجي", "كهربائي", "خياط", "كصاب", "خباز", "صمونجي",
-                "بقال", "عطار", "ابو المخضر", "صايغ", "بياع", "ابو المولد", "مصلح تلفزيونات", "صيانة موبايلات", "ابو التكسي", "سايق كية",
-                "سايق تريلة", "كابتن طيارة", "مضيف طيران", "بحار", "طباخ", "ويتر", "كاشير", "مصور", "مخرج", "ممثل",
-                "مغني", "رسام", "خطاط", "كاتب", "شاعر", "صحفي", "مذيع", "رياضي", "لاعب طوبة", "مدرب",
-                "حكم", "منقذ سباحة", "غواص", "فلاح", "مزارع", "ابو الدواب", "راعي", "صقار", "صياد سمك", "بيطري",
-                "صيدلاني", "محلل مختبر", "دكتور اسنان", "مهندس معماري", "مهندس مدني", "مبرمج", "مصمم", "محاسب", "موظف بنك", "مندوب مبيعات",
-                "سكرتير", "مرشد سياحي", "بودي كارد", "مراسل", "خبير تجميل", "كوافير", "ميكانيكي", "لحيمجي", "ابو الغاز", "ابو المي",
-                "عامل نظافة", "صباغ احذية", "اسكافي", "دلال عقارات", "جابي", "معقب معاملات", "مترجم", "فلكي", "خطيب جامع", "مؤذن"
-            ]
+            food: ["دولمة", "باجة", "مسكوف", "كاهي وقيمر", "كليجة", "صمون حجري", "تشريب دجاج", "قوزي عراقي", "زردة", "تمن ومرق", "فلافل وعمبة", "طرشي نجفي", "دهينة", "شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "خبز تنور", "بورك", "كباب عراقي", "تكة لحم", "معلاك مشوي", "مخلمة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لفة فلافل", "طماطة مقلية", "باذنجان مقلي", "سمك زبيدي", "ربيان بصراوي", "صبورة مشوية", "بامية", "فاصوليا يابسة", "مركة شجر", "مركة بتيتة", "مطبك سمك", "برياني عراقي", "مقلوبة", "شوربة عدس", "ماش", "هريسة", "حلاوة تمر", "تمر خستاوي", "رقي", "بطيخ سامراء", "نومي بصرة", "كص دجاج", "كص لحم", "عروك طاوة", "كفتة", "لبن أربيل", "قيمر سدة", "جبن عرب", "لبلبي", "باقلاء بالدهن", "شلغم مطبوخ", "لوزينة", "من السما", "عسل طبيعي", "زلاطة", "جاجيك", "مقبلات", "حمص بطحينة", "متبل", "بابا غنوج", "زيتون", "بصل أخضر", "فجل", "كرفس", "ريحان", "نعناع", "طرشي مدبس", "مدكوكة", "تمرية", "تمر هند", "كرزات", "حب شمسي", "حب رقي", "فستق حلبي", "لوز", "جوز", "كاجو", "مكروطة", "بسكت", "شوكولاتة", "جيلاتين", "كيكة", "عصير برتقال", "شاي حامض"],
+            animals: ["واوي", "بومة", "قط بري", "بزونة", "صخيلة", "طلي", "دجاجة", "ديج", "بطة", "وزة", "زرزور", "فاختة", "بلبل", "حمامة", "زاجل", "مطي", "هايشة", "عجل", "جاموسة", "خروف", "نعجة", "جلب", "ذيب", "ثعلب", "أسد", "فهد", "دب", "فيل", "زرافة", "قرد", "سنجاب", "أرنب", "غزال", "طير حب", "مينا", "ببغاء", "طاووس", "نعامة", "صقر", "نسر", "غراب", "خفاش", "تمساح", "سلحفاة", "حية", "دودة", "جريذي", "فارة", "بريعصي", "sحلية", "ضفدع", "سمكة", "حوت", "دولفين", "أخطبوط", "قنديل بحر", "نجم بحر", "سرطان", "دودة قز", "فراشة", "زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "حشرة", "نملة", "أبو جنيب", "دعسوقة", "خنفساء", "حلزون", "بطريق", "فقمة", "دب قطبي", "كنغر", "كوالا", "باندا", "حمار وحشي"],
+            places: ["بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء", "ديوانية", "سماوة", "ناصرية", "عمارة", "كوت", "بعقوبة", "تكريت", "رمادي", "فلوجة", "زاخو", "حلبجة", "شارع المتنبي", "نصب الشهيد", "ساحة التحرير", "باب الشرقي", "كرادة", "منصور", "أعظمية", "كاظمية", "أبو نواس", "شارع الرشيد", "قلعة أربيل", "زقورة أور", "بابل الأثرية", "ملوية سامراء", "طاق كسرى", "هور الحويزة", "جبل كورك", "شلال كلي علي بك", "سد دوكان", "مرقد الإمام علي", "مرقد الإمام الحسين", "مرقد الكاظمين", "الحضرة القادرية", "جامع أبو حنيفة", "كنيسة النجاة", "سوق الشورجة", "سوق الصفافير", "سوق الغزل", "مطار بغداد", "مطار أربيل", "ميناء أم قصر", "جسر الجادرية", "جسر المعلق", "جسر الجمهورية", "نهر دجلة", "نهر الفرات", "شط العرب", "الأهوار", "صحراء السماوة", "لندن", "باريس", "روما", "مدريد", "برلين", "نيويورك", "طوكيو", "بكين", "موسكو", "إسطنبول", "دبي", "رياض", "قاهرة", "عمان", "بيروت", "دمشق", "كويت", "دوحة", "منامة", "أبو ظبي", "مستشفى", "مدرسة", "جامعة بغداد", "الجامعة المستنصرية", "نادي رياضي", "ملعب الشعب", "ملعب جذع النخلة", "سينما", "مول", "سوبر ماركت", "مطعم", "فندق", "حديقة الزوراء", "مدينة العاب", "المتحف العراقي", "المسرح الوطني"],
+            household: ["مبردة", "صوبة", "قنفة", "جرباية", "خاشوكة", "جطل", "ماعون", "استكان", "قوري", "كتلي", "سماور", "بطل مي", "قنينة", "زولية", "بردة", "بنكة", "مكناسة", "طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير كهرباء", "بلك كهرباء", "شاشة تلفزيون", "ثلاجة", "مجمدة", "طباخ", "فرن", "تنور", "غسالة", "كاوية", "ميز", "كرسي", "كنتور", "مراية", "دوش", "شطافة", "مغسلة", "بوري ماء", "صوندة", "خاولي", "ليفة", "صابونة", "شامبو", "معجون أسنان", "مشط", "قراصة شعر", "ماشة", "مكياج", "عطر", "محبس", "ساعة يد", "قلادة", "سوار", "حقيبة", "محفظة", "نظارة", "قندرة", "نعال", "جواريب", "سترة قماش", "قميص", "دشداشة", "عباية", "شيلة", "فوطة", "عكال", "يشماغ", "غترة", "سلة مهملات", "دلة قهوة", "فنجان", "صينية", "ترمس", "جذرية", "طاوه", "مصفي", "جفجير", "لوح تقطيع", "مقص", "قفل حديد"],
+            jobs: ["فيتر سيارات", "صباغ جدران", "حلاق", "مضمد", "طبيب", "مهندس", "محامي", "قاضي", "معلم", "مدرس", "مدير", "شرطي", "رجل مرور", "جندي", "ضابط", "حارس أمني", "فراش", "نجار", "حداد", "سباك", "كهربائي", "خياط", "قصاب", "خباز", "بقال", "عطار", "صائغ ذهب", "مصلح أجهزة", "صيانة هواتف", "سائق أجرة", "كابتن طيار", "مضيف طيران", "بحار", "طباخ رئيسي", "مصور", "مخرج", "ممثل", "مغني", "رسام", "خطاط", "كاتب", "شاعر", "صحفي", "مذيع", "لاعب كرة قدم", "مدرب", "حكم", "منقذ سباحة", "غواص", "فلاح", "راعي أغنام", "طبيب بيطري", "صيدلاني", "محلل مختبر", "طبيب أسنان", "مبرمج حاسوب", "مصمم جرافيك", "محاسب", "موظف بنك", "مندوب مبيعات", "سكرتير", "مرشد سياحي", "حارس شخصي", "مراسل صحفي", "لحام حديد", "عامل نظافة", "إسكافي", "دلال عقارات", "مترجم لغات", "مؤذن جامع"],
+            adult12: ["لوكي متملق", "كلاوجي مخادع", "علاس جاسوس", "قفاص محتال", "حواسم فوضوي", "لغف نهب سري", "جكمجة درج سيارة", "طكوكي غني فجأة", "ملطلط تافه", "صاك وسيم جدا", "صاكة جميلة", "زاحف ملاحق", "حديقة أعزب مفلس", "طاكات ناجح جدا", "بسطال حذاء", "لزكة ملح جدا", "عقجة تجاعيد", "خروف تابع", "مكبل مرتبط", "سنكل أعزب", "جفص اخطأ", "مطفي غير مركز", "مخربط فوضوي", "عايق متمرد", "طايح حظه", "دايح تائه", "سرسري قليل الادب", "ادبسز غير مؤدب", "قشمر مغفل", "زعطوط طفل", "خفيف طائش"],
+            bodyParts: ["عين", "خشم", "حلق", "أذن", "رأس", "شعر", "لسان", "أسنان", "بلعوم", "إيد", "رجل", "ركبة", "بطن", "ظهر", "صدر", "قلب", "رئة", "كبد", "كلية", "أصبع", "جفن", "حاجب", "رقبة", "كتف"]
         };
 
-        // إنشاء التصنيف العام
-        WORD_DATABASE.general = [...WORD_DATABASE.food, ...WORD_DATABASE.animals, ...WORD_DATABASE.places, ...WORD_DATABASE.household, ...WORD_DATABASE.jobs];
+        const SIMILARITY_GROUPS = [
+            ["زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "دودة", "دعسوقة", "نملة", "حشرة"],
+            ["صقر", "نسر", "غراب", "بومة", "طاووس", "ببغاء", "مينا", "زاجل", "حمامة", "زرزور", "بلبل", "فاختة", "طير حب"],
+            ["أسد", "فهد", "ذيب", "واوي", "ثعلب", "دب", "دب قطبي", "قط بري"],
+            ["بزونة", "جلب", "مطي", "هايشة", "خروف", "طلي", "نعجة"],
+            ["سمكة", "زبيدي", "حوت", "دولفين", "أخطبوط", "ربيان بصراوي"],
+            ["شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "عصير برتقال", "شاي حامض"],
+            ["لفة فلافل", "كص دجاج", "كص لحم", "فلافل وعمبة", "بورك"],
+            ["دولمة", "باجة", "مسكوف", "تشريب دجاج", "قوزي عراقي", "مطبك سمك", "برياني عراقي", "مقلوبة"],
+            ["كليجة", "زردة", "دهينة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لوزينة", "من السما", "مكروطة", "بسكت", "كيكة"],
+            ["بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء", "ديوانية", "ناصرية"],
+            ["لندن", "باريس", "روما", "مدريد", "برلين", "نيويورك", "طوكيو", "دبي", "رياض", "قاهرة", "عمان", "إسطنبول"],
+            ["مبردة", "صوبة", "بنكة", "شاشة تلفزيون", "ثلاجة", "مجمدة", "طباخ", "فرن", "غسالة", "كاوية"],
+            ["قندرة", "نعال", "جواريب", "سترة قماش", "قميص", "دشداشة", "عباية"],
+            ["طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير كهرباء", "مكناسة", "مقص", "قفل حديد"],
+            ["طبيب", "مهندس", "محامي", "قاضي", "معلم", "مدرس", "صيدلاني", "طبيب أسنان", "طبيب بيطري"],
+            ["فيتر سيارات", "صباغ جدران", "نجار", "حداد", "كهربائي", "سباك", "خياط", "قصاب", "خباز"],
+            ["عين", "خشم", "حلق", "أذن", "رأس", "شعر", "لسان", "أسنان", "بلعوم", "رقبة"],
+            ["إيد", "رجل", "ركبة", "بطن", "ظهر", "صدر", "أصبع", "كتف"]
+        ];
+
+        WORD_DATABASE.general = [...WORD_DATABASE.food, ...WORD_DATABASE.animals, ...WORD_DATABASE.places, ...WORD_DATABASE.household, ...WORD_DATABASE.jobs, ...WORD_DATABASE.bodyParts];
 
         const CATEGORIES_INFO = {
-            general: { name: 'عام (كوكتيل)', icon: '🌍', desc: 'كل الكلمات السابقة بكسر التوقعات' },
+            general: { name: 'عام (كوكتيل)', icon: '🌍', desc: 'كل التصنيفات مجتمعة معاً لكسر التوقعات' },
             food: { name: 'الأكلات الشعبية', icon: '🍲', desc: 'أشهى الأطباق والمشروبات العراقية' },
-            animals: { name: 'الحيوانات والطيور', icon: '🐈', desc: 'أسماء الحيوانات باللهجة الدارجة' },
-            places: { name: 'المناطق والبلدان', icon: '🗺️', desc: 'شوارع ومناطق ومحافظات عراقية وعالمية' },
-            household: { name: 'البيت وغراضه', icon: '🏠', desc: 'أثاث وأغراض البيت البغدادي والريفي' },
-            jobs: { name: 'المهن الشغبية', icon: '💼', desc: 'أصحاب المصالح والمهن اليومية' }
+            animals: { name: 'الحيوانات والطيور', icon: '🐈', desc: 'أسماء الحيوانات والطيور باللهجة الدارجة' },
+            places: { name: 'المناطق والبلدان', icon: '🗺️', desc: 'شوارع ومناطق ومحافظات عراقية وعالمية شهيرة' },
+            household: { name: 'البيت وغراضه', icon: '🏠', desc: 'أثاث وأدوات المنزل والبيت البغدادي والريفي' },
+            jobs: { name: 'المهن والوظائف', icon: '💼', desc: 'أصحاب المصالح والمهن والأعمال اليومية' },
+            bodyParts: { name: 'أعضاء جسم الإنسان', icon: '🧠', desc: 'أعضاء وأجزاء الجسم البشري بالأسماء الشعبية والعلمية' },
+            adult12: { name: 'تحشيش وشارع (+12)', icon: '💬', desc: 'كلمات ومصطلحات للمزاح والضحك الخفيف الصديق للعائلة' }
         };
 
+        const MAX_HISTORY_LEN = 50;
+
         const STATE = {
+            version: '4.0', 
+            fontFamily: 'Cairo',
+            fontSize: 16, 
+            perfectSneakBonus: false,
+            timerVoteEnabled: true,     
+            timerGuessEnabled: true,    
+            timeoutPenaltyChoice: true, 
+            rejectOutsiderEnabled: true, 
             players: [
-                { id: 1, name: 'حسين', score: 0, history: [] },
-                { id: 2, name: 'بهاء', score: 0, history: [] },
-                { id: 3, name: 'توني', score: 0, history: [] },
-                { id: 4, name: 'فريق', score: 0, history: [] },
-                { id: 5, name: 'فاضل', score: 0, history: [] },
-                { id: 6, name: 'شريف', score: 0, history: [] },
-                { id: 7, name: 'رسلان', score: 0, history: [] },
-                { id: 8, name: 'وسام', score: 0, history: [] }
+                { id: 1, name: 'حسين', score: 0, history: [], outsiderStreak: 0, hidden: false },
+                { id: 2, name: 'بهاء', score: 0, history: [], outsiderStreak: 0, hidden: false },
+                { id: 3, name: 'توني', score: 0, history: [], outsiderStreak: 0, hidden: false },
+                { id: 4, name: 'فريق', score: 0, history: [], outsiderStreak: 0, hidden: false },
+                { id: 5, name: 'فاضل', score: 0, history: [], outsiderStreak: 0, hidden: false }
             ],
             selectedCategory: 'general',
             outsidersCountSetting: 'random', 
-            playedWords: { general: [], food: [], animals: [], places: [], household: [], jobs: [] },
+            playedWords: { general: [], food: [], animals: [], places: [], household: [], jobs: [], bodyParts: [], adult12: [] },
             currentRound: {
-                secretWord: '',
-                outsiders: [],
-                activeRevealerIdx: 0,
-                votes: {}, 
-                outsiderGuesses: {}, 
-                currentVotingPlayerIdx: 0,
-                votingOrder: [], // ترتيب عشوائي للتصويت
-                currentOutsiderGuessIdx: 0,
-                selectedSuspects: [],
-                forgotRolePlayerId: null 
+                secretWord: '', outsiders: [], activeRevealerIdx: 0,
+                votes: {}, outsiderGuesses: {}, outsiderOptionsCache: {}, 
+                currentVotingPlayerIdx: 0, votingOrder: [], currentOutsiderGuessIdx: 0,
+                selectedSuspects: [], forgotRolePlayerId: null,
+                isPrankMode: false, prankType: 'different_words', prankWordCount: 3, prankWords: {}, activeTimerVoterId: null, votingTimerRemaining: 30,
+                activeTimerOutsiderId: null, guessingTimerRemaining: 60,
+                firstVoterTimerStarted: false, rejectedPlayers: [] 
             },
             screen: 'welcome'
         };
 
-        function loadState() {
-            const saved = localStorage.getItem('barrasalfa_iq_state_v7');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    if (parsed.playedWords) STATE.playedWords = parsed.playedWords;
-                    if (parsed.players && parsed.players.length >= 3) {
-                        STATE.players = parsed.players.map(p => ({...p, history: p.history || []}));
-                    }
-                    if (parsed.selectedCategory) STATE.selectedCategory = parsed.selectedCategory;
-                    if (parsed.outsidersCountSetting) STATE.outsidersCountSetting = parsed.outsidersCountSetting;
-                } catch(e) {}
+        function getActivePlayers() {
+            return STATE.players.filter(p => !p.hidden);
+        }
+
+        function playTimerSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime); 
+                gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.8); 
+            } catch (e) {
+                console.log("Audio API blocked or unsupported");
             }
         }
 
+        function applyStyleSettings() {
+            document.body.style.fontFamily = `'${STATE.fontFamily}', sans-serif`;
+            document.documentElement.style.fontSize = STATE.fontSize + 'px';
+            document.body.style.fontSize = STATE.fontSize + 'px';
+            
+            const fontSel = document.getElementById('fontFamilySelect');
+            if(fontSel) fontSel.value = STATE.fontFamily;
+            
+            const sizeSel = document.getElementById('fontSizeSelect');
+            if(sizeSel) sizeSel.value = STATE.fontSize.toString();
+
+            const sneak = document.getElementById('sneakBonusToggle');
+            if(sneak) sneak.checked = STATE.perfectSneakBonus;
+
+            const vTimer = document.getElementById('voteTimerToggle');
+            if(vTimer) vTimer.checked = STATE.timerVoteEnabled;
+
+            const tPen = document.getElementById('timeoutPenaltyToggle');
+            if(tPen) tPen.checked = STATE.timeoutPenaltyChoice;
+
+            const gTimer = document.getElementById('guessTimerToggle');
+            if(gTimer) gTimer.checked = STATE.timerGuessEnabled;
+
+            const rOut = document.getElementById('rejectOutsiderToggle');
+            if(rOut) rOut.checked = STATE.rejectOutsiderEnabled;
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('barrasalfa_iq_state_v40'); 
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.playedWords) {
+                        STATE.playedWords = parsed.playedWords;
+                        for (let cat in WORD_DATABASE) {
+                            if (!STATE.playedWords[cat]) STATE.playedWords[cat] = [];
+                        }
+                    }
+                    if (parsed.players && parsed.players.length >= 3) {
+                        STATE.players = parsed.players.map(p => ({
+                            ...p, history: p.history || [], outsiderStreak: p.outsiderStreak || 0, hidden: p.hidden || false
+                        }));
+                    }
+                    if (parsed.selectedCategory) STATE.selectedCategory = parsed.selectedCategory;
+                    if (parsed.outsidersCountSetting) STATE.outsidersCountSetting = parsed.outsidersCountSetting;
+                    if (parsed.fontFamily) STATE.fontFamily = parsed.fontFamily;
+                    if (parsed.fontSize) STATE.fontSize = parseInt(parsed.fontSize) || 16;
+                    if (parsed.perfectSneakBonus !== undefined) STATE.perfectSneakBonus = parsed.perfectSneakBonus;
+                    if (parsed.timerVoteEnabled !== undefined) STATE.timerVoteEnabled = parsed.timerVoteEnabled;
+                    if (parsed.timerGuessEnabled !== undefined) STATE.timerGuessEnabled = parsed.timerGuessEnabled;
+                    if (parsed.timeoutPenaltyChoice !== undefined) STATE.timeoutPenaltyChoice = parsed.timeoutPenaltyChoice;
+                    if (parsed.rejectOutsiderEnabled !== undefined) STATE.rejectOutsiderEnabled = parsed.rejectOutsiderEnabled;
+                } catch(e) {}
+            }
+            applyStyleSettings();
+        }
+
         function saveState() {
-            localStorage.setItem('barrasalfa_iq_state_v7', JSON.stringify({
-                playedWords: STATE.playedWords,
-                players: STATE.players,
-                selectedCategory: STATE.selectedCategory,
-                outsidersCountSetting: STATE.outsidersCountSetting
+            localStorage.setItem('barrasalfa_iq_state_v40', JSON.stringify({
+                playedWords: STATE.playedWords, players: STATE.players,
+                selectedCategory: STATE.selectedCategory, outsidersCountSetting: STATE.outsidersCountSetting,
+                fontFamily: STATE.fontFamily, fontSize: STATE.fontSize, perfectSneakBonus: STATE.perfectSneakBonus,
+                timerVoteEnabled: STATE.timerVoteEnabled, timerGuessEnabled: STATE.timerGuessEnabled,
+                timeoutPenaltyChoice: STATE.timeoutPenaltyChoice, rejectOutsiderEnabled: STATE.rejectOutsiderEnabled
             }));
+        }
+
+        function isGameActive() { return !['welcome', 'setup', 'settings', 'summary'].includes(STATE.screen); }
+
+        function alertCustom(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-enter fixed top-12 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-5 py-2.5 rounded-lg shadow-xl font-bold text-xs z-[200] text-center border border-red-500 whitespace-nowrap';
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function openQuickMenu() { 
+            document.getElementById('quickMenuModal').classList.remove('hidden'); 
+            applyStyleSettings();
+        }
+        function closeQuickMenu() { document.getElementById('quickMenuModal').classList.add('hidden'); }
+        
+        function executeGoHomeAction() {
+            closeQuickMenu();
+            if (isGameActive()) {
+                document.getElementById('homeConfirmModal').classList.remove('hidden');
+            } else {
+                goToScreen('welcome');
+            }
+        }
+
+        function closeHomeConfirm() { document.getElementById('homeConfirmModal').classList.add('hidden'); }
+        function executeGoHome() { closeHomeConfirm(); goToScreen('welcome'); }
+
+        let quickPlayerSortable = null;
+
+        function openQuickPlayerManager() {
+            closeQuickMenu();
+            renderQuickPlayersList();
+            const warningEl = document.getElementById('quickPlayerWarning');
+            if(isGameActive()) warningEl.classList.remove('hidden');
+            else warningEl.classList.add('hidden');
+            document.getElementById('quickPlayerManagerModal').classList.remove('hidden');
+        }
+        
+        function closeQuickPlayerManager() { 
+            document.getElementById('quickPlayerManagerModal').classList.add('hidden'); 
+            if(!isGameActive()) render();
+        }
+
+        function togglePlayerVisibility(id, fromQuick) {
+            const player = STATE.players.find(p => p.id === id);
+            if (player) {
+                const activeCount = getActivePlayers().length;
+                if (!player.hidden && activeCount <= 3) {
+                    alertCustom("⚠️ يجب إبقاء 3 لاعبين نشطين على الأقل للعب!");
+                    return;
+                }
+                player.hidden = !player.hidden;
+                saveState();
+                if (fromQuick) {
+                    renderQuickPlayersList();
+                } else {
+                    render();
+                }
+            }
+        }
+
+        function renderQuickPlayersList() {
+            const container = document.getElementById('quickPlayersList');
+            let html = '';
+            const active = isGameActive();
+            
+            STATE.players.forEach((p, idx) => {
+                html += `
+                    <div class="flex justify-between items-center bg-slate-800/80 border border-slate-700/80 px-2.5 py-1.5 rounded-lg transition" data-player-id="${p.id}">
+                        <div class="flex items-center gap-2 w-1/2">
+                            <span class="sort-handle text-slate-500 text-base cursor-grab active:cursor-grabbing px-1 py-1" title="اسحب للترتيب">☰</span>
+                            <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[0.625rem] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
+                            <span class="font-bold text-slate-200 text-xs truncate ${p.hidden ? 'line-through text-slate-500' : ''}" title="${p.name}">${p.name}</span>
+                        </div>
+                        <div class="flex gap-0.5 shrink-0 bg-slate-950/50 rounded-lg p-0.5 border border-slate-800/50">
+                            <button onclick="togglePlayerVisibility(${p.id}, true)" class="px-2 py-1 text-[0.625rem] rounded hover:bg-slate-800 transition ${p.hidden ? 'text-red-400 font-black bg-red-950/20' : 'text-emerald-400'}" title="${p.hidden ? 'مخفي مؤقتاً (اضغط للتفعيل)' : 'نشط (اضغط للتعليق)'}">
+                                ${p.hidden ? '🙈 مخفي' : '👀 نشط'}
+                            </button>
+                            <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[0.625rem]">✏️</button>
+                            ${!active ? `<button onclick="removePlayer(${p.id}, true)" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[0.625rem]">❌</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            if (typeof Sortable !== 'undefined') {
+                if(quickPlayerSortable) quickPlayerSortable.destroy();
+                quickPlayerSortable = new Sortable(container, {
+                    handle: '.sort-handle',
+                    animation: 150,
+                    delay: 50, 
+                    delayOnTouchOnly: true,
+                    ghostClass: 'opacity-50',
+                    onEnd: function () {
+                        const newOrder = [];
+                        const listItems = container.querySelectorAll('[data-player-id]');
+                        listItems.forEach(item => {
+                            const id = parseInt(item.getAttribute('data-player-id'));
+                            const player = STATE.players.find(p => p.id === id);
+                            if (player) newOrder.push(player);
+                        });
+                        STATE.players = newOrder;
+                        saveState();
+                        renderQuickPlayersList(); 
+                    }
+                });
+            }
+        }
+
+        function addQuickPlayer() {
+            const input = document.getElementById('quickPlayerNameInput');
+            const name = input.value.trim();
+            if (name === '') return;
+            if (STATE.players.length >= 15) { alertCustom("الحد الأقصى 15 لاعب!"); return; }
+            if (STATE.players.some(p => p.name.toLowerCase() === name.toLowerCase())) { alertCustom("الاسم موجود بالفعل!"); return; }
+            
+            const newId = STATE.players.length > 0 ? Math.max(...STATE.players.map(p => p.id)) + 1 : 1;
+            STATE.players.push({ id: newId, name: name, score: 0, history: [], outsiderStreak: 0, hidden: false });
+            input.value = ''; saveState(); renderQuickPlayersList();
+        }
+
+        let activeCategoryInModal = '';
+        function openCategoryWordsModal(catKey) {
+            activeCategoryInModal = catKey;
+            const info = CATEGORIES_INFO[catKey];
+            
+            document.getElementById('catWordsTitle').innerText = info.name;
+            document.getElementById('catWordsIcon').innerText = info.icon;
+            
+            const searchInput = document.getElementById('catWordsSearchInput');
+            if (searchInput) searchInput.value = '';
+            
+            renderCategoryWordsGrid(catKey, '');
+            document.getElementById('categoryWordsModal').classList.remove('hidden');
+        }
+
+        function filterCategoryWords() {
+            const searchInput = document.getElementById('catWordsSearchInput');
+            const filterText = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            renderCategoryWordsGrid(activeCategoryInModal, filterText);
+        }
+
+        function renderCategoryWordsGrid(catKey, filterText) {
+            const allWords = WORD_DATABASE[catKey];
+            const playedWords = STATE.playedWords[catKey] || [];
+            
+            const filteredWords = allWords.filter(word => word.toLowerCase().includes(filterText));
+            
+            document.getElementById('catWordsTotal').innerText = allWords.length;
+            document.getElementById('catWordsRemaining').innerText = allWords.length - playedWords.length;
+
+            const grid = document.getElementById('catWordsGrid');
+            let html = '';
+            
+            filteredWords.forEach(word => {
+                const isPlayed = playedWords.includes(word);
+                const baseClass = isPlayed 
+                    ? "bg-slate-900 border-slate-800 text-slate-500 opacity-70" 
+                    : "bg-slate-800 border-indigo-900/50 text-indigo-300 font-bold";
+                
+                html += `
+                    <div class="py-2.5 px-2 border rounded text-center text-xs ${baseClass} break-words whitespace-normal leading-normal flex items-center justify-center min-h-[3.5rem] h-auto" title="${word}">
+                        ${word}
+                    </div>`;
+            });
+            
+            if (filteredWords.length === 0) {
+                html = `<div class="col-span-2 sm:col-span-3 text-center text-slate-500 text-[0.6875rem] py-8">لا توجد كلمات تطابق بحثك 🔍</div>`;
+            }
+            
+            grid.innerHTML = html;
+        }
+
+        function closeCategoryWordsModal() { document.getElementById('categoryWordsModal').classList.add('hidden'); }
+
+        function openQuickLeaderboard() {
+            const container = document.getElementById('quickLeaderboardContent');
+            const sortedPlayers = [...STATE.players].sort((a, b) => b.score - a.score);
+            let html = '';
+            sortedPlayers.forEach((p, idx) => {
+                let badge = idx === 0 ? '👑' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+                const isHidden = p.hidden;
+                const hiddenBadge = isHidden ? ' <span class="text-[0.625rem] text-red-400 bg-red-950/20 border border-red-900/30 px-1 py-0.5 rounded">مخفي 🙈</span>' : '';
+                html += `
+                    <div class="flex justify-between items-center py-2 border-b border-slate-700/50 text-sm">
+                        <button onclick="openHistoryFromLeaderboard(${p.id})" class="font-bold text-slate-200 hover:text-indigo-400 text-right w-full flex gap-1 items-center">
+                            <span class="text-[0.625rem] text-slate-500 w-3">${idx + 1}.</span> 
+                            <span class="${p.hidden ? 'line-through text-slate-500 font-normal' : ''}">${p.name} ${badge} ${hiddenBadge}</span>
+                        </button>
+                        <span class="font-black text-yellow-400 ml-2 shrink-0">${p.score}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            document.getElementById('quickLeaderboardModal').classList.remove('hidden');
+        }
+        function closeQuickLeaderboard() { document.getElementById('quickLeaderboardModal').classList.add('hidden'); }
+
+        function openHistoryFromLeaderboard(id) { closeQuickLeaderboard(); openHistoryModal(id); }
+
+        function navigateToResultsFromLeaderboard() {
+            closeQuickLeaderboard();
+            if (roundResultsCache && roundResultsCache.secretWord) {
+                goToScreen('summary');
+            } else {
+                alertCustom("⚠️ لا توجد نتائج جولة أخيرة لعرضها حالياً! ابدأ اللعب أولاً.");
+            }
         }
 
         function selectSecretWordForCategory(catKey) {
@@ -241,59 +729,211 @@
 
         function getCategoryPlayedCount(catKey) { return (STATE.playedWords[catKey] || []).length; }
 
-        function startNewRound() {
-            let numOutsiders = 1;
-            const playerCount = STATE.players.length;
+        function generateOutsiderGuessingOptions() {
+            const secret = STATE.currentRound.secretWord;
+            let targetCategory = 'food'; 
+            
+            for (const [cat, words] of Object.entries(WORD_DATABASE)) {
+                if (cat !== 'general' && words.includes(secret)) { targetCategory = cat; break; }
+            }
 
-            if (STATE.outsidersCountSetting === 'random') {
-                const maxAllowed = Math.min(3, Math.max(1, playerCount - 2));
-                numOutsiders = Math.floor(Math.random() * maxAllowed) + 1;
+            let pool = [];
+            let smartGroup = SIMILARITY_GROUPS.find(group => group.includes(secret));
+            if (smartGroup) pool = smartGroup.filter(w => w !== secret);
+
+            let categoryDecoys = WORD_DATABASE[targetCategory].filter(w => w !== secret && !pool.includes(w));
+            categoryDecoys = categoryDecoys.sort(() => Math.random() - 0.5);
+            
+            let finalDecoys = [...pool, ...categoryDecoys].slice(0, 9);
+            return [secret, ...finalDecoys].sort(() => Math.random() - 0.5);
+        }
+
+        let prankHoldInterval = null;
+        let holdStartTime = 0;
+        let prankTriggered = false;
+
+        function startPrankHold(e) {
+            e.preventDefault();
+            prankTriggered = false;
+            holdStartTime = Date.now();
+            let counter = 0;
+            const btn = e.currentTarget;
+            btn.style.transition = 'all 0.1s';
+            
+            clearInterval(prankHoldInterval);
+            prankHoldInterval = setInterval(() => {
+                counter += 100;
+                const percent = Math.min(100, (counter / 3000) * 100);
+                
+                if (counter >= 3000) {
+                    clearInterval(prankHoldInterval);
+                    prankTriggered = true;
+                    btn.innerHTML = 'عشوائي';
+                    btn.style.background = '';
+                    triggerPrankMode();
+                }
+            }, 100);
+        }
+
+        function endPrankHold(e) {
+            clearInterval(prankHoldInterval);
+            const btn = e.currentTarget;
+            if (btn) {
+                btn.innerHTML = 'عشوائي';
+                btn.style.background = '';
+            }
+            
+            const holdDuration = Date.now() - holdStartTime;
+            if (holdDuration < 400 && !prankTriggered) {
+                selectOutsidersCountSetting('random');
+            }
+        }
+
+        function triggerPrankMode() {
+            document.getElementById('prankConfigModal').classList.remove('hidden');
+            togglePrankWordsVisibility();
+        }
+
+        function closePrankConfig() {
+            document.getElementById('prankConfigModal').classList.add('hidden');
+        }
+
+        function togglePrankWordsVisibility() {
+            const type = document.getElementById('prankTypeSelect').value;
+            const container = document.getElementById('prankWordCountContainer');
+            if (type === 'different_words') {
+                container.classList.remove('hidden');
             } else {
-                numOutsiders = parseInt(STATE.outsidersCountSetting, 10);
+                container.classList.add('hidden');
+            }
+        }
+
+        function startPrankWithConfig() {
+            const type = document.getElementById('prankTypeSelect').value;
+            const wordCount = parseInt(document.getElementById('prankWordCountSelect').value) || 3;
+            
+            STATE.currentRound.isPrankMode = true;
+            STATE.currentRound.prankType = type;
+            STATE.currentRound.prankWordCount = wordCount;
+            STATE.outsidersCountSetting = 'prank';
+            
+            closePrankConfig();
+            saveState();
+            startNewRound();
+        }
+
+        function startNewRound() {
+            const activePlayers = getActivePlayers();
+            const playerCount = activePlayers.length;
+
+            if (playerCount < 3) {
+                alertCustom("⚠️ لا يمكن بدء الجولة! يجب تفعيل 3 لاعبين نشطين على الأقل.");
+                return;
             }
 
-            if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
+            let numOutsiders = 1;
+            const prankWords = {};
+            let chosenOutsiders = [];
+            let word = '';
 
-            const playerIndices = STATE.players.map(p => p.id);
-            const shuffledIds = [...playerIndices].sort(() => Math.random() - 0.5);
-            const chosenOutsiders = shuffledIds.slice(0, numOutsiders);
-            
-            // ترتيب عشوائي للمصوتين
-            const votingOrder = [...playerIndices].sort(() => Math.random() - 0.5);
-            
-            const word = selectSecretWordForCategory(STATE.selectedCategory);
+            if (STATE.currentRound.isPrankMode || STATE.outsidersCountSetting === 'prank') {
+                STATE.currentRound.isPrankMode = true;
+                const pType = STATE.currentRound.prankType || 'different_words';
+                const pCount = STATE.currentRound.prankWordCount || 3;
+                
+                word = selectSecretWordForCategory(STATE.selectedCategory);
 
-            // تصفير الكاش هنا يمنع ظهور تخمينات الجولة السابقة إذا تكرر نفس اللاعب
-            if (typeof lastGuesserId !== 'undefined') {
-                lastGuesserId = null;
-                cacheGuessOptions = [];
+                if (pType === 'all_outsiders') {
+                    chosenOutsiders = activePlayers.map(p => p.id);
+                    word = 'الكل خارج السالفة! 🥷';
+                } else if (pType === 'different_words') {
+                    chosenOutsiders = []; 
+                    const categoryWords = [...WORD_DATABASE[STATE.selectedCategory]].sort(() => Math.random() - 0.5);
+                    const selectedPrankWords = categoryWords.slice(0, Math.min(pCount, categoryWords.length));
+                    
+                    activePlayers.forEach((p, idx) => {
+                        prankWords[p.id] = selectedPrankWords[idx % selectedPrankWords.length];
+                    });
+                } else if (pType === 'reverse_mode') {
+                    const numInsiders = playerCount >= 5 ? 2 : 1;
+                    const shuffledActive = [...activePlayers].sort(() => Math.random() - 0.5);
+                    const insiderPlayers = shuffledActive.slice(0, numInsiders);
+                    const outsiderPlayers = shuffledActive.slice(numInsiders);
+                    
+                    chosenOutsiders = outsiderPlayers.map(p => p.id);
+                }
+            } else {
+                STATE.currentRound.isPrankMode = false;
+                if (STATE.outsidersCountSetting === 'random') {
+                    const maxAllowed = Math.min(3, Math.max(1, playerCount - 2));
+                    numOutsiders = Math.floor(Math.random() * maxAllowed) + 1;
+                } else {
+                    numOutsiders = parseInt(STATE.outsidersCountSetting, 10);
+                }
+                if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
+
+                let eligibleForOutsider = activePlayers.filter(p => (p.outsiderStreak || 0) < 2).map(p => p.id);
+                if (eligibleForOutsider.length < numOutsiders) eligibleForOutsider = activePlayers.map(p => p.id);
+
+                const shuffledIds = [...eligibleForOutsider].sort(() => Math.random() - 0.5);
+                chosenOutsiders = shuffledIds.slice(0, numOutsiders);
+                
+                STATE.players.forEach(p => {
+                    if(chosenOutsiders.includes(p.id)) p.outsiderStreak = (p.outsiderStreak || 0) + 1;
+                    else p.outsiderStreak = 0;
+                });
+
+                word = selectSecretWordForCategory(STATE.selectedCategory);
             }
 
+            const playerIndices = activePlayers.map(p => p.id);
+            let votingOrder = [...playerIndices].sort(() => Math.random() - 0.5);
+            
+            if (!STATE.currentRound.isPrankMode) {
+                while(chosenOutsiders.includes(votingOrder[0])) {
+                    votingOrder = [...playerIndices].sort(() => Math.random() - 0.5);
+                }
+            }
+            
             STATE.currentRound = {
-                secretWord: word,
-                outsiders: chosenOutsiders,
-                activeRevealerIdx: 0,
-                votes: {}, 
-                outsiderGuesses: {},
-                currentVotingPlayerIdx: 0,
-                votingOrder: votingOrder,
-                currentOutsiderGuessIdx: 0,
-                selectedSuspects: [],
-                forgotRolePlayerId: null
+                secretWord: word, outsiders: chosenOutsiders, activeRevealerIdx: 0,
+                votes: {}, outsiderGuesses: {}, outsiderOptionsCache: {},
+                currentVotingPlayerIdx: 0, votingOrder: votingOrder, currentOutsiderGuessIdx: 0,
+                selectedSuspects: [], forgotRolePlayerId: null,
+                isPrankMode: STATE.currentRound.isPrankMode,
+                prankType: STATE.currentRound.prankType,
+                prankWordCount: STATE.currentRound.prankWordCount,
+                prankWords: prankWords,
+                activeTimerVoterId: null, votingTimerRemaining: 30,
+                activeTimerOutsiderId: null, guessingTimerRemaining: 60,
+                firstVoterTimerStarted: false, rejectedPlayers: [] 
             };
 
             goToScreen('pass-to-player');
         }
 
-        function goToScreen(screenName) {
-            STATE.screen = screenName;
-            render();
+        let votingTimerInterval = null;
+        let guessingTimerInterval = null;
+
+        function goToScreen(screenName) { 
+            clearInterval(votingTimerInterval);
+            clearInterval(guessingTimerInterval);
+            
+            if (screenName === 'settings' || screenName === 'welcome') {
+                STATE.currentRound.isPrankMode = false;
+                if (STATE.outsidersCountSetting === 'prank') {
+                    STATE.outsidersCountSetting = 'random';
+                }
+                saveState();
+            }
+
+            STATE.screen = screenName; 
+            render(); 
         }
 
         function render() {
             const container = document.getElementById('app');
             if (!container) return;
-
             switch(STATE.screen) {
                 case 'welcome': renderWelcomeScreen(container); break;
                 case 'setup': renderSetupScreen(container); break;
@@ -313,25 +953,25 @@
 
         function renderWelcomeScreen(container) {
             container.innerHTML = `
-                <div class="w-full flex flex-col items-center text-center space-y-3 px-1 my-auto animate-pulse-slow max-h-full overflow-y-auto">
+                <div class="w-full flex flex-col items-center text-center space-y-3 px-1 my-auto max-h-full overflow-y-auto">
                     <div class="relative shrink-0">
                         <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-violet-600 to-yellow-500 blur opacity-60"></div>
                         <div class="relative bg-slate-950 p-4 rounded-full border border-slate-800 text-4xl">🕵️‍♂️</div>
                     </div>
                     <div class="space-y-0.5 shrink-0">
-                        <h2 class="text-xl font-black text-white">برا السالفة العرقية</h2>
-                        <p class="text-[10px] text-slate-400">لعبة الفراسة، الذكاء والضحكة الطيبة!</p>
+                        <h2 class="text-xl font-black text-white">برا السالفة العراقية</h2>
+                        <p class="text-[0.625rem] text-slate-400">لعبة الفراسة، الذكاء والضحكة الطيبة!</p>
                     </div>
                     <div class="w-full glass-panel p-3 rounded-xl text-right space-y-1.5 max-w-xs shrink-0">
                         <h3 class="font-bold text-yellow-400 border-b border-slate-800 pb-0.5 text-center text-xs">💡 شلون تلعبون؟</h3>
-                        <ul class="text-[10px] text-slate-300 space-y-1 list-disc list-inside">
-                            <li>مرروا الموبايل على كل اللاعبين لمعرفة أدوارهم.</li>
+                        <ul class="text-[0.625rem] text-slate-300 space-y-1 list-disc list-inside">
+                            <li>مرروا الموبايل لمعرفة الأدوار.</li>
                             <li>الكل حيعرف الكلمة ما عدا أشخاص <span class="text-red-400 font-bold">برا السالفة</span>.</li>
                             <li>اسألوا بعضكم بذكاء ومراوغة لكشف المريبين!</li>
-                            <li>التصويت سري وعشوائي بنهاية الجولة.</li>
+                            <li>تم تفعيل خصم نقطة للاعب المظلوم في النهاية.</li>
                         </ul>
                     </div>
-                    <div class="w-full max-w-xs pt-1">
+                    <div class="w-full max-w-xs pt-1 shrink-0">
                         <button onclick="goToScreen('setup')" class="w-full py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-sm shadow-md hover:from-violet-500 transition">ابدأ اللعب الآن 🚀</button>
                     </div>
                 </div>
@@ -345,47 +985,49 @@
                     <div class="flex justify-between items-center bg-slate-900/90 border border-slate-800/80 px-2.5 py-1.5 rounded-lg transition" data-player-id="${p.id}">
                         <div class="flex items-center gap-2 w-1/2">
                             <span class="sort-handle text-slate-500 text-base cursor-grab active:cursor-grabbing px-1 py-1" title="اسحب للترتيب">☰</span>
-                            <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
-                            <span class="font-bold text-slate-200 text-xs truncate" title="${p.name}">${p.name}</span>
+                            <span class="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-[0.625rem] font-bold text-indigo-300 shrink-0">${idx + 1}</span>
+                            <span class="font-bold text-slate-200 text-xs truncate ${p.hidden ? 'line-through text-slate-500' : ''}" title="${p.name}">${p.name}</span>
                         </div>
                         <div class="flex gap-0.5 shrink-0 bg-slate-950/50 rounded-lg p-0.5 border border-slate-800/50">
-                            <button onclick="movePlayerUp(${idx})" class="p-1 text-slate-400 hover:text-white transition rounded hover:bg-slate-800 text-[10px]" ${idx === 0 ? 'disabled style="opacity: 0.2"' : ''}>⬆️</button>
-                            <button onclick="movePlayerDown(${idx})" class="p-1 text-slate-400 hover:text-white transition rounded hover:bg-slate-800 text-[10px]" ${idx === STATE.players.length - 1 ? 'disabled style="opacity: 0.2"' : ''}>⬇️</button>
-                            <div class="w-px bg-slate-800 mx-0.5 my-1"></div>
-                            <button onclick="openEditModal(${p.id})" class="p-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[10px]">✏️</button>
-                            <button onclick="removePlayer(${p.id})" class="p-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[10px]">❌</button>
+                            <button onclick="togglePlayerVisibility(${p.id}, false)" class="px-2 py-1 text-[0.625rem] rounded hover:bg-slate-800 transition ${p.hidden ? 'text-red-400 font-bold bg-red-950/20' : 'text-emerald-400'}">
+                                ${p.hidden ? '🙈 مخفي' : '👀 نشط'}
+                            </button>
+                            <button onclick="openEditModal(${p.id})" class="px-2 py-1 text-blue-400 hover:text-blue-300 transition rounded hover:bg-slate-800 text-[0.625rem]">✏️</button>
+                            <button onclick="removePlayer(${p.id}, false)" class="px-2 py-1 text-red-400 hover:text-red-300 transition rounded hover:bg-slate-800 text-[0.625rem]">❌</button>
                         </div>
                     </div>
                 `;
             });
 
             container.innerHTML = `
-                <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden">
-                    <div class="space-y-2 flex-1 flex flex-col overflow-hidden">
+                <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
+                    <div class="space-y-3 flex-1">
                         <div class="flex items-center justify-between shrink-0">
-                            <h2 class="text-sm font-bold text-slate-200">ترتيب اللاعبين 👥 <span class="text-[9px] text-slate-500 font-normal">(اسحب للترتيب)</span></h2>
-                            <span class="text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">الحد الأدنى: 3</span>
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-200">ترتيب وإعداد اللاعبين 👥 <span class="text-[0.625rem] text-slate-500 font-normal">(اسحب ☰ للترتيب)</span></h2>
+                            <span class="text-[0.625rem] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">نشطين: ${getActivePlayers().length}</span>
                         </div>
                         <div class="flex gap-1.5 shrink-0">
-                            <input id="playerNameInput" type="text" placeholder="اكتب اسم جديد..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addPlayer()">
+                            <input id="playerNameInput" type="text" placeholder="اكتب اسم لاعب جديد..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addPlayer()">
                             <button onclick="addPlayer()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold transition text-xs shadow shrink-0">إضافة +</button>
                         </div>
-                        <div id="players-list-container" class="space-y-1 overflow-y-auto pr-0.5 flex-1" style="max-height: calc(100vh - 200px);">${playersHtml}</div>
+                        <div id="players-list-container" class="space-y-1.5">${playersHtml}</div>
                     </div>
                     <div class="pt-2 flex gap-2 shrink-0">
-                        <button onclick="showHomeConfirm()" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg font-bold transition text-xs">رجوع</button>
-                        <button id="nextToSettingsBtn" onclick="goToSettings()" class="flex-[2] py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg font-bold text-xs shadow transition">التالي: ضبط الجولة ⚙️</button>
+                        <button onclick="goToScreen('welcome')" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg font-bold transition text-xs">رجوع</button>
+                        <button id="nextToSettingsBtn" onclick="goToSettings()" class="flex-[2] py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg font-bold text-xs shadow transition">التالي: اختيار الفئة ⚙️</button>
                     </div>
                 </div>
             `;
             const nextBtn = document.getElementById('nextToSettingsBtn');
-            if (STATE.players.length < 3) nextBtn.disabled = true;
+            if (getActivePlayers().length < 3) nextBtn.disabled = true;
 
             const listElement = document.getElementById('players-list-container');
             if (listElement && typeof Sortable !== 'undefined') {
                 new Sortable(listElement, {
                     handle: '.sort-handle',
                     animation: 150,
+                    delay: 50, 
+                    delayOnTouchOnly: true,
                     ghostClass: 'opacity-50',
                     onEnd: function () {
                         const newOrder = [];
@@ -397,11 +1039,83 @@
                         });
                         STATE.players = newOrder;
                         saveState();
-                        render();
+                        render(); 
                     }
                 });
             }
         }
+
+        function renderSettingsScreen(container) {
+            let categoriesHtml = '';
+            Object.entries(CATEGORIES_INFO).forEach(([key, value]) => {
+                const isSelected = STATE.selectedCategory === key;
+                const playedCount = getCategoryPlayedCount(key);
+                const totalWords = WORD_DATABASE[key].length;
+                
+                categoriesHtml += `
+                    <div class="w-full flex items-center gap-1.5">
+                        <button onclick="selectCategory('${key}')" class="flex-1 text-right glass-panel p-4 rounded-2xl border flex justify-between items-center transition relative min-h-[4.5rem] ${isSelected ? 'border-yellow-400 bg-violet-950/25 glow-purple' : 'border-slate-800 hover:border-slate-700'}">
+                            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                <span class="text-2xl sm:text-3xl shrink-0">${value.icon}</span>
+                                <div class="text-right min-w-0 flex-1">
+                                    <h4 class="font-bold text-xs sm:text-sm text-slate-100 truncate ${isSelected ? 'text-yellow-400 font-black' : ''}">${value.name}</h4>
+                                    <p class="text-[0.625rem] sm:text-[0.6875rem] text-slate-400 leading-normal line-clamp-2">${value.desc}</p>
+                                </div>
+                            </div>
+                            <span class="text-[0.625rem] text-indigo-300 font-bold bg-indigo-950 px-2 py-1 rounded-lg border border-indigo-900 shrink-0 ml-1">${playedCount}/${totalWords}</span>
+                        </button>
+                        <button onclick="openCategoryWordsModal('${key}')" class="shrink-0 w-11 h-11 rounded-2xl bg-slate-800 border border-slate-700 hover:bg-slate-700 flex justify-center items-center text-slate-300 transition" title="عرض الكلمات">👁️</button>
+                    </div>
+                `;
+            });
+
+            const maxAllowedOutsiders = Math.max(1, Math.min(3, getActivePlayers().length - 2));
+            
+            container.innerHTML = `
+                <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
+                    <div class="space-y-3 flex-1">
+                        <div class="flex justify-between items-center shrink-0">
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-200">إعدادات الجولة ⚙️</h2>
+                            <p class="text-[0.55rem] text-slate-500">تم نقل بقية القوانين إلى القائمة السريعة ⚙️ فوق!</p>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="text-[0.6875rem] font-bold text-slate-300 block">اختار الفئة للعب:</label>
+                            <div class="space-y-2">${categoriesHtml}</div>
+                        </div>
+                        
+                        <div class="space-y-2 shrink-0 pt-1">
+                            <label class="text-[0.6875rem] font-bold text-slate-300 block">عدد اللاعبين "برا السالفة" 🤫</label>
+                            <div class="flex flex-wrap gap-1.5 justify-between w-full">
+                                <button 
+                                    onmousedown="startPrankHold(event)" 
+                                    onmouseup="endPrankHold(event)" 
+                                    onmouseleave="endPrankHold(event)"
+                                    ontouchstart="startPrankHold(event)"
+                                    ontouchend="endPrankHold(event)"
+                                    id="btnOutsiderRandom"
+                                    class="flex-1 min-w-[80px] py-2 rounded-xl border text-xs font-bold transition select-none ${STATE.outsidersCountSetting === 'random' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}"
+                                >
+                                    عشوائي
+                                </button>
+                                <button onclick="selectOutsidersCountSetting('1')" class="w-12 py-2 rounded-xl border text-xs font-bold transition ${STATE.outsidersCountSetting === '1' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}">1</button>
+                                <button onclick="selectOutsidersCountSetting('2')" ${maxAllowedOutsiders < 2 ? 'disabled class="w-12 py-2 rounded-xl border text-xs font-bold opacity-20 cursor-not-allowed"' : `class="w-12 py-2 rounded-xl border text-xs font-bold transition ${STATE.outsidersCountSetting === '2' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}"`}>2</button>
+                                <button onclick="selectOutsidersCountSetting('3')" ${maxAllowedOutsiders < 3 ? 'disabled class="w-12 py-2 rounded-xl border text-xs font-bold opacity-20 cursor-not-allowed"' : `class="w-12 py-2 rounded-xl border text-xs font-bold transition ${STATE.outsidersCountSetting === '3' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}"`}>3</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-2 flex gap-2 shrink-0">
+                        <button onclick="goToScreen('setup')" class="flex-1 py-2.5 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl font-bold text-xs">رجوع</button>
+                        <button onclick="startNewRound()" class="flex-[2] py-2.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 rounded-xl font-black text-xs shadow hover:scale-[1.01] transition">بدء الجولة 🔥</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleVoteTimer(val) { STATE.timerVoteEnabled = val; saveState(); }
+        function toggleGuessTimer(val) { STATE.timerGuessEnabled = val; saveState(); }
+        function toggleTimeoutPenaltyChoice(val) { STATE.timeoutPenaltyChoice = val; saveState(); }
+        function toggleRejectOutsider(val) { STATE.rejectOutsiderEnabled = val; saveState(); }
 
         function addPlayer() {
             const input = document.getElementById('playerNameInput');
@@ -409,34 +1123,18 @@
             const name = input.value.trim();
             if (name === '') return;
             if (STATE.players.length >= 15) { alertCustom("الحد الأقصى 15 لاعب!"); return; }
-            if (STATE.players.some(p => p.name.toLowerCase() === name.toLowerCase())) { alertCustom("الاسم هذا مستخدم!"); return; }
+            if (STATE.players.some(p => p.name.toLowerCase() === name.toLowerCase())) { alertCustom("الاسم مستخدم!"); return; }
             const newId = STATE.players.length > 0 ? Math.max(...STATE.players.map(p => p.id)) + 1 : 1;
-            STATE.players.push({ id: newId, name: name, score: 0, history: [] });
+            STATE.players.push({ id: newId, name: name, score: 0, history: [], outsiderStreak: 0, hidden: false });
             input.value = ''; saveState(); render();
         }
 
-        function removePlayer(id) {
+        function removePlayer(id, fromQuickManager) {
             if (STATE.players.length <= 3) { alertCustom("لا يمكن إزالة لاعب! الحد الأدنى 3 لاعبين للعب."); return; }
             STATE.players = STATE.players.filter(p => p.id !== id);
-            saveState(); render();
-        }
-
-        function movePlayerUp(index) {
-            if (index > 0) {
-                const temp = STATE.players[index - 1];
-                STATE.players[index - 1] = STATE.players[index];
-                STATE.players[index] = temp;
-                saveState(); render();
-            }
-        }
-
-        function movePlayerDown(index) {
-            if (index < STATE.players.length - 1) {
-                const temp = STATE.players[index + 1];
-                STATE.players[index + 1] = STATE.players[index];
-                STATE.players[index] = temp;
-                saveState(); render();
-            }
+            saveState(); 
+            if(fromQuickManager) renderQuickPlayersList();
+            else render();
         }
 
         let editingPlayerId = null;
@@ -451,10 +1149,7 @@
             setTimeout(() => input.focus(), 100);
         }
 
-        function closeEditModal() {
-            document.getElementById('customModal').classList.add('hidden');
-            editingPlayerId = null;
-        }
+        function closeEditModal() { document.getElementById('customModal').classList.add('hidden'); editingPlayerId = null; }
 
         function confirmEdit() {
             if (editingPlayerId === null) return;
@@ -467,141 +1162,143 @@
                 const player = STATE.players.find(p => p.id === editingPlayerId);
                 player.name = newName;
                 saveState();
-                render();
+                if(!document.getElementById('quickPlayerManagerModal').classList.contains('hidden')) renderQuickPlayersList();
+                else render();
             }
             closeEditModal();
         }
 
-        function showHomeConfirm() { document.getElementById('homeConfirmModal').classList.remove('hidden'); }
-        function closeHomeConfirm() { document.getElementById('homeConfirmModal').classList.add('hidden'); }
-        function executeGoHome() { closeHomeConfirm(); goToScreen('welcome'); }
-
-        function showConfirmReset() { document.getElementById('confirmModal').classList.remove('hidden'); }
+        let currentResetPin = '';
+        function showConfirmReset() { 
+            currentResetPin = Math.floor(10000 + Math.random() * 90000).toString();
+            document.getElementById('resetPinDisplay').innerText = currentResetPin;
+            document.getElementById('resetPinInput').value = '';
+            document.getElementById('confirmResetBtn').disabled = true;
+            document.getElementById('confirmModal').classList.remove('hidden'); 
+        }
         function closeConfirmReset() { document.getElementById('confirmModal').classList.add('hidden'); }
+        function checkResetPin() {
+            const input = document.getElementById('resetPinInput').value;
+            document.getElementById('confirmResetBtn').disabled = (input !== currentResetPin);
+        }
         function executeReset() {
-            STATE.players.forEach(p => { p.score = 0; p.history = []; });
-            saveState(); 
-            closeConfirmReset();
-            goToScreen('setup');
+            STATE.players.forEach(p => { p.score = 0; p.history = []; p.outsiderStreak = 0; p.hidden = false; });
+            saveState(); closeConfirmReset(); goToScreen('setup');
         }
 
         function goToSettings() {
-            if (STATE.players.length < 3) { alertCustom("أقل شي 3 لاعبين!"); return; }
+            if (getActivePlayers().length < 3) { alertCustom("أقل شي 3 لاعبين نشطين!"); return; }
             goToScreen('settings');
         }
 
-        function alertCustom(message) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed top-12 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg font-bold text-xs z-50 text-center animate-bounce';
-            toast.innerText = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
-        }
-
-        function renderSettingsScreen(container) {
-            let categoriesHtml = '';
-            Object.entries(CATEGORIES_INFO).forEach(([key, value]) => {
-                const isSelected = STATE.selectedCategory === key;
-                const playedCount = getCategoryPlayedCount(key);
-                const totalWords = WORD_DATABASE[key].length;
-                categoriesHtml += `
-                    <button onclick="selectCategory('${key}')" class="w-full text-right glass-panel p-2 rounded-lg border flex justify-between items-center transition relative ${isSelected ? 'border-yellow-400 bg-violet-950/25 glow-purple' : 'border-slate-800 hover:border-slate-700'}">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-xl">${value.icon}</span>
-                            <div>
-                                <h4 class="font-bold text-xs text-slate-100 ${isSelected ? 'text-yellow-400' : ''}">${value.name}</h4>
-                                <p class="text-[9px] text-slate-400">${value.desc}</p>
-                            </div>
-                        </div>
-                        <span class="text-[9px] text-indigo-300 font-bold bg-indigo-950 px-1.5 py-0.5 rounded border border-indigo-900">${playedCount}/${totalWords}</span>
-                    </button>
-                `;
-            });
-
-            const maxAllowedOutsiders = Math.max(1, Math.min(3, STATE.players.length - 2));
-            container.innerHTML = `
-                <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden">
-                    <div class="space-y-2 flex-1 flex flex-col overflow-hidden">
-                        <h2 class="text-sm font-bold text-slate-200 shrink-0">ضبط الجولة والكلمات ⚙️</h2>
-                        <div class="space-y-1 overflow-y-auto flex-1 max-h-[50vh] pr-0.5">
-                            <label class="text-[10px] font-bold text-slate-300 block">1. اختار الفئة:</label>
-                            <div class="space-y-1.5">${categoriesHtml}</div>
-                        </div>
-                        <div class="space-y-1 shrink-0">
-                            <label class="text-[10px] font-bold text-slate-300 block">2. عدد "برا السالفة" 🤫</label>
-                            <div class="grid grid-cols-4 gap-1">
-                                <button onclick="selectOutsidersCountSetting('random')" class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === 'random' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}">عشوائي</button>
-                                <button onclick="selectOutsidersCountSetting('1')" class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === '1' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}">1</button>
-                                <button onclick="selectOutsidersCountSetting('2')" ${maxAllowedOutsiders < 2 ? 'disabled class="py-1.5 rounded-lg border text-xs font-bold opacity-20 cursor-not-allowed"' : `class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === '2' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}"`}>2</button>
-                                <button onclick="selectOutsidersCountSetting('3')" ${maxAllowedOutsiders < 3 ? 'disabled class="py-1.5 rounded-lg border text-xs font-bold opacity-20 cursor-not-allowed"' : `class="py-1.5 rounded-lg border text-xs font-bold transition ${STATE.outsidersCountSetting === '3' ? 'border-yellow-400 bg-violet-950/40 text-yellow-400' : 'border-slate-800 bg-slate-900 text-slate-400'}"`}>3</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pt-1 flex gap-2 shrink-0">
-                        <button onclick="goToScreen('setup')" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg font-bold text-xs">رجوع</button>
-                        <button onclick="startNewRound()" class="flex-[2] py-2 bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 rounded-lg font-black text-xs shadow hover:scale-[1.01] transition">بدء الجولة 🔥</button>
-                    </div>
-                </div>
-            `;
-        }
-
+        function changeFont(font) { STATE.fontFamily = font; applyStyleSettings(); saveState(); }
+        function changeFontSize(size) { STATE.fontSize = parseInt(size); applyStyleSettings(); saveState(); }
+        function toggleSneakBonus(val) { STATE.perfectSneakBonus = val; saveState(); }
         function selectCategory(catKey) { STATE.selectedCategory = catKey; saveState(); render(); }
         function selectOutsidersCountSetting(val) { STATE.outsidersCountSetting = val; saveState(); render(); }
 
         function renderPassToPlayerScreen(container) {
-            const currentPlayer = STATE.players[STATE.currentRound.activeRevealerIdx];
+            const currentPlayer = getActivePlayers()[STATE.currentRound.activeRevealerIdx];
             container.innerHTML = `
-                <div class="w-full flex flex-col items-center text-center space-y-3 px-1 my-auto shrink-0">
-                    <span class="text-3xl animate-bounce">📱</span>
-                    <div class="space-y-0.5">
-                        <h2 class="text-sm font-bold text-slate-400">انطوا الجهاز لـ:</h2>
-                        <h3 class="text-xl font-extrabold text-violet-400 bg-violet-950/40 border border-violet-800/40 py-1.5 px-4 rounded-xl inline-block mt-1">${currentPlayer.name}</h3>
+                <div class="w-full flex flex-col items-center text-center space-y-4 px-1 my-auto max-h-full overflow-y-auto">
+                    <span class="text-4xl animate-bounce">📱</span>
+                    <div class="space-y-1">
+                        <h2 class="text-xs sm:text-sm font-bold text-slate-400">انطوا الجهاز لـ:</h2>
+                        <h3 class="text-2xl font-extrabold text-violet-400 bg-violet-950/40 border border-violet-800/40 py-2 px-5 rounded-2xl inline-block mt-1">${currentPlayer.name}</h3>
                     </div>
-                    <div class="p-2 glass-panel rounded-lg border border-red-500/10 max-w-xs">
-                        <p class="text-[10px] text-red-300 font-semibold leading-relaxed">⚠️ تأكد محد غير ${currentPlayer.name} يباوع للشاشة!</p>
+                    <div class="p-3 glass-panel rounded-xl border border-red-500/10 max-w-xs">
+                        <p class="text-[0.6875rem] text-red-300 font-semibold leading-relaxed">⚠️ تأكد محد غير ${currentPlayer.name} يباوع للشاشة!</p>
                     </div>
-                    <button onclick="goToScreen('reveal-role')" class="w-full max-w-xs py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg font-bold text-xs shadow hover:from-violet-500 transition">
+                    <button onclick="goToScreen('reveal-role')" class="w-full max-w-xs py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs shadow hover:from-violet-500 transition">
                         أني ${currentPlayer.name}، اكشف دوري 🤫
                     </button>
                 </div>
             `;
         }
 
+        function rejectOutsiderRole(playerId) {
+            const player = STATE.players.find(p => p.id === playerId);
+            if (!player) return;
+
+            player.score -= 1;
+            player.history.unshift({ 
+                word: '---', 
+                role: 'مقايضة الدور 🔄', 
+                points: -1, 
+                desc: 'رفضت دور برا السالفة ومقايضته بخصم نقطة 🔄', 
+                votes: null 
+            });
+
+            STATE.currentRound.outsiders = STATE.currentRound.outsiders.filter(id => id !== playerId);
+            STATE.currentRound.rejectedPlayers.push(playerId);
+
+            const activePlayers = getActivePlayers();
+            const unrevealedPlayerIds = [];
+            for (let i = STATE.currentRound.activeRevealerIdx + 1; i < activePlayers.length; i++) {
+                unrevealedPlayerIds.push(activePlayers[i].id);
+            }
+
+            if (unrevealedPlayerIds.length > 0) {
+                const newOutsiderId = unrevealedPlayerIds[Math.floor(Math.random() * unrevealedPlayerIds.length)];
+                STATE.currentRound.outsiders.push(newOutsiderId);
+            }
+
+            saveState();
+            alertCustom("🔄 تم خصم نقطة واحدة وتغيير دورك سرياً إلى داخل السالفة!");
+            render(); 
+        }
+
         function renderRevealRoleScreen(container) {
             const playerIndex = STATE.currentRound.activeRevealerIdx;
-            const currentPlayer = STATE.players[playerIndex];
+            const currentPlayer = getActivePlayers()[playerIndex];
             const isOutsider = STATE.currentRound.outsiders.includes(currentPlayer.id);
             const categoryName = CATEGORIES_INFO[STATE.selectedCategory].name;
             
+            const secretWord = STATE.currentRound.isPrankMode 
+                ? (STATE.currentRound.prankWords[currentPlayer.id] || STATE.currentRound.secretWord)
+                : STATE.currentRound.secretWord;
+
+            const remainingUnrevealed = getActivePlayers().length - (playerIndex + 1);
+            const canReject = STATE.rejectOutsiderEnabled && isOutsider && (remainingUnrevealed > 3);
+
+            const rejectButtonHtml = canReject 
+                ? `
+                <button onclick="rejectOutsiderRole(${currentPlayer.id})" class="w-full mt-3 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-xl text-xs font-black transition shadow-lg animate-pulse">
+                    🔄 رفض دور برا السالفة ومقايضته (-1 نقطة)
+                </button>
+                `
+                : '';
+
             const cardContent = isOutsider ? `
-                <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-center space-y-3 w-full glow-purple">
+                <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-center space-y-3 w-full glow-purple flex-1 flex flex-col justify-center min-h-[16rem]">
                     <span class="text-4xl block animate-pulse">🕵️‍♂️</span>
                     <h2 class="text-lg font-black text-slate-100">أنت برا السالفة!</h2>
                     <div class="py-1 border-t border-b border-slate-700">
-                        <p class="text-[11px] text-slate-300">أنت خارج التغطية وما تعرف الكلمة السرية! سوي نفسك تعرف حتى لا يصيدوك.</p>
+                        <p class="text-[0.6875rem] text-slate-300">أنت خارج التغطية وما تعرف الكلمة السرية! سوي نفسك تعرف حتى لا يصيدوك.</p>
                     </div>
-                    <p class="text-[10px] text-slate-400">فئة الكلمات: <span class="text-indigo-300">${categoryName}</span></p>
+                    ${rejectButtonHtml}
+                    <p class="text-[0.625rem] text-slate-400 mt-auto pt-2">فئة الكلمات: <span class="text-indigo-300">${categoryName}</span></p>
                 </div>
             ` : `
-                <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-center space-y-3 w-full glow-gold">
+                <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-center space-y-3 w-full glow-gold flex-1 flex flex-col justify-center min-h-[16rem]">
                     <span class="text-4xl block animate-bounce">💬</span>
                     <h2 class="text-lg font-black text-slate-100">أنت داخل السالفة!</h2>
-                    <div class="bg-slate-900 border border-slate-700 py-2.5 px-3 rounded-lg">
-                        <span class="text-[10px] text-slate-400 block mb-0.5">الكلمة السرية هي:</span>
-                        <span class="text-lg font-black text-yellow-400 tracking-wide">${STATE.currentRound.secretWord}</span>
+                    <div class="bg-slate-900 border border-slate-700 py-3 px-4 rounded-xl">
+                        <span class="text-[0.625rem] text-slate-400 block mb-0.5">الكلمة السرية هي:</span>
+                        <span class="text-xl sm:text-2xl font-black text-yellow-400 tracking-wide block py-1">${secretWord}</span>
                     </div>
-                    <p class="text-[10px] text-slate-400">فئة الكلمات: <span class="text-indigo-300">${categoryName}</span></p>
+                    <p class="text-[0.625rem] text-slate-400 mt-auto pt-2">فئة الكلمات: <span class="text-indigo-300">${categoryName}</span></p>
                 </div>
             `;
 
             container.innerHTML = `
-                <div class="w-full flex flex-col items-center justify-between max-w-xs h-full py-2 space-y-3">
+                <div class="w-full flex flex-col items-center justify-between max-w-xs h-full py-2 space-y-3 overflow-y-auto">
                     <div class="text-center w-full shrink-0">
-                        <span class="text-[9px] font-semibold text-slate-500">اللاعب ${playerIndex + 1} من ${STATE.players.length}</span>
+                        <span class="text-[0.625rem] font-semibold text-slate-500">اللاعب ${playerIndex + 1} من ${getActivePlayers().length}</span>
                         <h2 class="text-base font-bold text-slate-200">${currentPlayer.name}</h2>
                     </div>
                     <div class="w-full flex-1 flex flex-col justify-center">${cardContent}</div>
-                    <button onclick="finishRevealTurn()" class="w-full py-4 bg-slate-900 hover:bg-slate-800 border-[3px] border-slate-700 text-white rounded-xl font-black text-base active:scale-95 transition shadow-lg shrink-0">
+                    <button onclick="finishRevealTurn()" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 border-[3px] border-slate-700 text-white rounded-xl font-black text-sm active:scale-95 transition shadow-lg shrink-0">
                         اخفي الدور 👀
                     </button>
                 </div>
@@ -609,7 +1306,7 @@
         }
 
         function finishRevealTurn() {
-            if (STATE.currentRound.activeRevealerIdx + 1 < STATE.players.length) {
+            if (STATE.currentRound.activeRevealerIdx + 1 < getActivePlayers().length) {
                 STATE.currentRound.activeRevealerIdx += 1;
                 goToScreen('pass-to-player');
             } else {
@@ -621,43 +1318,40 @@
 
         function renderForgotRoleSelectScreen(container) {
             let listHtml = '';
-            STATE.players.forEach(p => {
+            const sortedPlayers = [...getActivePlayers()].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+            sortedPlayers.forEach(p => {
                 listHtml += `
-                    <button onclick="initiateForgotRolePass(${p.id})" class="w-full py-2 px-3 text-xs font-bold text-slate-200 bg-slate-900 border border-slate-800 rounded-lg text-right hover:bg-slate-800 flex justify-between">
+                    <button onclick="initiateForgotRolePass(${p.id})" class="w-full py-2.5 px-3 text-xs font-bold text-slate-200 bg-slate-900 border border-slate-800 rounded-xl text-right hover:bg-slate-800 flex justify-between">
                         <span>👤 ${p.name}</span>
                         <span class="text-indigo-400">اختيار</span>
                     </button>
                 `;
             });
             container.innerHTML = `
-                <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-2 text-center overflow-hidden">
+                <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-2 text-center overflow-y-auto px-1">
                     <h2 class="text-sm font-black text-slate-100 shrink-0">منو نسى دوره؟ (اختر اللاعب)</h2>
-                    <p class="text-[10px] text-slate-400 mb-1 shrink-0">المسؤول يختار اسم اللاعب اللي نسى دوره</p>
-                    <div class="space-y-1.5 overflow-y-auto pr-0.5 flex-1">${listHtml}</div>
-                    <button onclick="goToScreen('vote-action')" class="mt-2 py-2 bg-slate-800 text-slate-300 rounded-lg text-xs font-bold shrink-0">إلغاء والرجوع للتصويت</button>
+                    <p class="text-[0.625rem] text-slate-400 mb-1 shrink-0">المسؤول يختار اسم اللاعب اللي نسى دوره</p>
+                    <div class="space-y-1.5 flex-1">${listHtml}</div>
+                    <button onclick="goToScreen('vote-action')" class="mt-2 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-xs font-bold shrink-0">رجوع للتصويت</button>
                 </div>
             `;
         }
-
-        function initiateForgotRolePass(id) {
-            STATE.currentRound.forgotRolePlayerId = id;
-            goToScreen('forgot-role-pass');
-        }
-
+        function initiateForgotRolePass(id) { STATE.currentRound.forgotRolePlayerId = id; goToScreen('forgot-role-pass'); }
+        
         function renderForgotRolePassScreen(container) {
             const player = STATE.players.find(p => p.id === STATE.currentRound.forgotRolePlayerId);
             container.innerHTML = `
-                <div class="w-full flex flex-col items-center text-center space-y-3 px-1 my-auto shrink-0">
-                    <span class="text-3xl animate-pulse">📱</span>
-                    <div class="space-y-0.5">
-                        <h2 class="text-sm font-bold text-slate-400">انطوا الجهاز لـ:</h2>
-                        <h3 class="text-xl font-extrabold text-violet-400 bg-violet-950/40 border border-violet-800/40 py-1.5 px-4 rounded-xl inline-block mt-1">${player.name}</h3>
+                <div class="w-full flex flex-col items-center text-center space-y-4 px-1 my-auto max-h-full overflow-y-auto">
+                    <span class="text-4xl animate-pulse">📱</span>
+                    <div class="space-y-1">
+                        <h2 class="text-xs sm:text-sm font-bold text-slate-400">انطوا الجهاز لـ:</h2>
+                        <h3 class="text-2xl font-extrabold text-violet-400 bg-violet-950/40 border border-violet-800/40 py-2 px-5 rounded-2xl inline-block mt-1">${player.name}</h3>
                     </div>
-                    <p class="text-[10px] text-red-300 font-semibold mb-2">⚠️ محد يباوع غيره!</p>
-                    <button onclick="goToScreen('forgot-role-reveal')" class="w-full max-w-xs py-2 bg-slate-700 text-white rounded-lg font-bold text-xs shadow hover:bg-slate-600 transition">
+                    <p class="text-[0.6875rem] text-red-300 font-semibold mb-2">⚠️ محد يباوع غيره!</p>
+                    <button onclick="goToScreen('forgot-role-reveal')" class="w-full max-w-xs py-2.5 bg-slate-700 text-white rounded-xl font-bold text-xs shadow hover:bg-slate-600 transition">
                         أني ${player.name}، اظهر دوري 🤫
                     </button>
-                    <button onclick="goToScreen('forgot-role-select')" class="w-full max-w-xs py-2 bg-slate-900 border border-slate-800 text-slate-400 rounded-lg font-bold text-xs mt-2 hover:bg-slate-800 transition">
+                    <button onclick="goToScreen('forgot-role-select')" class="w-full max-w-xs py-2.5 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl font-bold text-xs mt-2 hover:bg-slate-800 transition">
                         رجوع للقائمة
                     </button>
                 </div>
@@ -668,135 +1362,367 @@
             const player = STATE.players.find(p => p.id === STATE.currentRound.forgotRolePlayerId);
             const isOutsider = STATE.currentRound.outsiders.includes(player.id);
             const categoryName = CATEGORIES_INFO[STATE.selectedCategory].name;
-            
+            const secretWord = STATE.currentRound.isPrankMode 
+                ? (STATE.currentRound.prankWords[player.id] || STATE.currentRound.secretWord)
+                : STATE.currentRound.secretWord;
+
             const cardContent = isOutsider ? `
                 <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl text-center space-y-3 w-full">
                     <span class="text-4xl">🕵️‍♂️</span>
                     <h2 class="text-base font-black text-slate-100">أنت برا السالفة!</h2>
-                    <p class="text-[10px] text-slate-400">الفئة: ${categoryName}</p>
+                    <p class="text-[0.625rem] text-slate-400">الفئة: ${categoryName}</p>
                 </div>
             ` : `
                 <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl text-center space-y-3 w-full">
                     <span class="text-4xl">💬</span>
                     <h2 class="text-base font-black text-slate-100">أنت داخل السالفة!</h2>
                     <div class="bg-slate-900 border border-slate-700 py-2 px-3 rounded-lg">
-                        <span class="text-[10px] text-slate-400 block">الكلمة السرية:</span>
-                        <span class="text-base font-black text-yellow-400">${STATE.currentRound.secretWord}</span>
+                        <span class="text-[0.625rem] text-slate-400 block">الكلمة السرية:</span>
+                        <span class="text-lg font-black text-yellow-400 py-1 block">${secretWord}</span>
                     </div>
                 </div>
             `;
-
             container.innerHTML = `
-                <div class="w-full flex flex-col items-center justify-center max-w-xs h-full space-y-4">
+                <div class="w-full flex flex-col items-center justify-center max-w-xs h-full space-y-4 overflow-y-auto px-1">
                     <h3 class="text-xs font-bold text-slate-400">تذكير اللاعب: <span class="text-white">${player.name}</span></h3>
                     ${cardContent}
-                    <button onclick="goToScreen('vote-action')" class="w-full py-4 bg-slate-900 border-[3px] border-slate-700 text-white rounded-xl font-black text-sm hover:bg-slate-800 active:scale-95 transition shadow-lg mt-2">
+                    <button onclick="goToScreen('vote-action')" class="w-full py-3.5 bg-slate-900 border-[3px] border-slate-700 text-white rounded-xl font-black text-sm hover:bg-slate-800 active:scale-95 transition shadow-lg mt-2">
                         اخفي الدور ورجع الجهاز للمسؤول 👀
                     </button>
                 </div>
             `;
         }
 
+        function startFirstVoterTimer() {
+            STATE.currentRound.firstVoterTimerStarted = true;
+            initVotingTimer();
+        }
+
+        function initVotingTimer() {
+            if (!STATE.timerVoteEnabled) return;
+            const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
+            const isFirstVoter = (STATE.currentRound.currentVotingPlayerIdx === 0);
+
+            if (isFirstVoter && !STATE.currentRound.firstVoterTimerStarted) {
+                renderFirstVoterTriggerUI();
+                return;
+            }
+            
+            if (STATE.currentRound.activeTimerVoterId === voterId) {
+                runVotingCountdown();
+                return;
+            }
+            
+            STATE.currentRound.activeTimerVoterId = voterId;
+            STATE.currentRound.votingTimerRemaining = isFirstVoter ? 60 : 30;
+            runVotingCountdown();
+        }
+
+        function renderFirstVoterTriggerUI() {
+            const container = document.getElementById('votingTimerContainer');
+            if (container) {
+                container.innerHTML = `
+                    <button onclick="startFirstVoterTimer()" class="w-full bg-yellow-500 text-slate-950 font-black text-xs py-1.5 px-4 rounded-xl shadow hover:scale-105 active:scale-95 transition flex items-center justify-center gap-1.5 animate-pulse">
+                        ▶️ تشغيل مؤقت اللاعب الأول (60ث)
+                    </button>
+                `;
+            }
+        }
+
+        function runVotingCountdown() {
+            clearInterval(votingTimerInterval);
+            const container = document.getElementById('votingTimerContainer');
+            if (!container) return;
+
+            container.innerHTML = `
+                <span>⏱️ وقت التصويت المتبقي:</span>
+                <span id="votingTimerDisplay" class="text-sm font-black text-yellow-400">--:--</span>
+            `;
+
+            const display = document.getElementById('votingTimerDisplay');
+
+            function updateDisplay() {
+                if (!display) return;
+                const mins = Math.floor(STATE.currentRound.votingTimerRemaining / 60);
+                const secs = STATE.currentRound.votingTimerRemaining % 60;
+                display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                
+                if (STATE.currentRound.votingTimerRemaining <= 5) {
+                    display.classList.add('animate-pulse', 'text-red-500');
+                } else {
+                    display.classList.remove('animate-pulse', 'text-red-500');
+                }
+            }
+
+            updateDisplay();
+
+            votingTimerInterval = setInterval(() => {
+                if (STATE.screen !== 'vote-action') {
+                    clearInterval(votingTimerInterval);
+                    return;
+                }
+                STATE.currentRound.votingTimerRemaining--;
+                updateDisplay();
+
+                if (STATE.currentRound.votingTimerRemaining <= 0) {
+                    clearInterval(votingTimerInterval);
+                    handleVotingTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleVotingTimeOut() {
+            playTimerSound();
+            if (STATE.timeoutPenaltyChoice) {
+                const modal = document.getElementById('voteTimeoutModal');
+                const postponeBtn = document.getElementById('timeoutPostponeBtn');
+                
+                const currentIdx = STATE.currentRound.currentVotingPlayerIdx;
+                const order = STATE.currentRound.votingOrder;
+                if (currentIdx >= order.length - 1) {
+                    postponeBtn.disabled = true;
+                    postponeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    postponeBtn.innerText = "❌ لا يمكن التأجيل (أنت آخر لاعب)";
+                } else {
+                    postponeBtn.disabled = false;
+                    postponeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    postponeBtn.innerText = "⏰ تأجيل دوري بالتصويت لاحقاً";
+                }
+                
+                modal.classList.remove('hidden');
+            } else {
+                alertCustom("⏳ انتهى وقت التصويت! تم اعتماد اختياراتك الحالية.");
+                const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
+                STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
+                advanceVoting();
+            }
+        }
+
+        function handleTimeoutChoice(choice) {
+            document.getElementById('voteTimeoutModal').classList.add('hidden');
+            const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
+            
+            if (choice === 'approve') {
+                STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
+                alertCustom("تم اعتماد اختياراتك الحالية بنجاح!");
+            } else if (choice === 'penalty-keep-votes') {
+                STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
+                adjustScoreDirectly(voterId, -1, "عقوبة تأخر التصويت (مع الاحتفاظ بالأصوات) ⚠️");
+                alertCustom("تم خصم نقطة واحدة للتأخير مع اعتماد أصواتك الحالية!");
+            } else if (choice === 'postpone') {
+                const currentIdx = STATE.currentRound.currentVotingPlayerIdx;
+                const order = STATE.currentRound.votingOrder;
+                if (currentIdx < order.length - 1) {
+                    const currentVoter = order.splice(currentIdx, 1)[0];
+                    order.push(currentVoter);
+                    STATE.currentRound.selectedSuspects = []; 
+                    alertCustom("تم تأجيل دورك لنهاية التصويت بسبب انتهاء الوقت!");
+                    render();
+                    return; 
+                } else {
+                    alertCustom("أنت آخر لاعب، لا يمكن التأجيل! تم اعتماد اختياراتك تلقائياً.");
+                    STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
+                }
+            } else if (choice === 'empty-no-penalty') {
+                STATE.currentRound.votes[voterId] = [];
+                alertCustom("تم إلغاء التصويت دون عقوبات.");
+            }
+            
+            advanceVoting();
+        }
+
+        function adjustScoreDirectly(playerId, amount, reason) {
+            const player = STATE.players.find(p => p.id === playerId);
+            if (player) {
+                player.score += amount;
+                player.history.unshift({ 
+                    word: '---', 
+                    role: 'تعديل آلي', 
+                    points: amount, 
+                    desc: reason, 
+                    votes: null 
+                });
+                if (player.history.length > MAX_HISTORY_LEN) player.history = player.history.slice(0, MAX_HISTORY_LEN);
+                saveState();
+            }
+        }
+
+        function advanceVoting() {
+            if (STATE.currentRound.currentVotingPlayerIdx + 1 < getActivePlayers().length) {
+                STATE.currentRound.currentVotingPlayerIdx += 1;
+                STATE.currentRound.selectedSuspects = [];
+                goToScreen('vote-action');
+            } else {
+                STATE.currentRound.activeTimerVoterId = null; 
+                if (STATE.currentRound.isPrankMode && STATE.currentRound.prankType !== 'reverse_mode') {
+                    calculateRoundPoints();
+                    goToScreen('summary');
+                } else {
+                    STATE.currentRound.currentOutsiderGuessIdx = 0;
+                    goToScreen('guess-pass');
+                }
+            }
+        }
+
         function renderVoteActionScreen(container) {
             const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
             const currentPlayer = STATE.players.find(p => p.id === voterId);
-            
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
-            const totalOutsiders = STATE.currentRound.outsiders.length;
-            const maxSelections = isRandomSetting ? Math.max(1, Math.min(3, STATE.players.length - 2)) : totalOutsiders;
-
+            const isPrank = STATE.currentRound.isPrankMode;
+            const prankType = STATE.currentRound.prankType;
+            const totalOutsiders = isPrank ? (prankType === 'reverse_mode' ? STATE.currentRound.outsiders.length : 1) : STATE.currentRound.outsiders.length;
             let candidatesHtml = '';
             
-            // جلب الأسماء وترتيبها أبجدياً لتسهيل البحث
-            const candidates = STATE.players.filter(p => p.id !== currentPlayer.id);
+            const candidates = getActivePlayers().filter(p => p.id !== currentPlayer.id);
             candidates.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
 
             candidates.forEach(p => {
                 const isSelected = STATE.currentRound.selectedSuspects.includes(p.id);
                 candidatesHtml += `
-                    <button onclick="toggleSuspectVote(${p.id})" class="w-full text-right p-2.5 glass-panel rounded-lg border transition flex items-center justify-between ${isSelected ? 'border-red-500 bg-red-950/25 glow-purple' : 'border-slate-800 hover:border-slate-700'}">
+                    <button data-candidate-id="${p.id}" onclick="toggleSuspectVote(${p.id})" class="candidate-btn w-full text-right p-3 glass-panel rounded-xl border transition flex items-center justify-between ${isSelected ? 'border-red-500 bg-red-950/25 glow-purple' : 'border-slate-800 hover:border-slate-700'}">
                         <div class="flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full ${isSelected ? 'bg-red-950 text-red-400' : 'bg-slate-800 text-slate-400'} flex items-center justify-center text-xs">👤</span>
-                            <span class="font-bold text-xs ${isSelected ? 'text-red-400' : 'text-slate-200'}">${p.name}</span>
+                            <span class="icon-circle w-6 h-6 rounded-full ${isSelected ? 'bg-red-950 text-red-400' : 'bg-slate-800 text-slate-400'} flex items-center justify-center text-xs">👤</span>
+                            <span class="candidate-name font-bold text-xs ${isSelected ? 'text-red-400' : 'text-slate-200'}">${p.name}</span>
                         </div>
-                        ${isSelected ? '<span class="text-[9px] text-red-400 font-black border border-red-800 px-1.5 py-0.5 rounded-full">برا السالفة</span>' : '<span class="text-[9px] text-slate-600 border border-slate-800 px-1.5 py-0.5 rounded-full">اختار</span>'}
+                        <span class="vote-indicator text-[0.625rem] ${isSelected ? 'text-red-400 font-black border border-red-800' : 'text-slate-600 border border-slate-800'} px-1.5 py-0.5 rounded-full">
+                            ${isSelected ? 'برا السالفة' : 'اختار'}
+                        </span>
                     </button>
                 `;
             });
 
-            const rulesInstructionHtml = isRandomSetting 
-                ? `<p class="text-[10px] text-indigo-300 font-bold mt-0.5">بما أن عدد برا السالفة "عشوائي"، تكدر تختار أي عدد تشك بيهم!</p>`
-                : `<p class="text-[10px] text-indigo-300 font-bold mt-0.5">لازم تختار بالضبط: ${totalOutsiders} (المختار حالياً: ${STATE.currentRound.selectedSuspects.length})</p>`;
+            let rulesInstructionHtml = '';
+            const isFlexibleVoting = isPrank || isRandomSetting || prankType === 'reverse_mode';
+
+            if (isFlexibleVoting) {
+                rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">تصويت مرن! اختر من 1 إلى 3 مشتبه بهم كحد أقصى تعتقد أنهم برا السالفة.</p>`;
+            } else {
+                rulesInstructionHtml = `<p class="text-[0.6875rem] text-indigo-300 font-bold mt-0.5">لازم تختار بالضبط: <span id="maxOutsidersRuleText">${totalOutsiders}</span> (المختار حالياً: <span id="selectedSuspectsCount">${STATE.currentRound.selectedSuspects.length}</span>)</p>`;
+            }
+
+            const timerWidgetHtml = STATE.timerVoteEnabled 
+                ? `<div id="votingTimerContainer" class="flex items-center justify-center gap-1 bg-red-950/40 border border-red-900/40 py-1.5 px-3 rounded-full text-xs font-black text-red-400 shrink-0 mb-1.5">
+                       <span>⏱️ وقت التصويت المتبقي:</span>
+                       <span id="votingTimerDisplay" class="text-sm font-black text-yellow-400">--:--</span>
+                   </div>`
+                : '';
 
             container.innerHTML = `
-                <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden">
-                    <div class="space-y-2 flex-1 flex flex-col overflow-hidden">
+                <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
+                    <div class="space-y-3 flex-1">
                         <div class="text-center shrink-0">
-                            <h2 class="text-sm font-bold text-slate-400">دور اللاعب للتصويت سرياً:</h2>
-                            <h3 class="text-xl font-black text-yellow-400 bg-slate-900 border border-slate-800 py-1 px-4 rounded-xl inline-block mt-0.5">🗳️ ${currentPlayer.name}</h3>
+                            <h2 class="text-xs font-bold text-slate-400">دور اللاعب للتصويت سرياً:</h2>
+                            <h3 class="text-xl font-black text-yellow-400 bg-slate-900 border border-slate-800 py-1.5 px-5 rounded-2xl inline-block mt-0.5">🗳️ ${currentPlayer.name}</h3>
                         </div>
-                        <div class="bg-indigo-950/40 border border-indigo-900/40 p-2 rounded-lg text-center shrink-0">
-                            ${rulesInstructionHtml}
+                        <div class="flex flex-col items-center shrink-0">
+                            ${timerWidgetHtml}
+                            <div class="bg-indigo-950/40 border border-indigo-900/40 p-2.5 rounded-xl text-center w-full">
+                                ${rulesInstructionHtml}
+                            </div>
                         </div>
-                        <div class="space-y-1 overflow-y-auto pr-0.5 flex-1">${candidatesHtml}</div>
+                        <div class="space-y-2">${candidatesHtml}</div>
                     </div>
-                    <div class="flex gap-1 shrink-0">
-                        <button onclick="goToScreen('forgot-role-select')" class="py-2 px-2 bg-slate-900 border border-slate-800 text-slate-400 rounded-lg text-[10px] font-bold hover:bg-slate-800">
-                            نسى دوره؟ 🤷‍♂️
-                        </button>
-                        <button onclick="confirmPlayerVote()" class="flex-1 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-bold text-xs shadow hover:scale-[1.01] transition">
-                            تأكيد التصويت ✔️
-                        </button>
+                    <div class="flex gap-1.5 shrink-0 mb-1">
+                        <button onclick="postponeVote()" class="flex-1 py-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-xl text-[0.625rem] font-bold hover:bg-slate-700 transition">تأجيل دوري ⏭️</button>
+                        <button onclick="goToScreen('forgot-role-select')" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl text-[0.625rem] font-bold hover:bg-slate-800 transition">نسى دوره؟ 🤷‍♂️</button>
+                    </div>
+                    <div class="flex gap-1.5 shrink-0">
+                        <button onclick="confirmPlayerVote()" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-bold text-xs shadow hover:scale-[1.01] transition">تأكيد التصويت ✔️</button>
                     </div>
                 </div>
             `;
+
+            setTimeout(() => { initVotingTimer(); }, 50);
         }
 
         function toggleSuspectVote(suspectId) {
+            const sId = parseInt(suspectId);
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
-            const totalOutsiders = STATE.currentRound.outsiders.length;
-            const maxSelections = isRandomSetting ? Math.max(1, Math.min(3, STATE.players.length - 2)) : totalOutsiders;
+            const isPrank = STATE.currentRound.isPrankMode;
+            const prankType = STATE.currentRound.prankType;
+            const totalOutsiders = isPrank ? (prankType === 'reverse_mode' ? STATE.currentRound.outsiders.length : 1) : STATE.currentRound.outsiders.length;
+            const isFlexibleVoting = isPrank || isRandomSetting || prankType === 'reverse_mode';
+            const maxSelections = isFlexibleVoting ? Math.max(1, Math.min(3, getActivePlayers().length - 2)) : totalOutsiders;
 
-            const index = STATE.currentRound.selectedSuspects.indexOf(suspectId);
+            const index = STATE.currentRound.selectedSuspects.indexOf(sId);
             if (index > -1) {
                 STATE.currentRound.selectedSuspects.splice(index, 1);
             } else {
                 if (STATE.currentRound.selectedSuspects.length >= maxSelections) {
-                    alertCustom(isRandomSetting ? "الحد الأقصى للمشتبه بهم!" : `تكدر تختار ${totalOutsiders} كحد أقصى!`);
+                    alertCustom(isFlexibleVoting ? "الحد الأقصى للمشتبه بهم!" : `تكدر تختار ${totalOutsiders} كحد أقصى!`);
                     return;
                 }
-                STATE.currentRound.selectedSuspects.push(suspectId);
+                STATE.currentRound.selectedSuspects.push(sId);
             }
-            render();
+
+            updateSuspectButtonsUI();
+        }
+
+        function updateSuspectButtonsUI() {
+            const container = document.getElementById('app');
+            if (!container) return;
+            
+            const buttons = container.querySelectorAll('[data-candidate-id]');
+            buttons.forEach(btn => {
+                const cId = parseInt(btn.getAttribute('data-candidate-id'));
+                const isSelected = STATE.currentRound.selectedSuspects.includes(cId);
+                const indicator = btn.querySelector('.vote-indicator');
+                const nameText = btn.querySelector('.candidate-name');
+                const iconCircle = btn.querySelector('.icon-circle');
+
+                if (isSelected) {
+                    btn.className = "candidate-btn w-full text-right p-3 glass-panel rounded-xl border transition flex items-center justify-between border-red-500 bg-red-950/25 glow-purple";
+                    if (indicator) {
+                        indicator.className = "vote-indicator text-[0.625rem] text-red-400 font-black border border-red-800 px-1.5 py-0.5 rounded-full";
+                        indicator.innerText = "برا السالفة";
+                    }
+                    if (nameText) nameText.className = "candidate-name font-bold text-xs text-red-400";
+                    if (iconCircle) iconCircle.className = "icon-circle w-6 h-6 rounded-full bg-red-950 text-red-400 flex items-center justify-center text-xs";
+                } else {
+                    btn.className = "candidate-btn w-full text-right p-3 glass-panel rounded-xl border transition flex items-center justify-between border-slate-800 hover:border-slate-700";
+                    if (indicator) {
+                        indicator.className = "vote-indicator text-[0.625rem] text-slate-600 border border-slate-800 px-1.5 py-0.5 rounded-full";
+                        indicator.innerText = "اختار";
+                    }
+                    if (nameText) nameText.className = "candidate-name font-bold text-xs text-slate-200";
+                    if (iconCircle) iconCircle.className = "icon-circle w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-xs";
+                }
+            });
+
+            const countEl = document.getElementById('selectedSuspectsCount');
+            if (countEl) {
+                countEl.innerText = STATE.currentRound.selectedSuspects.length;
+            }
+        }
+
+        function postponeVote() {
+            const currentIdx = STATE.currentRound.currentVotingPlayerIdx;
+            const order = STATE.currentRound.votingOrder;
+            if (currentIdx < order.length - 1) {
+                const currentVoter = order.splice(currentIdx, 1)[0];
+                order.push(currentVoter);
+                STATE.currentRound.selectedSuspects = []; 
+                render(); 
+                alertCustom("تم تأجيل دورك لنهاية التصويت!");
+            } else alertCustom("أنت آخر لاعب، لازم تصوت هسه!");
         }
 
         function confirmPlayerVote() {
             const voterId = STATE.currentRound.votingOrder[STATE.currentRound.currentVotingPlayerIdx];
             const isRandomSetting = STATE.outsidersCountSetting === 'random';
-            const totalOutsiders = STATE.currentRound.outsiders.length;
+            const isPrank = STATE.currentRound.isPrankMode;
+            const prankType = STATE.currentRound.prankType;
+            const totalOutsiders = isPrank ? (prankType === 'reverse_mode' ? STATE.currentRound.outsiders.length : 1) : STATE.currentRound.outsiders.length;
+            const isFlexibleVoting = isPrank || isRandomSetting || prankType === 'reverse_mode';
 
-            if (isRandomSetting) {
-                if (STATE.currentRound.selectedSuspects.length === 0) {
-                    alertCustom("يا عيني اختار لاعب واحد على الأقل يشك بي!");
-                    return;
-                }
+            if (isFlexibleVoting) {
+                if (STATE.currentRound.selectedSuspects.length === 0) { alertCustom("اختار لاعب واحد على الأقل يشك بي!"); return; }
             } else {
-                if (STATE.currentRound.selectedSuspects.length !== totalOutsiders) {
-                    alertCustom(`لازم تصوت على ${totalOutsiders} لاعبين بالضبط حسب شروط الجولة!`);
-                    return;
-                }
+                if (STATE.currentRound.selectedSuspects.length !== totalOutsiders) { alertCustom(`لازم تصوت على ${totalOutsiders} لاعبين بالضبط!`); return; }
             }
 
             STATE.currentRound.votes[voterId] = [...STATE.currentRound.selectedSuspects];
-
-            if (STATE.currentRound.currentVotingPlayerIdx + 1 < STATE.players.length) {
-                STATE.currentRound.currentVotingPlayerIdx += 1;
-                STATE.currentRound.selectedSuspects = [];
-                goToScreen('vote-action');
-            } else {
-                STATE.currentRound.currentOutsiderGuessIdx = 0;
-                goToScreen('guess-pass');
-            }
+            advanceVoting();
         }
 
         function renderGuessPassScreen(container) {
@@ -804,12 +1730,12 @@
             const outsiderPlayer = STATE.players.find(p => p.id === outsiderId);
 
             container.innerHTML = `
-                <div class="w-full flex flex-col items-center text-center space-y-3 px-1 my-auto shrink-0">
+                <div class="w-full flex flex-col items-center text-center space-y-3 px-1 my-auto max-h-full overflow-y-auto">
                     <span class="text-4xl animate-bounce">🤔</span>
                     <div class="space-y-1">
-                        <span class="text-[10px] bg-red-950 border border-red-800 text-red-400 px-2 py-0.5 rounded-full font-bold">كشف برا السالفة</span>
+                        <span class="text-[0.625rem] bg-red-950 border border-red-800 text-red-400 px-2.5 py-1 rounded-full font-bold">كشف برا السالفة</span>
                         <h2 class="text-lg font-black text-slate-100">انكشفت اللعبة! اللاعب برا السالفة هو:</h2>
-                        <h3 class="text-2xl font-extrabold text-red-400 bg-slate-900 border border-slate-800 py-1.5 px-5 rounded-xl inline-block mt-1">${outsiderPlayer.name}</h3>
+                        <h3 class="text-2xl font-extrabold text-red-400 bg-slate-900 border border-slate-800 py-2 px-5 rounded-2xl inline-block mt-1">${outsiderPlayer.name}</h3>
                         <p class="text-xs text-slate-400">هسه انطوا الجهاز إله ليخمن الكلمة من أصل 10 كلمات!</p>
                     </div>
                     <button onclick="goToScreen('guess-action')" class="w-full max-w-xs py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-bold text-xs shadow transition mt-2">
@@ -819,86 +1745,140 @@
             `;
         }
 
-        function generateOutsiderGuessingOptions() {
-            const secret = STATE.currentRound.secretWord;
-            let targetCategory = 'food'; // Default fallback
+        function initGuessingTimer() {
+            if (!STATE.timerGuessEnabled) return;
+            const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
             
-            // تحديد التصنيف الفرعي الدقيق للكلمة حتى لو كان التصنيف المختار "عام"
-            for (const [cat, words] of Object.entries(WORD_DATABASE)) {
-                if (cat !== 'general' && words.includes(secret)) {
-                    targetCategory = cat;
-                    break;
+            if (STATE.currentRound.activeTimerOutsiderId === outsiderId) {
+                runGuessingCountdown();
+                return;
+            }
+            
+            STATE.currentRound.activeTimerOutsiderId = outsiderId;
+            STATE.guessingTimerRemaining = 60; 
+            runGuessingCountdown();
+        }
+
+        function runGuessingCountdown() {
+            clearInterval(guessingTimerInterval);
+            const display = document.getElementById('guessingTimerDisplay');
+            if (!display) return;
+
+            function updateDisplay() {
+                if (!display) return;
+                const mins = Math.floor(STATE.guessingTimerRemaining / 60);
+                const secs = STATE.guessingTimerRemaining % 60;
+                display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                
+                if (STATE.guessingTimerRemaining <= 5) {
+                    display.classList.add('animate-pulse', 'text-red-500');
+                } else {
+                    display.classList.remove('animate-pulse', 'text-red-500');
                 }
             }
 
-            // سحب كلمات مموهة من نفس التصنيف لزيادة الصعوبة والمنطقية
-            const pool = WORD_DATABASE[targetCategory].filter(w => w !== secret);
-            const decoys = pool.sort(() => Math.random() - 0.5).slice(0, 9);
-            return [secret, ...decoys].sort(() => Math.random() - 0.5);
+            updateDisplay();
+
+            guessingTimerInterval = setInterval(() => {
+                if (STATE.screen !== 'guess-action') {
+                    clearInterval(guessingTimerInterval);
+                    return;
+                }
+                STATE.guessingTimerRemaining--;
+                updateDisplay();
+
+                if (STATE.guessingTimerRemaining <= 0) {
+                    clearInterval(guessingTimerInterval);
+                    playTimerSound();
+                    handleGuessingTimeOut();
+                }
+            }, 1000);
         }
 
-        let cacheGuessOptions = [];
-        let lastGuesserId = null;
+        function handleGuessingTimeOut() {
+            alertCustom("⏳ انتهى وقت التخمين! تم اختيار كلمة عشوائية.");
+            const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
+            const currentOptions = STATE.currentRound.outsiderOptionsCache[outsiderId];
+            if (currentOptions && currentOptions.length > 0) {
+                const randomWord = currentOptions[Math.floor(Math.random() * currentOptions.length)];
+                STATE.currentRound.outsiderGuesses[outsiderId] = randomWord;
+            }
+            confirmOutsiderGuess();
+        }
 
         function renderGuessActionScreen(container) {
             const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
             const outsiderPlayer = STATE.players.find(p => p.id === outsiderId);
-
-            if (lastGuesserId !== outsiderId) {
-                cacheGuessOptions = generateOutsiderGuessingOptions();
-                lastGuesserId = outsiderId;
+            
+            if (!STATE.currentRound.outsiderOptionsCache[outsiderId]) {
+                STATE.currentRound.outsiderOptionsCache[outsiderId] = generateOutsiderGuessingOptions();
+                saveState();
             }
 
+            const currentOptions = STATE.currentRound.outsiderOptionsCache[outsiderId];
             const chosenWord = STATE.currentRound.outsiderGuesses[outsiderId];
             let optionsHtml = '';
-            cacheGuessOptions.forEach((word) => {
+            
+            currentOptions.forEach((word) => {
                 const isSelected = chosenWord === word;
-                // تم تكبير الخط هنا إلى text-sm sm:text-base وزيادة الحشوة py-3
                 optionsHtml += `
-                    <button onclick="selectGuessWord('${word}')" class="py-3 px-1 glass-panel rounded-lg border font-bold text-sm sm:text-base transition text-center ${isSelected ? 'border-yellow-400 bg-violet-950/40 text-yellow-400 scale-105 shadow-lg' : 'border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800'}">
+                    <button data-guess-word="${word}" onclick="selectGuessWord('${word}')" class="py-3 px-1 glass-panel rounded-lg border font-bold text-lg sm:text-xl transition text-center ${isSelected ? 'border-yellow-400 bg-violet-950/40 text-yellow-400 scale-105 shadow-lg' : 'border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800'}">
                         ${word}
                     </button>
                 `;
             });
 
+            const timerWidgetHtml = STATE.timerGuessEnabled 
+                ? `<div id="guessingTimerContainer" class="flex items-center justify-center gap-1 bg-red-950/40 border border-red-900/40 py-1.5 px-3 rounded-xl text-xs font-black text-red-400 shrink-0 mb-1.5 w-full">
+                       <span>⏱️ وقت التخمين المتبقي:</span>
+                       <span id="guessingTimerDisplay" class="text-sm font-black text-yellow-400">--:--</span>
+                   </div>`
+                : '';
+
             container.innerHTML = `
-                <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-3 py-1 overflow-hidden">
-                    <div class="space-y-3 flex-1 flex flex-col overflow-hidden">
+                <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
+                    <div class="space-y-3 flex-1">
                         <div class="text-center shrink-0">
                             <h2 class="text-xs font-bold text-slate-400">خمن الكلمة يا بطل:</h2>
                             <h3 class="text-xl font-black text-red-400 block">${outsiderPlayer.name}</h3>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 overflow-y-auto flex-1 pr-0.5 pb-2">
-                            ${optionsHtml}
+                        <div class="shrink-0 flex justify-center">
+                            ${timerWidgetHtml}
                         </div>
+                        <div class="grid grid-cols-2 gap-2 pb-2">${optionsHtml}</div>
                     </div>
-                    <button onclick="confirmOutsiderGuess()" class="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-black text-sm shadow transition shrink-0">
-                        تأكيد التخمين 🎯
-                    </button>
+                    <button onclick="confirmOutsiderGuess()" class="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-black text-sm shadow transition shrink-0">تأكيد التخمين 🎯</button>
                 </div>
             `;
+
+            setTimeout(() => { initGuessingTimer(); }, 50);
         }
 
-        function selectGuessWord(word) {
-            STATE.currentRound.outsiderGuesses[STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx]] = word;
-            render();
+        function selectGuessWord(word) { 
+            STATE.currentRound.outsiderGuesses[STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx]] = word; 
+            
+            const buttons = document.querySelectorAll('[data-guess-word]');
+            buttons.forEach(btn => {
+                const btnWord = btn.getAttribute('data-guess-word');
+                const isSelected = (word === btnWord);
+                if (isSelected) {
+                    btn.className = "py-3 px-1 glass-panel rounded-lg border font-bold text-lg sm:text-xl transition text-center border-yellow-400 bg-violet-950/40 text-yellow-400 scale-105 shadow-lg";
+                } else {
+                    btn.className = "py-3 px-1 glass-panel rounded-lg border font-bold text-lg sm:text-xl transition text-center border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800";
+                }
+            });
         }
 
         function confirmOutsiderGuess() {
             const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
             const chosenWord = STATE.currentRound.outsiderGuesses[outsiderId];
-            
-            if (!chosenWord) {
-                alertCustom("لازم تختار كلمة وحدة من الـ 10 كلمات أولاً!");
-                return;
-            }
-
+            if (!chosenWord) { alertCustom("لازم تختار كلمة وحدة من الـ 10 كلمات أولاً!"); return; }
             if (STATE.currentRound.currentOutsiderGuessIdx + 1 < STATE.currentRound.outsiders.length) {
-                STATE.currentRound.currentOutsiderGuessIdx += 1;
-                goToScreen('guess-pass');
-            } else {
-                calculateRoundPoints();
-                goToScreen('summary');
+                STATE.currentRound.currentOutsiderGuessIdx += 1; goToScreen('guess-pass');
+            } else { 
+                STATE.currentRound.activeTimerOutsiderId = null;
+                calculateRoundPoints(); 
+                goToScreen('summary'); 
             }
         }
 
@@ -907,64 +1887,117 @@
         function calculateRoundPoints() {
             const secret = STATE.currentRound.secretWord;
             const outsiders = STATE.currentRound.outsiders;
-            
-            const playerRoundPoints = {}; 
-            const votedStatsFlags = {}; 
-            const guessSuccessFlags = {}; 
-            const outsiderGuessesCache = { ...STATE.currentRound.outsiderGuesses };
+            const isPrank = STATE.currentRound.isPrankMode;
+            const prankType = STATE.currentRound.prankType;
+            const activePlayers = getActivePlayers();
 
-            STATE.players.forEach(p => {
-                if (outsiders.includes(p.id)) return; 
-                const pVotes = STATE.currentRound.votes[p.id] || [];
-                let pointsEarned = 0;
-                let correctVotes = 0;
-                let wrongVotes = 0;
+            const isActualPrankScoring = isPrank && (prankType === 'all_outsiders' || prankType === 'different_words');
 
-                // استخراج أسماء اللاعبين الذين قام بالتصويت عليهم
-                const votedNames = pVotes.map(vId => {
-                    const vp = STATE.players.find(x => x.id === vId);
-                    return vp ? vp.name : 'مجهول';
+            if (isActualPrankScoring) {
+                const playerRoundPoints = {};
+                const votedStatsFlags = {};
+                const guessSuccessFlags = {};
+                const insidePlayerPenalties = {};
+
+                activePlayers.forEach(p => {
+                    playerRoundPoints[p.id] = 0; 
+                    votedStatsFlags[p.id] = { correct: 0, wrong: 0 };
+                    guessSuccessFlags[p.id] = false;
+                    
+                    let displayRole = 'مقلب 🤫';
+                    let displayWord = '---';
+                    let desc = 'جولة مقلب للمزاح والضحك';
+
+                    if (prankType === 'all_outsiders') {
+                        displayRole = 'برا السالفة (مقلب 🤫)';
+                        displayWord = 'الكل برا السالفة!';
+                        desc = 'مقلب الكل برا السالفة! الجميع تاهوا معاً 🥷';
+                    } else if (prankType === 'different_words') {
+                        displayRole = 'داخل السالفة (مقلب 🤫)';
+                        displayWord = STATE.currentRound.prankWords[p.id] || 'مجهول';
+                        desc = `مقلب تشتيت الكلمات! كلمتك كانت: "${displayWord}" 🎭`;
+                    }
+                    
+                    p.history.unshift({ 
+                        word: displayWord, 
+                        role: displayRole, 
+                        points: 0, 
+                        desc: desc, 
+                        votes: (STATE.currentRound.votes[p.id] || []).map(vId => STATE.players.find(x => x.id === vId)?.name || 'مجهول').join('، ')
+                    });
                 });
-                const votesStr = votedNames.length > 0 ? votedNames.join('، ') : 'محد';
+
+                roundResultsCache = { 
+                    isPrankMode: true,
+                    prankType: prankType,
+                    secretWord: prankType === 'all_outsiders' ? 'الكل برا السالفة!' : 'توزيع كلمات مختلفة 🎭', 
+                    outsiders: prankType === 'all_outsiders' ? activePlayers.map(p => p.id) : [], 
+                    playerRoundPoints, 
+                    votedStatsFlags, 
+                    guessSuccessFlags, 
+                    outsiderGuessesCache: {}, 
+                    outsiderOptionsSaved: {}, 
+                    insidePlayerPenalties,
+                    activePlayerIds: activePlayers.map(p => p.id)
+                };
+                saveState();
+                return;
+            }
+
+            const playerRoundPoints = {}, votedStatsFlags = {}, guessSuccessFlags = {}, insidePlayerPenalties = {};
+            const outsiderGuessesCache = { ...STATE.currentRound.outsiderGuesses };
+            const outsiderOptionsSaved = { ...STATE.currentRound.outsiderOptionsCache };
+            const penaltyThreshold = Math.floor(activePlayers.length / 2) + 1; 
+            
+            const votesReceived = {};
+            activePlayers.forEach(p => votesReceived[p.id] = { count: 0, byIds: [] });
+            Object.entries(STATE.currentRound.votes).forEach(([voterIdStr, votedForIds]) => {
+                const voterId = parseInt(voterIdStr);
+                votedForIds.forEach(targetId => { 
+                    if(votesReceived[targetId]) {
+                        votesReceived[targetId].count++; 
+                        votesReceived[targetId].byIds.push(voterId); 
+                    }
+                });
+            });
+
+            activePlayers.forEach(p => {
+                const pVotes = STATE.currentRound.votes[p.id] || [];
+                const isOutsider = outsiders.includes(p.id);
+                let pointsEarned = 0, correctVotes = 0, wrongVotes = 0, historyDescLines = [];
+                const votedForNames = pVotes.map(vId => STATE.players.find(x => x.id === vId)?.name || 'مجهول');
+                const votesStr = votedForNames.length > 0 ? votedForNames.join('، ') : 'محد';
 
                 pVotes.forEach(vId => {
                     if (outsiders.includes(vId)) { pointsEarned += 1; correctVotes++; } 
-                    else { pointsEarned -= 1; wrongVotes++; }
+                    else { if (!isOutsider) pointsEarned -= 1; wrongVotes++; }
                 });
+
                 votedStatsFlags[p.id] = { correct: correctVotes, wrong: wrongVotes };
-                playerRoundPoints[p.id] = pointsEarned;
-                p.score += pointsEarned;
                 
-                // حفظ التاريخ (History) مع الأسماء
-                p.history.unshift({
-                    word: secret, role: 'داخل السالفة', points: pointsEarned,
-                    desc: `صاد ${correctVotes} | غلط ${wrongVotes}`,
-                    votes: votesStr
-                });
-            });
-
-            outsiders.forEach(oId => {
-                const guess = STATE.currentRound.outsiderGuesses[oId];
-                const guessCorrect = (guess === secret);
-                guessSuccessFlags[oId] = guessCorrect;
-                const oPlayer = STATE.players.find(p => p.id === oId);
-                let points = 0;
-                if (guessCorrect) points += 1; 
-                playerRoundPoints[oId] = points;
-                if (oPlayer) {
-                    oPlayer.score += points;
-                    // حفظ التاريخ (History)
-                    oPlayer.history.unshift({
-                        word: secret, role: 'برا السالفة', points: points,
-                        desc: guessCorrect ? 'خمن صح ✔️' : `خمن غلط (${guess}) ❌`
-                    });
+                if (isOutsider) {
+                    const guess = outsiderGuessesCache[p.id];
+                    const guessCorrect = (guess === secret);
+                    guessSuccessFlags[p.id] = guessCorrect;
+                    
+                    if (guessCorrect) pointsEarned += 1;
+                    historyDescLines.push(guessCorrect ? 'خمن صح ✔️' : `خمن غلط (${guess}) ❌`);
+                    if(correctVotes > 0) historyDescLines.push(`صاد زميله (${correctVotes})`);
+                    if (STATE.perfectSneakBonus && votesReceived[p.id].count === 0) { pointsEarned += 1; historyDescLines.push('مكافأة تخفي 🥷'); }
+                } else {
+                    historyDescLines.push(`صاد ${correctVotes} | غلط ${wrongVotes}`);
+                    if (votesReceived[p.id].count >= penaltyThreshold) {
+                        pointsEarned -= 1; historyDescLines.push('عقوبة المظلوم ⚖️');
+                        insidePlayerPenalties[p.id] = { count: votesReceived[p.id].count, byIds: votesReceived[p.id].byIds };
+                    }
                 }
+
+                playerRoundPoints[p.id] = pointsEarned; p.score += pointsEarned;
+                p.history.unshift({ word: secret, role: isOutsider ? 'برا السالفة' : 'داخل السالفة', points: pointsEarned, desc: historyDescLines.join('، '), votes: votesStr });
             });
 
-            // تقليم التاريخ لآخر 15 جولة لتوفير المساحة
-            STATE.players.forEach(p => { if(p.history.length > 15) p.history = p.history.slice(0,15); });
-
-            roundResultsCache = { secretWord: secret, outsiders: [...outsiders], playerRoundPoints, votedStatsFlags, guessSuccessFlags, outsiderGuessesCache };
+            STATE.players.forEach(p => { if(p.history.length > MAX_HISTORY_LEN) p.history = p.history.slice(0, MAX_HISTORY_LEN); });
+            roundResultsCache = { isPrankMode: false, secretWord: secret, outsiders: [...outsiders], playerRoundPoints, votedStatsFlags, guessSuccessFlags, outsiderGuessesCache, outsiderOptionsSaved, insidePlayerPenalties, activePlayerIds: activePlayers.map(p => p.id) };
             saveState();
         }
 
@@ -972,150 +2005,256 @@
             const player = STATE.players.find(p => p.id === playerId);
             if (player) {
                 player.score += amount;
-                
-                // تسجيل التعديل اليدوي في السجل
-                player.history.unshift({
-                    word: '---', 
-                    role: 'تعديل مسؤول', 
-                    points: amount,
-                    desc: amount > 0 ? 'إضافة نقاط يدوياً ➕' : 'خصم نقاط يدوياً ➖',
-                    votes: null
-                });
-                
-                if (player.history.length > 15) player.history = player.history.slice(0, 15);
-                
+                player.history.unshift({ word: '---', role: 'تعديل مسؤول', points: amount, desc: amount > 0 ? 'إضافة نقاط يدوياً ➕' : 'خصم نقاط يدوياً ➖', votes: null });
+                if (player.history.length > MAX_HISTORY_LEN) player.history = player.history.slice(0, MAX_HISTORY_LEN);
                 saveState();
-                render(); // إعادة رسم واجهة النتائج فقط
+                const scrollEl = document.getElementById('summaryScrollArea');
+                const scrollPos = scrollEl ? scrollEl.scrollTop : 0;
+                render(); 
+                setTimeout(() => { const newScrollEl = document.getElementById('summaryScrollArea'); if(newScrollEl) newScrollEl.scrollTop = scrollPos; }, 0);
             }
         }
 
         function openHistoryModal(playerId) {
             const player = STATE.players.find(p => p.id === playerId);
             if (!player) return;
-            
             document.getElementById('historyPlayerName').innerText = `سجل: ${player.name}`;
             const container = document.getElementById('historyContent');
             
-            if (player.history.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-slate-500 mt-10">لا توجد جولات مسجلة بعد.</p>`;
-            } else {
+            if (player.history.length === 0) container.innerHTML = `<p class="text-center text-xs text-slate-500 mt-10">لا توجد جولات مسجلة بعد.</p>`;
+            else {
                 let html = '';
-                player.history.forEach((h, i) => {
-                    const isPositive = h.points > 0;
-                    const isZero = h.points === 0;
-                    const roleColor = h.role === 'برا السالفة' ? 'text-red-400' : 'text-indigo-400';
-                    const ptColor = isPositive ? 'text-emerald-400' : (isZero ? 'text-slate-400' : 'text-red-500');
-                    
-                    // تنسيق قسم "صوت على"
-                    const votesHtml = h.votes ? `<p class="text-[9px] text-slate-400 mt-1 border-t border-slate-700/50 pt-1">صوّت على: <span class="text-slate-200 font-bold">${h.votes}</span></p>` : '';
-                    
-                    html += `
-                        <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50 flex justify-between items-center text-[10px]">
-                            <div class="flex-1">
-                                <p class="font-bold text-slate-200">الكلمة: <span class="text-yellow-400">${h.word}</span></p>
-                                <p class="text-slate-400">الدور: <span class="${roleColor} font-bold">${h.role}</span> - ${h.desc}</p>
-                                ${votesHtml}
-                            </div>
-                            <span class="${ptColor} font-black text-xs block ml-2 shrink-0" dir="ltr">${h.points > 0 ? '+' : ''}${h.points}</span>
-                        </div>
-                    `;
+                player.history.forEach(h => {
+                    const roleColor = h.role === 'برا السالفة' ? 'text-red-400' : (h.role === 'داخل السالفة' ? 'text-indigo-400' : 'text-slate-400');
+                    const ptColor = h.points > 0 ? 'text-emerald-400' : (h.points === 0 ? 'text-slate-400' : 'text-red-500');
+                    const votesHtml = h.votes ? `<p class="text-[0.625rem] text-slate-400 mt-1 border-t border-slate-700/50 pt-1">صوّت على: <span class="text-slate-200 font-bold">${h.votes}</span></p>` : '';
+                    html += `<div class="bg-slate-800/50 p-2 rounded border border-slate-700/50 flex justify-between items-center text-[0.6875rem]">
+                            <div class="flex-1"><p class="font-bold text-slate-200">الكلمة: <span class="text-yellow-400">${h.word}</span></p>
+                            <p class="text-slate-400">الدور: <span class="${roleColor} font-bold">${h.role}</span> - ${h.desc}</p>${votesHtml}</div>
+                            <span class="${ptColor} font-black text-xs block ml-2 shrink-0" dir="ltr">${h.points > 0 ? '+' : ''}${h.points}</span></div>`;
                 });
                 container.innerHTML = html;
             }
             document.getElementById('historyModal').classList.remove('hidden');
         }
+        function closeHistoryModal() { document.getElementById('historyModal').classList.add('hidden'); }
 
-        function closeHistoryModal() {
-            document.getElementById('historyModal').classList.add('hidden');
+        function openOutsiderOptionsModal(playerId) {
+            const player = STATE.players.find(p => p.id === playerId);
+            if (!player) return;
+            document.getElementById('optionsModalTitle').innerText = `خيارات: ${player.name}`;
+            const options = roundResultsCache.outsiderOptionsSaved[playerId] || [];
+            const guessedWord = roundResultsCache.outsiderGuessesCache[playerId];
+            const secretWord = roundResultsCache.secretWord;
+            
+            const gridContainer = document.getElementById('optionsModalGrid');
+            let html = '';
+            options.forEach(word => {
+                let borderClass = 'border-slate-700 bg-slate-800 text-slate-300';
+                if (word === secretWord && word === guessedWord) borderClass = 'border-emerald-500 bg-emerald-950/40 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.3)]';
+                else if (word === secretWord) borderClass = 'border-emerald-500 border-dashed bg-emerald-950/20 text-emerald-500';
+                else if (word === guessedWord) borderClass = 'border-red-500 bg-red-950/40 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.3)]';
+                html += `<div class="py-2.5 px-1 rounded-lg border text-center text-xs font-bold ${borderClass}">${word}</div>`;
+            });
+            gridContainer.innerHTML = html; document.getElementById('outsiderOptionsModal').classList.remove('hidden');
+        }
+        function closeOutsiderOptionsModal() { document.getElementById('outsiderOptionsModal').classList.add('hidden'); }
+
+        function downloadResultsAsImage() {
+            const element = document.getElementById('summaryScrollArea');
+            if (!element) return;
+            
+            const btn = document.getElementById('downloadImgBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ جاري تصدير الملف...';
+            btn.disabled = true;
+
+            const originalStyle = element.getAttribute('style') || '';
+            
+            element.style.maxHeight = 'none';
+            element.style.height = 'auto';
+            element.style.overflow = 'visible';
+            element.style.paddingBottom = '36px'; 
+            
+            setTimeout(() => {
+                html2canvas(element, {
+                    backgroundColor: '#090d16', 
+                    scale: 2, 
+                    logging: false,
+                    useCORS: true,
+                    windowWidth: element.scrollWidth,
+                    windowHeight: element.scrollHeight
+                }).then(canvas => {
+                    try {
+                        const link = document.createElement('a');
+                        link.download = `نتائج_برا_السالفة_v4.0.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    } catch (err) {
+                        alertCustom("خطأ أثناء تحضير ملف الصورة!");
+                    } finally {
+                        element.setAttribute('style', originalStyle);
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                }).catch(err => {
+                    alertCustom("عذراً، تعذر تصدير لقطة النتائج!");
+                    element.setAttribute('style', originalStyle);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
+            }, 300);
         }
 
         function renderSummaryScreen(container) {
             const results = roundResultsCache;
-            
+            const activeRoundPlayerIds = results.activePlayerIds || getActivePlayers().map(p => p.id);
+
+            if (results.isPrankMode) {
+                let prankDetailHtml = '';
+                activeRoundPlayerIds.forEach(pId => {
+                    const p = STATE.players.find(x => x.id === pId);
+                    if(!p) return;
+                    let wordDisplay = 'مجهول';
+                    if (results.prankType === 'all_outsiders') {
+                        wordDisplay = 'الكل برا السالفة!';
+                    } else {
+                        wordDisplay = STATE.currentRound.prankWords[p.id] || 'مجهول';
+                    }
+                    
+                    prankDetailHtml += `
+                        <div class="bg-violet-950/20 border border-violet-800/40 p-2.5 rounded-lg flex justify-between items-center text-right text-xs">
+                            <div>
+                                <span class="font-extrabold text-violet-400">${p.name}</span>
+                                <p class="text-[0.625rem] text-slate-300">الكلمة اللي طلعتله جانت: <span class="font-bold text-yellow-400">"${wordDisplay}"</span></p>
+                            </div>
+                            <span class="text-slate-500 font-bold text-[0.625rem]">مقلب 🤫</span>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
+                        <div class="space-y-3 flex-1">
+                            <div class="bg-gradient-to-r from-red-950 to-amber-950 p-3 rounded-xl border border-red-800/40 text-center shrink-0">
+                                <span class="text-xs text-yellow-400 font-bold block mb-1">🤫 مقلب سري! السالفة جانت محروقة!</span>
+                                <span class="text-[0.625rem] text-slate-300 block">لقد كان مقلباً فكاهياً لإثارة البلبلة والضحك والجميع كانوا خارج التغطية أو بكلمات مشتتة! (النقاط لم تتأثر في جولة المقلب)</span>
+                            </div>
+                            
+                            <div id="summaryScrollArea" class="space-y-2 rounded-xl p-2 bg-slate-900 border border-slate-800">
+                                <h3 class="text-[0.625rem] font-bold text-slate-400 px-1">👥 كلمات اللاعبين في الجولة:</h3>
+                                <div class="space-y-1.5">${prankDetailHtml}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-1 flex gap-2 shrink-0">
+                            <button onclick="showConfirmReset()" class="flex-1 py-2.5 bg-slate-900 border border-slate-800 text-red-400 rounded-xl font-bold text-xs">تصفير 🔄</button>
+                            <button onclick="goToScreen('settings')" class="flex-[2] py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs shadow transition">جولة جديدة 🔁</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
             let outsidersHtml = '';
             results.outsiders.forEach(oId => {
                 const player = STATE.players.find(p => p.id === oId);
+                if (!player) return;
                 const isGuessed = results.guessSuccessFlags[oId];
                 const points = results.playerRoundPoints[oId];
+                const stats = results.votedStatsFlags[oId];
                 const guessWord = results.outsiderGuessesCache[oId] || 'لم يخمن';
+                const sneakBonusText = (STATE.perfectSneakBonus && (points > (isGuessed ? 1 : 0) + stats.correct)) ? '<span class="text-[0.625rem] text-emerald-400 block">+1 مكافأة تخفي 🥷</span>' : '';
+                
                 outsidersHtml += `
-                    <div class="bg-red-950/20 border border-red-900/40 p-2 rounded-lg flex justify-between items-center text-right text-xs">
-                        <div>
-                            <h4 class="font-extrabold text-red-400 text-xs">${player.name}</h4>
-                            <p class="text-[9px] text-slate-300">تخمينه: <span class="font-bold text-yellow-400">${guessWord}</span> - ${isGuessed ? '<span class="text-emerald-400 font-bold">صح ✔️</span>' : '<span class="text-red-400 font-bold">غلط ❌</span>'}</p>
+                    <div class="bg-red-950/20 border border-red-900/40 p-2 rounded-lg flex flex-col gap-1 text-right text-xs">
+                        <div class="flex justify-between items-center w-full">
+                            <div><h4 class="font-extrabold text-red-400 text-xs">${player.name}</h4>
+                            <p class="text-[0.625rem] text-slate-300">تخمينه: <span class="font-bold text-yellow-400">${guessWord}</span> - ${isGuessed ? '<span class="text-emerald-400 font-bold">صح ✔️</span>' : '<span class="text-red-400 font-bold">غلط ❌</span>'}</p>
+                            ${stats.correct > 0 ? `<p class="text-[0.625rem] text-indigo-300">صاد ${stats.correct} زميل برا السالفة</p>` : ''}
+                            ${sneakBonusText}</div>
+                            <div class="text-left"><span class="${points > 0 ? 'text-emerald-400' : 'text-slate-400'} font-black text-xs block">+${points} ن</span></div>
                         </div>
-                        <div class="text-left"><span class="${points > 0 ? 'text-emerald-400' : 'text-slate-400'} font-black text-xs block">+${points} ن</span></div>
-                    </div>
-                `;
+                        <button onclick="openOutsiderOptionsModal(${oId})" class="w-full mt-0.5 py-1.5 bg-red-900/30 hover:bg-red-800/50 border border-red-800/40 rounded text-[0.625rem] text-red-300 font-bold transition flex justify-center items-center gap-1">
+                            <span>🔍</span> شوف خياراته شنو كانت!
+                        </button>
+                    </div>`;
             });
 
             let insidersHtml = '';
-            STATE.players.forEach(p => {
-                if (results.outsiders.includes(p.id)) return;
-                const stats = results.votedStatsFlags[p.id];
-                const points = results.playerRoundPoints[p.id];
+            activeRoundPlayerIds.forEach(pId => {
+                if (results.outsiders.includes(pId)) return;
+                const p = STATE.players.find(x => x.id === pId);
+                if (!p) return;
+                const stats = results.votedStatsFlags[pId];
+                const points = results.playerRoundPoints[pId];
+                let penaltyHtml = '';
+                if(results.insidePlayerPenalties[pId]) {
+                    const penInfo = results.insidePlayerPenalties[pId];
+                    const voters = penInfo.byIds.map(id => STATE.players.find(x=>x.id===id)?.name).join('، ');
+                    penaltyHtml = `<div class="mt-1 pt-1 border-t border-red-900/30 text-[0.625rem] text-red-300"><span class="font-bold text-red-400">⚖️ اللاعب المظلوم:</span> انشك بيه من (${penInfo.count}) وهم: ${voters} (-1 نقطة)</div>`;
+                }
                 insidersHtml += `
-                    <div class="bg-slate-900/60 border border-slate-800 p-2 rounded-lg flex justify-between items-center text-right text-xs">
-                        <div>
-                            <h4 class="font-extrabold text-indigo-400 text-xs">${p.name}</h4>
-                            <p class="text-[9px] text-slate-300">صح: <span class="text-emerald-400">${stats.correct}</span> | غلط: <span class="text-red-400">${stats.wrong}</span></p>
+                    <div class="bg-slate-900/60 border border-slate-800 p-2 rounded-lg flex flex-col text-right text-xs">
+                        <div class="flex justify-between items-center">
+                            <div><h4 class="font-extrabold text-indigo-400 text-xs">${p.name}</h4>
+                            <p class="text-[0.625rem] text-slate-300">صح: <span class="text-emerald-400">${stats.correct}</span> | غلط: <span class="text-red-400">${stats.wrong}</span></p></div>
+                            <div class="text-left"><span class="${points >= 0 ? 'text-emerald-400' : 'text-red-400'} font-black text-xs block" dir="ltr">${points > 0 ? '+' : ''}${points} ن</span></div>
                         </div>
-                        <div class="text-left"><span class="${points >= 0 ? 'text-emerald-400' : 'text-red-400'} font-black text-xs block" dir="ltr">${points > 0 ? '+' : ''}${points} ن</span></div>
-                    </div>
-                `;
+                        ${penaltyHtml}
+                    </div>`;
             });
 
             const sortedPlayers = [...STATE.players].sort((a, b) => b.score - a.score);
             let scoreboardHtml = '';
             sortedPlayers.forEach((p, idx) => {
                 let badge = idx === 0 ? '👑' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+                const isHidden = p.hidden;
                 scoreboardHtml += `
                     <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60 text-xs">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[10px] font-black text-slate-500 w-3">${idx + 1}</span>
-                            <button onclick="openHistoryModal(${p.id})" class="font-bold text-slate-200 hover:text-indigo-300 transition underline decoration-slate-600 underline-offset-4" title="اضغط لرؤية السجل">${p.name} ${badge}</button>
+                        <div class="flex items-center gap-1.5 w-1/2">
+                            <span class="text-[0.625rem] font-black text-slate-500 w-3 shrink-0">${idx + 1}</span>
+                            <button onclick="openHistoryModal(${p.id})" class="font-bold text-slate-200 hover:text-indigo-300 transition underline decoration-slate-600 underline-offset-4 truncate text-right w-full ${isHidden ? 'line-through text-slate-500 font-normal' : ''}" title="اضغط لرؤية السجل">
+                                ${p.name} ${badge} ${isHidden ? '<span class="text-[0.55rem] text-red-400 bg-red-950/20 border border-red-900/20 px-1 py-0.2 rounded font-normal">مخفي</span>' : ''}
+                            </button>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 shrink-0">
                             <div class="flex gap-0.5 bg-slate-900 border border-slate-700/50 rounded p-0.5">
-                                <button onclick="adjustScore(${p.id}, 1)" class="text-emerald-400 hover:bg-slate-700 w-5 h-5 rounded flex items-center justify-center font-bold" title="إضافة نقطة">+</button>
-                                <button onclick="adjustScore(${p.id}, -1)" class="text-red-400 hover:bg-slate-700 w-5 h-5 rounded flex items-center justify-center font-bold" title="خصم نقطة">-</button>
+                                <button onclick="adjustScore(${p.id}, 1)" class="text-emerald-400 hover:bg-slate-700 w-5 h-5 rounded flex items-center justify-center font-bold">+</button>
+                                <button onclick="adjustScore(${p.id}, -1)" class="text-red-400 hover:bg-slate-700 w-5 h-5 rounded flex items-center justify-center font-bold">-</button>
                             </div>
-                            <span class="font-black text-yellow-400 text-xs w-12 text-left">${p.score} نقطة</span>
+                            <span class="font-black text-yellow-400 text-xs w-10 text-left">${p.score}</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
 
             container.innerHTML = `
-                <div class="w-full flex flex-col justify-between max-w-sm h-full space-y-2 py-1 overflow-hidden">
-                    <div class="space-y-2 flex-1 flex flex-col overflow-hidden">
+                <div class="w-full flex flex-col max-w-sm h-full space-y-3 py-1 overflow-y-auto px-1">
+                    <div class="space-y-3 flex-1">
                         <div class="bg-gradient-to-r from-violet-950 to-indigo-950 p-2.5 rounded-xl border border-violet-800/40 text-center shrink-0">
-                            <span class="text-[9px] text-slate-400 block">الكلمة كانت:</span>
-                            <span class="text-lg font-black text-yellow-400 block">"${results.secretWord}"</span>
+                            <span class="text-[0.625rem] text-slate-400 block">الكلمة كانت:</span>
+                            <span class="text-xl sm:text-2xl font-black text-yellow-400 block">"${results.secretWord}"</span>
                         </div>
                         
-                        <div class="space-y-1.5 overflow-y-auto flex-1 pr-0.5">
-                            <div class="space-y-1">
-                                <h3 class="text-[10px] font-bold text-slate-400">🕵️‍♂️ نتائج برا السالفة:</h3>
-                                <div class="space-y-1">${outsidersHtml}</div>
-                            </div>
-                            <div class="space-y-1">
-                                <h3 class="text-[10px] font-bold text-slate-400">💬 نتائج داخل السالفة:</h3>
-                                <div class="space-y-1">${insidersHtml}</div>
-                            </div>
+                        <div id="summaryScrollArea" class="space-y-2 rounded-xl p-2 bg-slate-950 border border-slate-800">
+                            <div class="space-y-1"><h3 class="text-[0.625rem] font-bold text-slate-400">🕵️‍♂️ نتائج برا السالفة:</h3><div class="space-y-1">${outsidersHtml}</div></div>
+                            <div class="space-y-1"><h3 class="text-[0.625rem] font-bold text-slate-400">💬 نتائج داخل السالفة:</h3><div class="space-y-1">${insidersHtml}</div></div>
                             <div class="glass-panel p-2.5 rounded-xl border border-slate-800 space-y-1">
-                                <h3 class="text-[10px] font-bold text-yellow-400 border-b border-slate-800 pb-1 flex justify-between">
-                                    <span>لوحة الصدارة والترتيب</span>
-                                    <span class="text-slate-400 font-normal">اضغط عالاسم للسجل</span>
-                                </h3>
+                                <h3 class="text-[0.625rem] font-bold text-yellow-400 border-b border-slate-800 pb-1 flex justify-between"><span>لوحة الصدارة والترتيب الشامل</span></h3>
                                 <div class="space-y-0.5">${scoreboardHtml}</div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="pt-1 flex gap-2 shrink-0">
-                        <button onclick="showConfirmReset()" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-red-400 rounded-lg font-bold text-xs">تصفير 🔄</button>
-                        <button onclick="goToScreen('settings')" class="flex-[2] py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg font-bold text-xs shadow transition">جولة جديدة 🔁</button>
+                    <div class="space-y-2 shrink-0">
+                        <button id="downloadImgBtn" onclick="downloadResultsAsImage()" class="w-full py-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-xl font-bold text-xs shadow flex items-center justify-center gap-1.5 transition">
+                            📥 تنزيل لوحة النتائج كصورة
+                        </button>
+                        
+                        <div class="flex gap-2">
+                            <button onclick="showConfirmReset()" class="flex-1 py-2.5 bg-slate-900 border border-slate-800 text-red-400 rounded-xl font-bold text-xs">تصفير 🔄</button>
+                            <button onclick="goToScreen('settings')" class="flex-[2] py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs shadow transition">جولة جديدة 🔁</button>
+                        </div>
                     </div>
                 </div>
             `;
