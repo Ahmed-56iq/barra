@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>لعبة برا السالفة | الإصدار 4.0</title>
+    <title>لعبة برا السالفة | الإصدار 4.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -39,7 +39,7 @@
         
         <div class="flex items-center gap-1.5 cursor-pointer" onclick="executeGoHomeAction()">
             <span class="text-xl">🤫</span>
-            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v4.0</span></h1>
+            <h1 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v4.5</span></h1>
         </div>
         
         <button onclick="openQuickMenu()" class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition text-base" title="القائمة السريعة">⚙️</button>
@@ -50,7 +50,7 @@
     </main>
 
     <footer class="w-full max-w-md mx-auto text-center py-1 text-[0.6rem] text-slate-600 shrink-0">
-        لعبة برا السالفة - الإصدار 4.0 &copy; 2026
+        لعبة برا السالفة - الإصدار 4.5 &copy; 2026
     </footer>
 
     <!-- منبثقة إعدادات المقلب السري المتقدمة -->
@@ -180,6 +180,7 @@
             <div class="flex gap-1.5 shrink-0 mb-3">
                 <input id="quickPlayerNameInput" type="text" placeholder="اسم لاعب جديد..." class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addQuickPlayer()">
                 <button onclick="addQuickPlayer()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold transition text-xs shadow shrink-0">إضافة +</button>
+                <button type="button" data-draft-trigger class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg font-bold transition text-xs shrink-0" title="الأسماء المؤرشفة">📋 المسودة</button>
             </div>
             
             <p id="quickPlayerWarning" class="hidden text-[0.625rem] text-yellow-400 bg-yellow-900/30 border border-yellow-800 p-1.5 rounded mb-2 text-center shrink-0">⚠️ الجولة نشطة حالياً: يمكنك تعليق/إظهار اللاعبين وتعديلهم والترتيب فقط.</p>
@@ -326,6 +327,44 @@
                 </button>
             </div>
         </div>
+    <!-- منبثقة تخصيص تصنيفات الكوكتيل -->
+    <div id="cocktailCustomModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[115] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl flex flex-col">
+            <div class="flex justify-between items-center shrink-0">
+                <h3 class="text-sm font-black text-yellow-400 flex items-center gap-1.5">
+                    <span>🌍</span> تخصيص تصنيف الكوكتيل العام
+                </h3>
+                <button onclick="closeCocktailCustomModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            <p class="text-[0.6875rem] text-slate-300">حدد التصنيفات التي تريد إدراجها داخل تصنيف الكوكتيل:</p>
+            
+            <div id="cocktailSubCategoriesList" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
+                <!-- سيتم تعبئتها ديناميكياً -->
+            </div>
+
+            <div class="flex gap-2 shrink-0 pt-2 border-t border-slate-800">
+                <button onclick="closeCocktailCustomModal()" class="w-full py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-xs font-bold transition">حفظ وإغلاق ✔️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- منبثقة الأسماء المؤرشفة / المسودة -->
+    <div id="archivedPlayersModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[115] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl w-full max-w-sm max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-2 shrink-0">
+                <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+                    <span>📋</span> الأسماء المؤرشفة (المسودة)
+                </h3>
+                <button onclick="closeArchivedPlayersModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full w-6 h-6 flex justify-center items-center font-bold">✕</button>
+            </div>
+            <p class="text-[0.625rem] text-slate-400 mb-2 shrink-0">اضغط على أي اسم لإضافته فوراً للاعبين النشطين:</p>
+            
+            <div id="archivedPlayersGrid" class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 gap-1.5 content-start">
+                <!-- سيتم تعبئتها ديناميكياً -->
+            </div>
+
+            <button onclick="closeArchivedPlayersModal()" class="w-full mt-3 py-2 bg-slate-800 hover:bg-slate-700 transition text-slate-200 rounded-xl text-xs font-bold shrink-0">إغلاق</button>
+        </div>
     </div>
 
     <script>
@@ -374,29 +413,37 @@
             adult12: { name: 'تحشيش وشارع (+12)', icon: '💬', desc: 'كلمات ومصطلحات للمزاح والضحك الخفيف الصديق للعائلة' }
         };
 
+        const CATEGORY_KEYS = Object.keys(CATEGORIES_INFO);
+
+        const PRESET_ARCHIVED_PLAYERS = [
+            "احسان", "اكرم", "امجد", "ايراني", "بهاء", "توني", 
+            "رسلان", "زيدون", "شريف", "صالح", "عباس", "عبدول", 
+            "علام", "فاضل", "فريق", "كرار", "محمدحسين", "مصور", 
+            "مهدي", "موسى", "وسام", "يونس"
+        ];
+
+        const COCKTAIL_SUBCATEGORY_KEYS = ['food', 'animals', 'places', 'household', 'jobs', 'bodyParts', 'adult12'];
+
         const MAX_HISTORY_LEN = 50;
 
         const STATE = {
-            version: '4.0', 
+            version: '4.5', 
             fontFamily: 'Cairo',
             fontSize: 16, 
             perfectSneakBonus: false,
             timerVoteEnabled: true,     
             timerGuessEnabled: true,    
             timeoutPenaltyChoice: true, 
-            rejectOutsiderEnabled: true, 
-            players: [
-                { id: 1, name: 'حسين', score: 0, history: [], outsiderStreak: 0, hidden: false },
-                { id: 2, name: 'بهاء', score: 0, history: [], outsiderStreak: 0, hidden: false },
-                { id: 3, name: 'توني', score: 0, history: [], outsiderStreak: 0, hidden: false },
-                { id: 4, name: 'فريق', score: 0, history: [], outsiderStreak: 0, hidden: false },
-                { id: 5, name: 'فاضل', score: 0, history: [], outsiderStreak: 0, hidden: false }
-            ],
+            rejectOutsiderEnabled: false, 
+            cocktailSubCategories: ['food', 'animals', 'places', 'household', 'jobs', 'bodyParts'],
+            players: [], // القائمة فارغة بشكل افتراضي كما طلب المستخدم
             selectedCategory: 'general',
-            outsidersCountSetting: 'random', 
+            selectedCategories: ['general'], // الفئات المحددة من المستخدم، ويتم سحب واحدة عشوائياً كل جولة
+            outsidersCountSetting: 'random',
             playedWords: { general: [], food: [], animals: [], places: [], household: [], jobs: [], bodyParts: [], adult12: [] },
             currentRound: {
                 secretWord: '', outsiders: [], activeRevealerIdx: 0,
+                revealOrder: [],
                 votes: {}, outsiderGuesses: {}, outsiderOptionsCache: {}, 
                 currentVotingPlayerIdx: 0, votingOrder: [], currentOutsiderGuessIdx: 0,
                 selectedSuspects: [], forgotRolePlayerId: null,
@@ -409,6 +456,36 @@
 
         function getActivePlayers() {
             return STATE.players.filter(p => !p.hidden);
+        }
+
+        function normaliseCocktailSubCategories(categories) {
+            const selected = Array.isArray(categories) ? categories : [];
+            const valid = selected.filter((key, index) => COCKTAIL_SUBCATEGORY_KEYS.includes(key) && selected.indexOf(key) === index);
+            return valid.length ? valid : ['food', 'animals'];
+        }
+
+        function normaliseSelectedCategories(categories) {
+            const selected = Array.isArray(categories) ? categories : [];
+            const valid = selected.filter((key, index) => CATEGORY_KEYS.includes(key) && selected.indexOf(key) === index);
+            return valid.length ? valid : ['general'];
+        }
+
+        function getSelectedCategories() {
+            STATE.selectedCategories = normaliseSelectedCategories(STATE.selectedCategories);
+            return STATE.selectedCategories;
+        }
+
+        // تُستدعى مرة واحدة عند بدء الجولة: تسحب فئة عشوائية من بين الفئات المحددة
+        function resolveRoundCategory() {
+            const selected = getSelectedCategories();
+            STATE.selectedCategory = selected[Math.floor(Math.random() * selected.length)];
+            return STATE.selectedCategory;
+        }
+
+        function getCocktailWords() {
+            const subCats = normaliseCocktailSubCategories(STATE.cocktailSubCategories);
+            STATE.cocktailSubCategories = subCats;
+            return Array.from(new Set(subCats.flatMap((catKey) => WORD_DATABASE[catKey] || [])));
         }
 
         function playTimerSound() {
@@ -456,7 +533,8 @@
         }
 
         function loadState() {
-            const saved = localStorage.getItem('barrasalfa_iq_state_v40'); 
+            const savedV45 = localStorage.getItem('barrasalfa_iq_state_v45');
+            const saved = savedV45 || localStorage.getItem('barrasalfa_iq_state_v44') || localStorage.getItem('barrasalfa_iq_state_v43') || localStorage.getItem('barrasalfa_iq_state_v42') || localStorage.getItem('barrasalfa_iq_state_v40'); 
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
@@ -466,12 +544,22 @@
                             if (!STATE.playedWords[cat]) STATE.playedWords[cat] = [];
                         }
                     }
-                    if (parsed.players && parsed.players.length >= 3) {
+                    if (parsed.players && Array.isArray(parsed.players)) {
                         STATE.players = parsed.players.map(p => ({
-                            ...p, history: p.history || [], outsiderStreak: p.outsiderStreak || 0, hidden: p.hidden || false
+                            ...p, 
+                            history: p.history || [], 
+                            outsiderStreak: p.outsiderStreak || 0, 
+                            totalOutsiderCount: p.totalOutsiderCount || 0, 
+                            hidden: p.hidden || false
                         }));
                     }
                     if (parsed.selectedCategory) STATE.selectedCategory = parsed.selectedCategory;
+                    // توافق مع النسخ القديمة: لو محفوظة فئة واحدة فقط نحولها لقائمة
+                    if (parsed.selectedCategories && Array.isArray(parsed.selectedCategories) && parsed.selectedCategories.length > 0) {
+                        STATE.selectedCategories = normaliseSelectedCategories(parsed.selectedCategories);
+                    } else if (parsed.selectedCategory) {
+                        STATE.selectedCategories = normaliseSelectedCategories([parsed.selectedCategory]);
+                    }
                     if (parsed.outsidersCountSetting) STATE.outsidersCountSetting = parsed.outsidersCountSetting;
                     if (parsed.fontFamily) STATE.fontFamily = parsed.fontFamily;
                     if (parsed.fontSize) STATE.fontSize = parseInt(parsed.fontSize) || 16;
@@ -479,19 +567,24 @@
                     if (parsed.timerVoteEnabled !== undefined) STATE.timerVoteEnabled = parsed.timerVoteEnabled;
                     if (parsed.timerGuessEnabled !== undefined) STATE.timerGuessEnabled = parsed.timerGuessEnabled;
                     if (parsed.timeoutPenaltyChoice !== undefined) STATE.timeoutPenaltyChoice = parsed.timeoutPenaltyChoice;
-                    if (parsed.rejectOutsiderEnabled !== undefined) STATE.rejectOutsiderEnabled = parsed.rejectOutsiderEnabled;
+                    if (savedV45 && parsed.rejectOutsiderEnabled !== undefined) STATE.rejectOutsiderEnabled = parsed.rejectOutsiderEnabled;
+                    if (parsed.cocktailSubCategories && Array.isArray(parsed.cocktailSubCategories) && parsed.cocktailSubCategories.length > 0) {
+                        STATE.cocktailSubCategories = normaliseCocktailSubCategories(parsed.cocktailSubCategories);
+                    }
                 } catch(e) {}
             }
             applyStyleSettings();
         }
 
         function saveState() {
-            localStorage.setItem('barrasalfa_iq_state_v40', JSON.stringify({
+            localStorage.setItem('barrasalfa_iq_state_v45', JSON.stringify({
                 playedWords: STATE.playedWords, players: STATE.players,
-                selectedCategory: STATE.selectedCategory, outsidersCountSetting: STATE.outsidersCountSetting,
+                selectedCategory: STATE.selectedCategory, selectedCategories: STATE.selectedCategories,
+                outsidersCountSetting: STATE.outsidersCountSetting,
                 fontFamily: STATE.fontFamily, fontSize: STATE.fontSize, perfectSneakBonus: STATE.perfectSneakBonus,
                 timerVoteEnabled: STATE.timerVoteEnabled, timerGuessEnabled: STATE.timerGuessEnabled,
-                timeoutPenaltyChoice: STATE.timeoutPenaltyChoice, rejectOutsiderEnabled: STATE.rejectOutsiderEnabled
+                timeoutPenaltyChoice: STATE.timeoutPenaltyChoice, rejectOutsiderEnabled: STATE.rejectOutsiderEnabled,
+                cocktailSubCategories: STATE.cocktailSubCategories
             }));
         }
 
@@ -610,6 +703,326 @@
             }
         }
 
+        function openCocktailCustomModal() {
+            renderCocktailSubCategoriesList();
+            document.getElementById('cocktailCustomModal').classList.remove('hidden');
+        }
+
+        function closeCocktailCustomModal() {
+            STATE.cocktailSubCategories = normaliseCocktailSubCategories(STATE.cocktailSubCategories);
+            if (!STATE.cocktailSubCategories.length) {
+                alertCustom("يجب اختيار تصنيف واحد على الأقل للكوكتيل!");
+                STATE.cocktailSubCategories = ['food', 'animals'];
+            }
+            saveState();
+            document.getElementById('cocktailCustomModal').classList.add('hidden');
+            if (STATE.screen === 'settings') render();
+        }
+
+        function toggleCocktailSubCategory(catKey) {
+            if (!COCKTAIL_SUBCATEGORY_KEYS.includes(catKey)) return;
+            STATE.cocktailSubCategories = normaliseCocktailSubCategories(STATE.cocktailSubCategories);
+            const idx = STATE.cocktailSubCategories.indexOf(catKey);
+            if (idx > -1) {
+                if (STATE.cocktailSubCategories.length <= 1) {
+                    alertCustom("يجب إبقاء تصنيف واحد على الأقل في الكوكتيل!");
+                    return;
+                }
+                STATE.cocktailSubCategories.splice(idx, 1);
+            } else {
+                STATE.cocktailSubCategories.push(catKey);
+            }
+            saveState();
+            renderCocktailSubCategoriesList();
+        }
+
+        function renderCocktailSubCategoriesList() {
+            const container = document.getElementById('cocktailSubCategoriesList');
+            if (!container) return;
+            let html = '';
+            const subCatKeys = COCKTAIL_SUBCATEGORY_KEYS;
+            
+            subCatKeys.forEach(catKey => {
+                const info = CATEGORIES_INFO[catKey];
+                const isChecked = STATE.cocktailSubCategories.includes(catKey);
+                html += `
+                    <label class="flex items-center justify-between p-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl cursor-pointer hover:bg-slate-800 transition">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${info.icon}</span>
+                            <div>
+                                <span class="text-xs font-bold text-slate-100 block">${info.name}</span>
+                                <span class="text-[0.6rem] text-slate-400 block">${WORD_DATABASE[catKey].length} كلمة</span>
+                            </div>
+                        </div>
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCocktailSubCategory('${catKey}')" class="w-5 h-5 accent-yellow-500 rounded">
+                    </label>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function openArchivedPlayersModal() {
+            const modal = document.getElementById('archivedPlayersModal');
+            if (!modal) return;
+            renderArchivedPlayersGrid();
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeArchivedPlayersModal() {
+            const modal = document.getElementById('archivedPlayersModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden', 'true');
+            }
+            if (STATE.screen === 'setup') render();
+        }
+
+        // Keep these handlers explicitly available to buttons created dynamically by render().
+        window.openArchivedPlayersModal = openArchivedPlayersModal;
+        window.closeArchivedPlayersModal = closeArchivedPlayersModal;
+
+        // Draft picker v4.4: built at click time, independent from the old modal.
+        // تحديث: تبقى مفتوحة حتى يغلقها المستخدم، وتسمح باختيار أكثر من لاعب،
+        // مع تظليل الاسم المختار وإظهار علامة (−) لإلغاء الاختيار.
+        const draftNormalise = (value) => String(value || '').trim().toLocaleLowerCase('ar');
+
+        function isDraftNameAdded(name) {
+            if (!Array.isArray(STATE.players)) return false;
+            return STATE.players.some((player) => draftNormalise(player.name) === draftNormalise(name));
+        }
+
+        function closeDraftPickerV44() {
+            const picker = document.getElementById('draftPickerV44');
+            if (picker) picker.remove();
+        }
+
+        // تحديث المسودة والشاشة التي خلفها بعد أي إضافة أو إلغاء
+        function syncAfterDraftChange() {
+            saveState();
+            renderDraftPickerGridV44();
+            const quickManager = document.getElementById('quickPlayerManagerModal');
+            if (quickManager && !quickManager.classList.contains('hidden')) renderQuickPlayersList();
+            if (STATE.screen === 'setup') render();
+        }
+
+        function addDraftPlayerV44(name) {
+            if (!Array.isArray(STATE.players)) STATE.players = [];
+
+            if (STATE.players.length >= 15) {
+                alertCustom('الحد الأقصى 15 لاعب!');
+                return;
+            }
+            if (isDraftNameAdded(name)) {
+                alertCustom('اللاعب مضاف بالفعل!');
+                return;
+            }
+
+            const ids = STATE.players.map((player) => Number(player.id)).filter(Number.isFinite);
+            const id = ids.length ? Math.max(...ids) + 1 : 1;
+            STATE.players.push({ id, name, score: 0, history: [], outsiderStreak: 0, totalOutsiderCount: 0, hidden: false });
+
+            if (isGameActive() && STATE.currentRound) {
+                if (Array.isArray(STATE.currentRound.votingOrder) && !STATE.currentRound.votingOrder.includes(id)) STATE.currentRound.votingOrder.push(id);
+                if (Array.isArray(STATE.currentRound.revealOrder) && !STATE.currentRound.revealOrder.includes(id)) STATE.currentRound.revealOrder.push(id);
+            }
+
+            syncAfterDraftChange();
+        }
+
+        function removeDraftPlayerV44(name) {
+            if (isGameActive()) {
+                alertCustom('لا يمكن إلغاء اختيار لاعب أثناء جولة نشطة!');
+                return;
+            }
+            const player = STATE.players.find((candidate) => draftNormalise(candidate.name) === draftNormalise(name));
+            if (!player) return;
+            STATE.players = STATE.players.filter((candidate) => candidate.id !== player.id);
+            syncAfterDraftChange();
+        }
+
+        function toggleDraftPlayerV44(name) {
+            if (isDraftNameAdded(name)) removeDraftPlayerV44(name);
+            else addDraftPlayerV44(name);
+        }
+
+        function renderDraftPickerGridV44() {
+            const grid = document.getElementById('draftPickerGridV44');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            [...PRESET_ARCHIVED_PLAYERS].sort((a, b) => a.localeCompare(b, 'ar')).forEach((name) => {
+                const added = isDraftNameAdded(name);
+
+                const playerButton = document.createElement('button');
+                playerButton.type = 'button';
+                playerButton.dataset.draftName = name;
+                playerButton.title = added ? 'تم اختياره — اضغط علامة (−) لإلغاء الاختيار' : 'اضغط لإضافته إلى اللاعبين';
+                playerButton.style.cssText = 'min-height:44px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;'
+                    + `border:1px solid ${added ? '#b45309' : '#475569'};border-radius:10px;background:${added ? '#1c1917' : '#1e293b'};`
+                    + `color:#e2e8f0;font-weight:700;cursor:pointer;opacity:${added ? '0.45' : '1'};transition:opacity .15s,border-color .15s,background .15s;`;
+
+                const label = document.createElement('span');
+                label.textContent = name;
+                label.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+
+                const badge = document.createElement('span');
+                badge.textContent = added ? '−' : '+';
+                badge.style.cssText = 'width:22px;height:22px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:16px;font-weight:900;line-height:1;'
+                    + `background:${added ? '#7f1d1d' : '#312e81'};color:${added ? '#fca5a5' : '#a5b4fc'};`;
+
+                playerButton.append(label, badge);
+                playerButton.addEventListener('click', () => toggleDraftPlayerV44(name));
+                grid.appendChild(playerButton);
+            });
+
+            const counter = document.getElementById('draftPickerCountV44');
+            if (counter) counter.textContent = `اللاعبون المضافون: ${STATE.players.length} / 15`;
+        }
+
+        function openDraftPickerV44() {
+            closeDraftPickerV44();
+
+            const picker = document.createElement('div');
+            picker.id = 'draftPickerV44';
+            picker.setAttribute('role', 'dialog');
+            picker.setAttribute('aria-modal', 'true');
+            picker.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,6,23,.92);direction:rtl;';
+
+            const panel = document.createElement('section');
+            panel.style.cssText = 'width:min(420px,100%);max-height:85vh;display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid #475569;border-radius:18px;background:#0f172a;color:#f8fafc;box-shadow:0 24px 64px rgba(0,0,0,.55);';
+
+            const header = document.createElement('div');
+            header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;';
+            const title = document.createElement('strong');
+            title.textContent = '📋 اختر لاعبين من المسودة';
+            const close = document.createElement('button');
+            close.type = 'button';
+            close.textContent = '✕';
+            close.style.cssText = 'width:30px;height:30px;border:0;border-radius:999px;background:#334155;color:#fff;font-weight:700;cursor:pointer;';
+            close.addEventListener('click', closeDraftPickerV44);
+            header.append(title, close);
+
+            const hint = document.createElement('p');
+            hint.textContent = 'اضغط الأسماء لإضافتها (تقدر تختار أكثر من واحد). الاسم المختار يصير باهتاً وتظهر بجانبه علامة (−) لإلغاء اختياره. النافذة تبقى مفتوحة حتى تغلقها بنفسك.';
+            hint.style.cssText = 'margin:0;color:#94a3b8;font-size:12px;line-height:1.6;';
+
+            const counter = document.createElement('div');
+            counter.id = 'draftPickerCountV44';
+            counter.style.cssText = 'color:#cbd5e1;font-size:12px;font-weight:700;background:#1e293b;border:1px solid #334155;border-radius:10px;padding:6px 10px;text-align:center;';
+
+            const grid = document.createElement('div');
+            grid.id = 'draftPickerGridV44';
+            grid.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:auto;padding:2px;';
+
+            const doneButton = document.createElement('button');
+            doneButton.type = 'button';
+            doneButton.textContent = 'تم ✔️';
+            doneButton.style.cssText = 'flex:0 0 auto;padding:11px;border:0;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:#fff;font-weight:800;font-size:13px;cursor:pointer;';
+            doneButton.addEventListener('click', closeDraftPickerV44);
+
+            picker.addEventListener('click', (event) => { if (event.target === picker) closeDraftPickerV44(); });
+            panel.append(header, hint, counter, grid, doneButton);
+            picker.appendChild(panel);
+            document.body.appendChild(picker);
+
+            renderDraftPickerGridV44();
+        }
+
+        document.addEventListener('click', (event) => {
+            const trigger = event.target.closest('[data-draft-trigger]');
+            if (!trigger) return;
+            event.preventDefault();
+            openDraftPickerV44();
+        });
+
+        function addArchivedPlayer(name) {
+            if (STATE.players.length >= 15) { alertCustom("الحد الأقصى 15 لاعب!"); return; }
+            if (STATE.players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+                alertCustom("اللاعب مضاف بالفعل!");
+                return;
+            }
+            const newId = STATE.players.length > 0 ? Math.max(...STATE.players.map(p => p.id)) + 1 : 1;
+            const newPlayer = { id: newId, name: name, score: 0, history: [], outsiderStreak: 0, totalOutsiderCount: 0, hidden: false };
+            STATE.players.push(newPlayer);
+
+            if (isGameActive() && STATE.currentRound) {
+                if (STATE.currentRound.votingOrder && !STATE.currentRound.votingOrder.includes(newId)) {
+                    STATE.currentRound.votingOrder.push(newId);
+                }
+                if (STATE.currentRound.revealOrder && !STATE.currentRound.revealOrder.includes(newId)) {
+                    STATE.currentRound.revealOrder.push(newId);
+                }
+            }
+
+            saveState();
+            renderArchivedPlayersGrid();
+            if (!document.getElementById('quickPlayerManagerModal').classList.contains('hidden')) {
+                renderQuickPlayersList();
+            }
+            // تحديث عداد اللاعبين في شاشة الإعداد بدون إغلاق المودال
+            const activeCountEl = document.querySelector('#app span[class*="bg-slate-800"]');
+            if (activeCountEl && STATE.screen === 'setup') {
+                activeCountEl.textContent = 'نشطين: ' + getActivePlayers().length;
+            }
+        }
+
+        function removeArchivedPlayer(name) {
+            const player = STATE.players.find(p => p.name.toLowerCase() === name.toLowerCase());
+            if (player) {
+                if (STATE.players.length <= 1) { alertCustom("لا يمكن إزالة اللاعب الوحيد!"); return; }
+                STATE.players = STATE.players.filter(p => p.id !== player.id);
+                saveState();
+                renderArchivedPlayersGrid();
+                if (!document.getElementById('quickPlayerManagerModal').classList.contains('hidden')) {
+                    renderQuickPlayersList();
+                }
+                const activeCountEl = document.querySelector('#app span[class*="bg-slate-800"]');
+                if (activeCountEl && STATE.screen === 'setup') {
+                    activeCountEl.textContent = 'نشطين: ' + getActivePlayers().length;
+                }
+            }
+        }
+
+        function renderArchivedPlayersGrid() {
+            const container = document.getElementById('archivedPlayersGrid');
+            if (!container) return;
+            let html = '';
+            
+            const sortedNames = [...PRESET_ARCHIVED_PLAYERS].sort((a, b) => a.localeCompare(b, 'ar'));
+
+            sortedNames.forEach(name => {
+                const isAdded = STATE.players.some(p => p.name.toLowerCase() === name.toLowerCase());
+                if (isAdded) {
+                    html += `
+                        <button type="button" data-archived-player="${name}" data-archived-action="remove" class="py-2 px-2 bg-emerald-950/60 border border-emerald-600/60 text-emerald-300 rounded-xl text-xs font-bold text-center flex items-center justify-between transition hover:bg-red-950/40 hover:border-red-600/60 hover:text-red-400 group" title="اضغط للإزالة">
+                            <span>${name}</span>
+                            <span class="group-hover:hidden text-[0.625rem]">✓</span>
+                            <span class="hidden group-hover:inline text-[0.625rem]">✕</span>
+                        </button>
+                    `;
+                } else {
+                    html += `
+                        <button type="button" data-archived-player="${name}" data-archived-action="add" class="py-2 px-2 bg-slate-800 border border-slate-700/80 hover:border-indigo-500 text-slate-200 rounded-xl text-xs font-bold text-center flex items-center justify-between transition hover:bg-slate-750">
+                            <span>${name}</span>
+                            <span class="text-indigo-400 font-bold text-sm">+</span>
+                        </button>
+                    `;
+                }
+            });
+            container.innerHTML = html;
+            container.onclick = (event) => {
+                const button = event.target.closest('[data-archived-player]');
+                if (!button || !container.contains(button)) return;
+
+                const { archivedPlayer: name, archivedAction: action } = button.dataset;
+                if (action === 'add') addArchivedPlayer(name);
+                if (action === 'remove') removeArchivedPlayer(name);
+            };
+        }
+
         function addQuickPlayer() {
             const input = document.getElementById('quickPlayerNameInput');
             const name = input.value.trim();
@@ -618,7 +1031,19 @@
             if (STATE.players.some(p => p.name.toLowerCase() === name.toLowerCase())) { alertCustom("الاسم موجود بالفعل!"); return; }
             
             const newId = STATE.players.length > 0 ? Math.max(...STATE.players.map(p => p.id)) + 1 : 1;
-            STATE.players.push({ id: newId, name: name, score: 0, history: [], outsiderStreak: 0, hidden: false });
+            const newPlayer = { id: newId, name: name, score: 0, history: [], outsiderStreak: 0, totalOutsiderCount: 0, hidden: false };
+            STATE.players.push(newPlayer);
+
+            // إصلاح: تحديث مصفوفة التصويت والجولة النشطة عند إضافة لاعب أثناء اللعب
+            if (isGameActive() && STATE.currentRound) {
+                if (STATE.currentRound.votingOrder && !STATE.currentRound.votingOrder.includes(newId)) {
+                    STATE.currentRound.votingOrder.push(newId);
+                }
+                if (STATE.currentRound.revealOrder && !STATE.currentRound.revealOrder.includes(newId)) {
+                    STATE.currentRound.revealOrder.push(newId);
+                }
+            }
+
             input.value = ''; saveState(); renderQuickPlayersList();
         }
 
@@ -644,7 +1069,7 @@
         }
 
         function renderCategoryWordsGrid(catKey, filterText) {
-            const allWords = WORD_DATABASE[catKey];
+            const allWords = catKey === 'general' ? getCocktailWords() : WORD_DATABASE[catKey];
             const playedWords = STATE.playedWords[catKey] || [];
             
             const filteredWords = allWords.filter(word => word.toLowerCase().includes(filterText));
@@ -711,7 +1136,7 @@
         }
 
         function selectSecretWordForCategory(catKey) {
-            const allWords = WORD_DATABASE[catKey];
+            const allWords = catKey === 'general' ? getCocktailWords() : WORD_DATABASE[catKey];
             const played = STATE.playedWords[catKey] || [];
             let remaining = allWords.filter(w => !played.includes(w));
             
@@ -831,6 +1256,13 @@
                 return;
             }
 
+            // سحب فئة عشوائية من بين الفئات التي حددها المستخدم
+            const roundCategories = getSelectedCategories();
+            resolveRoundCategory();
+            if (roundCategories.length > 1) {
+                alertCustom(`🎲 فئة هذه الجولة: ${CATEGORIES_INFO[STATE.selectedCategory].name}`);
+            }
+
             let numOutsiders = 1;
             const prankWords = {};
             let chosenOutsiders = [];
@@ -872,15 +1304,25 @@
                 }
                 if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
 
-                let eligibleForOutsider = activePlayers.filter(p => (p.outsiderStreak || 0) < 2).map(p => p.id);
-                if (eligibleForOutsider.length < numOutsiders) eligibleForOutsider = activePlayers.map(p => p.id);
+                const eligibleForOutsider = activePlayers.filter(p => (p.totalOutsiderCount || 0) < 2).map(p => p.id);
+                if (eligibleForOutsider.length === 0) {
+                    alertCustom('كل اللاعبين وصلوا الحد الأقصى: مرتان برا السالفة. أضف لاعباً جديداً أو ابدأ تشكيلة جديدة.');
+                    return;
+                }
+                // Never assign a third outsider role. If fewer eligible players remain,
+                // the round continues with the number that is still available.
+                numOutsiders = Math.min(numOutsiders, eligibleForOutsider.length);
 
                 const shuffledIds = [...eligibleForOutsider].sort(() => Math.random() - 0.5);
                 chosenOutsiders = shuffledIds.slice(0, numOutsiders);
                 
                 STATE.players.forEach(p => {
-                    if(chosenOutsiders.includes(p.id)) p.outsiderStreak = (p.outsiderStreak || 0) + 1;
-                    else p.outsiderStreak = 0;
+                    if (chosenOutsiders.includes(p.id)) {
+                        p.totalOutsiderCount = (p.totalOutsiderCount || 0) + 1;
+                        p.outsiderStreak = (p.outsiderStreak || 0) + 1;
+                    } else {
+                        p.outsiderStreak = 0;
+                    }
                 });
 
                 word = selectSecretWordForCategory(STATE.selectedCategory);
@@ -897,6 +1339,7 @@
             
             STATE.currentRound = {
                 secretWord: word, outsiders: chosenOutsiders, activeRevealerIdx: 0,
+                revealOrder: activePlayers.map(p => p.id),
                 votes: {}, outsiderGuesses: {}, outsiderOptionsCache: {},
                 currentVotingPlayerIdx: 0, votingOrder: votingOrder, currentOutsiderGuessIdx: 0,
                 selectedSuspects: [], forgotRolePlayerId: null,
@@ -1009,6 +1452,7 @@
                         <div class="flex gap-1.5 shrink-0">
                             <input id="playerNameInput" type="text" placeholder="اكتب اسم لاعب جديد..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition text-slate-100" onkeypress="if(event.key === 'Enter') addPlayer()">
                             <button onclick="addPlayer()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg font-bold transition text-xs shadow shrink-0">إضافة +</button>
+                            <button type="button" data-draft-trigger class="px-2.5 py-1.5 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 text-indigo-300 rounded-lg font-bold transition text-xs shadow shrink-0 flex items-center gap-1" title="اختيار من الأسماء المسودة">📋 المسودة</button>
                         </div>
                         <div id="players-list-container" class="space-y-1.5">${playersHtml}</div>
                     </div>
@@ -1047,15 +1491,17 @@
 
         function renderSettingsScreen(container) {
             let categoriesHtml = '';
+            const selectedCats = getSelectedCategories();
             Object.entries(CATEGORIES_INFO).forEach(([key, value]) => {
-                const isSelected = STATE.selectedCategory === key;
+                const isSelected = selectedCats.includes(key);
                 const playedCount = getCategoryPlayedCount(key);
                 const totalWords = WORD_DATABASE[key].length;
-                
+
                 categoriesHtml += `
                     <div class="w-full flex items-center gap-1.5">
                         <button onclick="selectCategory('${key}')" class="flex-1 text-right glass-panel p-4 rounded-2xl border flex justify-between items-center transition relative min-h-[4.5rem] ${isSelected ? 'border-yellow-400 bg-violet-950/25 glow-purple' : 'border-slate-800 hover:border-slate-700'}">
                             <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                <span class="w-5 h-5 shrink-0 rounded-md border flex items-center justify-center text-[0.6875rem] font-black ${isSelected ? 'bg-yellow-400 border-yellow-400 text-slate-950' : 'border-slate-600 text-transparent'}">✓</span>
                                 <span class="text-2xl sm:text-3xl shrink-0">${value.icon}</span>
                                 <div class="text-right min-w-0 flex-1">
                                     <h4 class="font-bold text-xs sm:text-sm text-slate-100 truncate ${isSelected ? 'text-yellow-400 font-black' : ''}">${value.name}</h4>
@@ -1069,6 +1515,10 @@
                 `;
             });
 
+            const multiCatHint = selectedCats.length > 1
+                ? `<span class="text-[0.625rem] text-yellow-400 bg-yellow-950/30 border border-yellow-800/50 px-2 py-0.5 rounded-lg">🎲 ${selectedCats.length} فئات — تُسحب واحدة عشوائياً كل جولة</span>`
+                : `<span class="text-[0.625rem] text-slate-500">اختر فئة أو أكثر</span>`;
+
             const maxAllowedOutsiders = Math.max(1, Math.min(3, getActivePlayers().length - 2));
             
             container.innerHTML = `
@@ -1080,7 +1530,10 @@
                         </div>
                         
                         <div class="space-y-2">
-                            <label class="text-[0.6875rem] font-bold text-slate-300 block">اختار الفئة للعب:</label>
+                            <div class="flex items-center justify-between gap-2 flex-wrap">
+                                <label class="text-[0.6875rem] font-bold text-slate-300 block">اختار فئة اللعب (يمكن اختيار أكثر من فئة):</label>
+                                ${multiCatHint}
+                            </div>
                             <div class="space-y-2">${categoriesHtml}</div>
                         </div>
                         
@@ -1182,7 +1635,7 @@
             document.getElementById('confirmResetBtn').disabled = (input !== currentResetPin);
         }
         function executeReset() {
-            STATE.players.forEach(p => { p.score = 0; p.history = []; p.outsiderStreak = 0; p.hidden = false; });
+            STATE.players.forEach(p => { p.score = 0; p.history = []; p.outsiderStreak = 0; p.totalOutsiderCount = 0; p.hidden = false; });
             saveState(); closeConfirmReset(); goToScreen('setup');
         }
 
@@ -1194,11 +1647,50 @@
         function changeFont(font) { STATE.fontFamily = font; applyStyleSettings(); saveState(); }
         function changeFontSize(size) { STATE.fontSize = parseInt(size); applyStyleSettings(); saveState(); }
         function toggleSneakBonus(val) { STATE.perfectSneakBonus = val; saveState(); }
-        function selectCategory(catKey) { STATE.selectedCategory = catKey; saveState(); render(); }
+        // تبديل الفئة: ضغطة تضيفها للاختيار وضغطة أخرى تلغيها (مع إبقاء فئة واحدة على الأقل)
+        function selectCategory(catKey) {
+            if (!CATEGORY_KEYS.includes(catKey)) return;
+            const selected = getSelectedCategories();
+            const idx = selected.indexOf(catKey);
+            if (idx > -1) {
+                if (selected.length <= 1) {
+                    alertCustom("يجب اختيار فئة واحدة على الأقل!");
+                    return;
+                }
+                selected.splice(idx, 1);
+            } else {
+                selected.push(catKey);
+            }
+            // نبقي selectedCategory صالحة دائماً، وسيُعاد سحبها عشوائياً عند بدء الجولة
+            if (!selected.includes(STATE.selectedCategory)) STATE.selectedCategory = selected[0];
+            saveState();
+            render();
+        }
         function selectOutsidersCountSetting(val) { STATE.outsidersCountSetting = val; saveState(); render(); }
 
+        function postponeRevealTurn() {
+            if (!STATE.currentRound.revealOrder || STATE.currentRound.revealOrder.length === 0) {
+                STATE.currentRound.revealOrder = getActivePlayers().map(p => p.id);
+            }
+            const activeIdx = STATE.currentRound.activeRevealerIdx;
+            const order = STATE.currentRound.revealOrder;
+            if (activeIdx < order.length - 1) {
+                const currentP = order.splice(activeIdx, 1)[0];
+                order.push(currentP);
+                alertCustom("تم تأجيل كشف دورك لنهاية الأدوار! ⏰");
+                goToScreen('pass-to-player');
+            } else {
+                alertCustom("أنت آخر لاعب، لا يمكن التأجيل!");
+            }
+        }
+
         function renderPassToPlayerScreen(container) {
-            const currentPlayer = getActivePlayers()[STATE.currentRound.activeRevealerIdx];
+            if (!STATE.currentRound.revealOrder || STATE.currentRound.revealOrder.length === 0) {
+                STATE.currentRound.revealOrder = getActivePlayers().map(p => p.id);
+            }
+            const currentId = STATE.currentRound.revealOrder[STATE.currentRound.activeRevealerIdx];
+            const currentPlayer = STATE.players.find(p => p.id === currentId) || getActivePlayers()[0];
+            const canPostpone = STATE.currentRound.activeRevealerIdx < STATE.currentRound.revealOrder.length - 1;
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center text-center space-y-4 px-1 my-auto max-h-full overflow-y-auto">
                     <span class="text-4xl animate-bounce">📱</span>
@@ -1209,16 +1701,37 @@
                     <div class="p-3 glass-panel rounded-xl border border-red-500/10 max-w-xs">
                         <p class="text-[0.6875rem] text-red-300 font-semibold leading-relaxed">⚠️ تأكد محد غير ${currentPlayer.name} يباوع للشاشة!</p>
                     </div>
-                    <button onclick="goToScreen('reveal-role')" class="w-full max-w-xs py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs shadow hover:from-violet-500 transition">
-                        أني ${currentPlayer.name}، اكشف دوري 🤫
-                    </button>
+                    <div class="w-full max-w-xs flex gap-1.5">
+                        <button onclick="goToScreen('reveal-role')" class="${canPostpone ? 'flex-[2]' : 'w-full'} py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs shadow hover:from-violet-500 transition">
+                            أني ${currentPlayer.name}، اكشف دوري 🤫
+                        </button>
+                        ${canPostpone ? `<button onclick="postponeRevealTurn()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-xl font-bold text-xs transition">⏰ تأجيل دوري</button>` : ''}
+                    </div>
                 </div>
             `;
+        }
+
+        function getEligibleOutsiderReplacementIds() {
+            const round = STATE.currentRound;
+            const revealOrder = Array.isArray(round.revealOrder) ? round.revealOrder : [];
+            return revealOrder.slice(round.activeRevealerIdx + 1).filter((id) => {
+                const player = STATE.players.find((candidate) => candidate.id === id);
+                return player
+                    && !round.outsiders.includes(id)
+                    && !round.rejectedPlayers.includes(id)
+                    && (Number(player.totalOutsiderCount) || 0) < 2;
+            });
         }
 
         function rejectOutsiderRole(playerId) {
             const player = STATE.players.find(p => p.id === playerId);
             if (!player) return;
+
+            const replacementIds = getEligibleOutsiderReplacementIds();
+            if (replacementIds.length === 0) {
+                alertCustom('لا يوجد لاعب مؤهل لمقايضة الدور من دون تجاوز حد المرتين.');
+                return;
+            }
 
             player.score -= 1;
             player.history.unshift({ 
@@ -1231,17 +1744,10 @@
 
             STATE.currentRound.outsiders = STATE.currentRound.outsiders.filter(id => id !== playerId);
             STATE.currentRound.rejectedPlayers.push(playerId);
-
-            const activePlayers = getActivePlayers();
-            const unrevealedPlayerIds = [];
-            for (let i = STATE.currentRound.activeRevealerIdx + 1; i < activePlayers.length; i++) {
-                unrevealedPlayerIds.push(activePlayers[i].id);
-            }
-
-            if (unrevealedPlayerIds.length > 0) {
-                const newOutsiderId = unrevealedPlayerIds[Math.floor(Math.random() * unrevealedPlayerIds.length)];
-                STATE.currentRound.outsiders.push(newOutsiderId);
-            }
+            const newOutsiderId = replacementIds[Math.floor(Math.random() * replacementIds.length)];
+            STATE.currentRound.outsiders.push(newOutsiderId);
+            const replacementPlayer = STATE.players.find((candidate) => candidate.id === newOutsiderId);
+            replacementPlayer.totalOutsiderCount = (Number(replacementPlayer.totalOutsiderCount) || 0) + 1;
 
             saveState();
             alertCustom("🔄 تم خصم نقطة واحدة وتغيير دورك سرياً إلى داخل السالفة!");
@@ -1249,8 +1755,12 @@
         }
 
         function renderRevealRoleScreen(container) {
+            if (!STATE.currentRound.revealOrder || STATE.currentRound.revealOrder.length === 0) {
+                STATE.currentRound.revealOrder = getActivePlayers().map(p => p.id);
+            }
             const playerIndex = STATE.currentRound.activeRevealerIdx;
-            const currentPlayer = getActivePlayers()[playerIndex];
+            const currentId = STATE.currentRound.revealOrder[playerIndex];
+            const currentPlayer = STATE.players.find(p => p.id === currentId) || getActivePlayers()[0];
             const isOutsider = STATE.currentRound.outsiders.includes(currentPlayer.id);
             const categoryName = CATEGORIES_INFO[STATE.selectedCategory].name;
             
@@ -1258,8 +1768,8 @@
                 ? (STATE.currentRound.prankWords[currentPlayer.id] || STATE.currentRound.secretWord)
                 : STATE.currentRound.secretWord;
 
-            const remainingUnrevealed = getActivePlayers().length - (playerIndex + 1);
-            const canReject = STATE.rejectOutsiderEnabled && isOutsider && (remainingUnrevealed > 3);
+            const remainingUnrevealed = STATE.currentRound.revealOrder.length - (playerIndex + 1);
+            const canReject = STATE.rejectOutsiderEnabled && isOutsider && (remainingUnrevealed > 3) && getEligibleOutsiderReplacementIds().length > 0;
 
             const rejectButtonHtml = canReject 
                 ? `
@@ -1270,9 +1780,13 @@
                 : '';
 
             const cardContent = isOutsider ? `
-                <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-center space-y-3 w-full glow-purple flex-1 flex flex-col justify-center min-h-[16rem]">
-                    <span class="text-4xl block animate-pulse">🕵️‍♂️</span>
-                    <h2 class="text-lg font-black text-slate-100">أنت برا السالفة!</h2>
+                <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-center space-y-3 w-full glow-gold flex-1 flex flex-col justify-center min-h-[16rem]">
+                    <span class="text-4xl block animate-bounce">🕵️‍♂️</span>
+                    <h2 class="text-lg font-black text-slate-100">دورك في الجولة:</h2>
+                    <div class="bg-slate-900 border border-slate-700 py-3 px-4 rounded-xl">
+                        <span class="text-[0.625rem] text-slate-400 block mb-0.5">أنت:</span>
+                        <span class="text-xl sm:text-2xl font-black text-yellow-400 tracking-wide block py-1">أنت برا السالفة! 🕵️‍♂️</span>
+                    </div>
                     <div class="py-1 border-t border-b border-slate-700">
                         <p class="text-[0.6875rem] text-slate-300">أنت خارج التغطية وما تعرف الكلمة السرية! سوي نفسك تعرف حتى لا يصيدوك.</p>
                     </div>
@@ -1294,19 +1808,22 @@
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center justify-between max-w-xs h-full py-2 space-y-3 overflow-y-auto">
                     <div class="text-center w-full shrink-0">
-                        <span class="text-[0.625rem] font-semibold text-slate-500">اللاعب ${playerIndex + 1} من ${getActivePlayers().length}</span>
+                        <span class="text-[0.625rem] font-semibold text-slate-500">اللاعب ${playerIndex + 1} من ${STATE.currentRound.revealOrder.length}</span>
                         <h2 class="text-base font-bold text-slate-200">${currentPlayer.name}</h2>
                     </div>
                     <div class="w-full flex-1 flex flex-col justify-center">${cardContent}</div>
-                    <button onclick="finishRevealTurn()" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 border-[3px] border-slate-700 text-white rounded-xl font-black text-sm active:scale-95 transition shadow-lg shrink-0">
-                        اخفي الدور 👀
-                    </button>
+                    <div class="w-full flex gap-1.5 shrink-0">
+                        <button onclick="finishRevealTurn()" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 border-[3px] border-slate-700 text-white rounded-xl font-black text-sm active:scale-95 transition shadow-lg">
+                            اخفي الدور 👀
+                        </button>
+                    </div>
                 </div>
             `;
         }
 
         function finishRevealTurn() {
-            if (STATE.currentRound.activeRevealerIdx + 1 < getActivePlayers().length) {
+            const totalRevealers = STATE.currentRound.revealOrder ? STATE.currentRound.revealOrder.length : getActivePlayers().length;
+            if (STATE.currentRound.activeRevealerIdx + 1 < totalRevealers) {
                 STATE.currentRound.activeRevealerIdx += 1;
                 goToScreen('pass-to-player');
             } else {
@@ -1726,20 +2243,36 @@
         }
 
         function renderGuessPassScreen(container) {
-            const outsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
-            const outsiderPlayer = STATE.players.find(p => p.id === outsiderId);
+            const allOutsiders = STATE.currentRound.outsiders.map(id => STATE.players.find(p => p.id === id)).filter(Boolean);
+            const currentOutsiderId = STATE.currentRound.outsiders[STATE.currentRound.currentOutsiderGuessIdx];
+            const currentOutsiderPlayer = STATE.players.find(p => p.id === currentOutsiderId) || allOutsiders[0];
+
+            let outsidersListHtml = '';
+            allOutsiders.forEach(p => {
+                const isCurrent = p.id === currentOutsiderId;
+                outsidersListHtml += `
+                    <div class="px-3.5 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${isCurrent ? 'bg-red-950/80 border-red-500 text-red-300 shadow-[0_0_12px_rgba(239,68,68,0.3)] animate-pulse' : 'bg-slate-900 border-slate-800 text-slate-400'}">
+                        <span>🕵️‍♂️ ${p.name}</span>
+                        ${isCurrent ? '<span class="text-[0.6rem] bg-red-900/60 text-white px-1.5 py-0.5 rounded-md">(دور التخمين الآن)</span>' : ''}
+                    </div>
+                `;
+            });
 
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center text-center space-y-3 px-1 my-auto max-h-full overflow-y-auto">
                     <span class="text-4xl animate-bounce">🤔</span>
-                    <div class="space-y-1">
-                        <span class="text-[0.625rem] bg-red-950 border border-red-800 text-red-400 px-2.5 py-1 rounded-full font-bold">كشف برا السالفة</span>
-                        <h2 class="text-lg font-black text-slate-100">انكشفت اللعبة! اللاعب برا السالفة هو:</h2>
-                        <h3 class="text-2xl font-extrabold text-red-400 bg-slate-900 border border-slate-800 py-2 px-5 rounded-2xl inline-block mt-1">${outsiderPlayer.name}</h3>
-                        <p class="text-xs text-slate-400">هسه انطوا الجهاز إله ليخمن الكلمة من أصل 10 كلمات!</p>
+                    <div class="space-y-2 w-full">
+                        <span class="text-[0.625rem] bg-red-950 border border-red-800 text-red-400 px-2.5 py-1 rounded-full font-bold">كشف برا السالفة (${allOutsiders.length})</span>
+                        <h2 class="text-base sm:text-lg font-black text-slate-100 mt-1">انكشفت اللعبة! الأشخاص برا السالفة هم:</h2>
+                        
+                        <div class="flex flex-wrap justify-center gap-2 py-1 max-w-xs mx-auto">
+                            ${outsidersListHtml}
+                        </div>
+
+                        <p class="text-xs text-slate-400 pt-1">هسه انطوا الجهاز لـ <span class="font-bold text-red-400">${currentOutsiderPlayer.name}</span> ليخمن الكلمة من أصل 10 كلمات!</p>
                     </div>
-                    <button onclick="goToScreen('guess-action')" class="w-full max-w-xs py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-bold text-xs shadow transition mt-2">
-                        أني ${outsiderPlayer.name}، جاهز أخمن 🕵️‍♂️
+                    <button onclick="goToScreen('guess-action')" class="w-full max-w-xs py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-bold text-xs shadow hover:from-red-500 transition mt-2">
+                        أني ${currentOutsiderPlayer.name}، جاهز أخمن 🕵️‍♂️
                     </button>
                 </div>
             `;
@@ -2087,7 +2620,7 @@
                 }).then(canvas => {
                     try {
                         const link = document.createElement('a');
-                        link.download = `نتائج_برا_السالفة_v4.0.png`;
+                        link.download = `نتائج_برا_السالفة_v4.4.png`;
                         link.href = canvas.toDataURL('image/png');
                         link.click();
                     } catch (err) {
