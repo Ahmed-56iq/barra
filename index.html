@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>لعبة برا السالفة | الإصدار 4.5</title>
+    <title>لعبة برا السالفة | الإصدار 4.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -82,7 +82,7 @@
             <span class="text-xl">🤫</span>
             <h1
                 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">
-                برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v4.5</span>
+                برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v4.6</span>
             </h1>
         </div>
 
@@ -97,8 +97,36 @@
     </main>
 
     <footer class="w-full max-w-md mx-auto text-center py-1 text-[0.6rem] text-slate-600 shrink-0">
-        لعبة برا السالفة - الإصدار 4.5 &copy; 2026
+        لعبة برا السالفة - الإصدار 4.6 &copy; 2026
     </footer>
+
+    <!-- طبقة الوميض التحذيري (إنذار كشف الدور) -->
+    <div id="alarmFlashOverlay" class="hidden fixed inset-0 z-[300] pointer-events-none"></div>
+
+    <!-- منبثقة رمز حماية المسودة -->
+    <div id="draftPinModal"
+        class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[290] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-yellow-800/60 p-5 rounded-2xl w-full max-w-xs space-y-4 shadow-2xl">
+            <div class="text-center space-y-1">
+                <span class="text-3xl block">🔐</span>
+                <h3 class="text-sm font-black text-yellow-400">رمز المسؤول مطلوب</h3>
+                <p class="text-[0.625rem] text-slate-400 leading-relaxed">أدخل الرمز السري لفتح المسودة وعرض الأسماء
+                    المؤرشفة</p>
+            </div>
+            <input id="draftPinInput" type="password" inputmode="numeric" autocomplete="off" placeholder="••••••"
+                oninput="clearDraftPinError()" onkeypress="if(event.key==='Enter') submitDraftPin()"
+                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-center text-lg tracking-[0.5em] text-slate-100 focus:outline-none focus:border-yellow-500 transition"
+                dir="ltr">
+            <p id="draftPinError" class="hidden text-[0.625rem] text-red-400 text-center font-bold">❌ الرمز غير صحيح</p>
+            <div class="flex gap-2">
+                <button onclick="closeDraftPin()"
+                    class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 transition text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
+                <button onclick="submitDraftPin()"
+                    class="flex-[2] py-2.5 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 text-slate-950 rounded-xl text-xs font-black transition shadow">تأكيد
+                    ودخول</button>
+            </div>
+        </div>
+    </div>
 
     <!-- منبثقة إعدادات المقلب السري المتقدمة -->
     <div id="prankConfigModal"
@@ -242,6 +270,25 @@
                         <input type="checkbox" id="rejectOutsiderToggle" onchange="toggleRejectOutsider(this.checked)"
                             class="w-5 h-5 accent-yellow-500 shrink-0">
                     </label>
+
+                    <label
+                        class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between cursor-pointer border-t border-slate-700/50 pt-2 gap-2">
+                        <span>مؤقت أمان التمرير 🔒<br><span class="text-[0.6rem] text-slate-500 font-normal">تأخير زر
+                                "اكشف دوري" عند التمرير — اللاعب الأول معفى تلقائياً</span></span>
+                        <input type="checkbox" id="passSafetyTimerToggle" onchange="togglePassSafetyTimer(this.checked)"
+                            class="w-5 h-5 accent-emerald-500 shrink-0">
+                    </label>
+                    <div id="passSafetyTimerDurationContainer" class="hidden border-t border-slate-700/50 pt-2">
+                        <label
+                            class="text-[0.6875rem] font-bold text-slate-300 flex items-center justify-between gap-2">
+                            <span>مدة الانتظار (ثانية) ⏱️</span>
+                            <input type="number" min="1" max="120" step="1" id="passSafetyTimerDurationInput"
+                                oninput="changePassSafetyTimerDuration(this.value)"
+                                class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 w-20 text-center focus:outline-none focus:border-emerald-500 transition"
+                                dir="ltr">
+                        </label>
+                        <p class="text-[0.55rem] text-slate-500 mt-1">أدخل أي قيمة بين 1 و 120 ثانية</p>
+                    </div>
                 </div>
 
                 <button onclick="openQuickPlayerManager()"
@@ -528,7 +575,7 @@
                 food: ["دولمة", "باجة", "مسكوف", "كاهي وقيمر", "كليجة", "صمون حجري", "تشريب دجاج", "قوزي عراقي", "زردة", "تمن ومرق", "فلافل وعمبة", "طرشي نجفي", "دهينة", "شربت زبيب", "عصير رمان", "شاي مهيل", "استكان شاي", "خبز تنور", "بورك", "كباب عراقي", "تكة لحم", "معلاك مشوي", "مخلمة", "حلاوة طحينية", "بقلاوة", "زلابية", "عوامات", "لفة فلافل", "طماطة مقلية", "باذنجان مقلي", "سمك زبيدي", "ربيان بصراوي", "صبورة مشوية", "بامية", "فاصوليا يابسة", "مركة شجر", "مركة بتيتة", "مطبك سمك", "برياني عراقي", "مقلوبة", "شوربة عدس", "ماش", "هريسة", "حلاوة تمر", "تمر خستاوي", "رقي", "بطيخ سامراء", "نومي بصرة", "كص دجاج", "كص لحم", "عروك طاوة", "كفتة", "لبن أربيل", "قيمر سدة", "جبن عرب", "لبلبي", "باقلاء بالدهن", "شلغم مطبوخ", "لوزينة", "من السما", "عسل طبيعي", "زلاطة", "جاجيك", "مقبلات", "حمص بطحينة", "متبل", "بابا غنوج", "زيتون", "بصل أخضر", "فجل", "كرفس", "ريحان", "نعناع", "طرشي مدبس", "مدكوكة", "تمرية", "تمر هند", "كرزات", "حب شمسي", "حب رقي", "فستق حلبي", "لوز", "جوز", "كاجو", "مكروطة", "بسكت", "شوكولاتة", "جيلاتين", "كيكة", "عصير برتقال", "شاي حامض"],
                 animals: ["واوي", "بومة", "قط بري", "بزونة", "صخيلة", "طلي", "دجاجة", "ديج", "بطة", "وزة", "زرزور", "فاختة", "بلبل", "حمامة", "زاجل", "مطي", "هايشة", "عجل", "جاموسة", "خروف", "نعجة", "جلب", "ذيب", "ثعلب", "أسد", "فهد", "دب", "فيل", "زرافة", "قرد", "سنجاب", "أرنب", "غزال", "طير حب", "مينا", "ببغاء", "طاووس", "نعامة", "صقر", "نسر", "غراب", "خفاش", "تمساح", "سلحفاة", "حية", "دودة", "جريذي", "فارة", "بريعصي", "sحلية", "ضفدع", "سمكة", "حوت", "دولفين", "أخطبوط", "قنديل بحر", "نجم بحر", "سرطان", "دودة قز", "فراشة", "زنبور", "نحلة", "ذبانة", "بقة", "صرصر", "عنكبوت", "عقرب", "جرادة", "حشرة", "نملة", "أبو جنيب", "دعسوقة", "خنفساء", "حلزون", "بطريق", "فقمة", "دب قطبي", "كنغر", "كوالا", "باندا", "حمار وحشي"],
                 places: ["بغداد", "بصرة", "موصل", "أربيل", "سليمانية", "دهوك", "كركوك", "حلة", "نجف", "كربلاء", "ديوانية", "سماوة", "ناصرية", "عمارة", "كوت", "بعقوبة", "تكريت", "رمادي", "فلوجة", "زاخو", "حلبجة", "شارع المتنبي", "نصب الشهيد", "ساحة التحرير", "باب الشرقي", "كرادة", "منصور", "أعظمية", "كاظمية", "أبو نواس", "شارع الرشيد", "قلعة أربيل", "زقورة أور", "بابل الأثرية", "ملوية سامراء", "طاق كسرى", "هور الحويزة", "جبل كورك", "شلال كلي علي بك", "سد دوكان", "مرقد الإمام علي", "مرقد الإمام الحسين", "مرقد الكاظمين", "الحضرة القادرية", "جامع أبو حنيفة", "كنيسة النجاة", "سوق الشورجة", "سوق الصفافير", "سوق الغزل", "مطار بغداد", "مطار أربيل", "ميناء أم قصر", "جسر الجادرية", "جسر المعلق", "جسر الجمهورية", "نهر دجلة", "نهر الفرات", "شط العرب", "الأهوار", "صحراء السماوة", "لندن", "باريس", "روما", "مدريد", "برلين", "نيويورك", "طوكيو", "بكين", "موسكو", "إسطنبول", "دبي", "رياض", "قاهرة", "عمان", "بيروت", "دمشق", "كويت", "دوحة", "منامة", "أبو ظبي", "مستشفى", "مدرسة", "جامعة بغداد", "الجامعة المستنصرية", "نادي رياضي", "ملعب الشعب", "ملعب جذع النخلة", "سينما", "مول", "سوبر ماركت", "مطعم", "فندق", "حديقة الزوراء", "مدينة العاب", "المتحف العراقي", "المسرح الوطني"],
-                household: ["مبردة", "صوبة", "قنفة", "جرباية", "خاشوكة", "جطل", "ماعون", "استكان", "قوري", "كتلي", "سماور", "بطل مي", "قنينة", "زولية", "بردة", "بنكة", "مكناسة", "طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير كهرباء", "بلك كهرباء", "شاشة تلفزيون", "ثلاجة", "مجمدة", "طباخ", "فرن", "تنور", "غسالة", "كاوية", "ميز", "كرسي", "كنتور", "مراية", "دوش", "شطافة", "مغسلة", "بوري ماء", "صوندة", "خاولي", "ليفة", "صابونة", "شامبو", "معجون أسنان", "مشط", "قراصة شعر", "ماشة", "مكياج", "عطر", "محبس", "ساعة يد", "قلادة", "سوار", "حقيبة", "محفظة", "نظارة", "قندرة", "نعال", "جواريب", "سترة قماش", "قميص", "دشداشة", "عباية", "شيلة", "فوطة", "عكال", "يشماغ", "غترة", "سلة مهملات", "دلة قهوة", "فنجان", "صينية", "ترمس", "جذرية", "طاوه", "مصفي", "جفجير", "لوح تقطيع", "مقص", "قفل حديد"],
+                household: ["مبردة", "صوبة", "قنفة", "جرباية", "خاشوكة", "جطل", "ماعون", "استكان", "قوري", "كتلي", "سماور", "بطل مي", "قنينة", "زولية", "بردة", "بنكة", "مكناسة", "طبر", "جاكوج", "درنفيس", "سبانة", "بلايس", "واير كهرباء", "بلك كهرباء", "شاشة تلفزيون", "ثلاجة", "مجمدة", "طباخ", "فرن", "تنور", "غسالة", "كاوية", "ميز", "كرسي", "كنتور", "مراية", "دوش", "شطافة", "مغسلة", "بوري ماء", "صوندة", "خاولي", "ليفة", "صابونة", "شامبو", "معجون أسنان", "مشط", "قراصة شعر", "ماشة", "مكياج", "عطر", "محبس", "ساعة يد", "قلادة", "سوار", "حقيبة", "محفظة", "نظارة", "قندرة", "نعال", "جواريب", "سترة قماش", "قميص", "دشداشة", "عباية", "شيلة", "فوطة", "عكال", "يشماغ", "غترة", "سلة مهملات", "دلة قهوة", "فنجان", "صينية", "ترمس", "طاوه", "مصفي", "جفجير", "لوح تقطيع", "مقص", "قفل حديد"],
                 jobs: ["فيتر سيارات", "صباغ جدران", "حلاق", "مضمد", "طبيب", "مهندس", "محامي", "قاضي", "معلم", "مدرس", "مدير", "شرطي", "رجل مرور", "جندي", "ضابط", "حارس أمني", "فراش", "نجار", "حداد", "سباك", "كهربائي", "خياط", "قصاب", "خباز", "بقال", "عطار", "صائغ ذهب", "مصلح أجهزة", "صيانة هواتف", "سائق أجرة", "كابتن طيار", "مضيف طيران", "بحار", "طباخ رئيسي", "مصور", "مخرج", "ممثل", "مغني", "رسام", "خطاط", "كاتب", "شاعر", "صحفي", "مذيع", "لاعب كرة قدم", "مدرب", "حكم", "منقذ سباحة", "غواص", "فلاح", "راعي أغنام", "طبيب بيطري", "صيدلاني", "محلل مختبر", "طبيب أسنان", "مبرمج حاسوب", "مصمم جرافيك", "محاسب", "موظف بنك", "مندوب مبيعات", "سكرتير", "مرشد سياحي", "حارس شخصي", "مراسل صحفي", "لحام حديد", "عامل نظافة", "إسكافي", "دلال عقارات", "مترجم لغات", "مؤذن جامع"],
                 adult12: ["لوكي متملق", "كلاوجي مخادع", "علاس جاسوس", "قفاص محتال", "حواسم فوضوي", "لغف نهب سري", "جكمجة درج سيارة", "طكوكي غني فجأة", "ملطلط تافه", "صاك وسيم جدا", "صاكة جميلة", "زاحف ملاحق", "حديقة أعزب مفلس", "طاكات ناجح جدا", "بسطال حذاء", "لزكة ملح جدا", "عقجة تجاعيد", "خروف تابع", "مكبل مرتبط", "سنكل أعزب", "جفص اخطأ", "مطفي غير مركز", "مخربط فوضوي", "عايق متمرد", "طايح حظه", "دايح تائه", "سرسري قليل الادب", "ادبسز غير مؤدب", "قشمر مغفل", "زعطوط طفل", "خفيف طائش"],
                 bodyParts: ["عين", "خشم", "حلق", "أذن", "رأس", "شعر", "لسان", "أسنان", "بلعوم", "إيد", "رجل", "ركبة", "بطن", "ظهر", "صدر", "قلب", "رئة", "كبد", "كلية", "أصبع", "جفن", "حاجب", "رقبة", "كتف"]
@@ -573,7 +620,7 @@
             const PRESET_ARCHIVED_PLAYERS = [
                 "احسان", "اكرم", "امجد", "ايراني", "بهاء", "توني",
                 "رسلان", "زيدون", "شريف", "صالح", "عباس", "عبدول",
-                "علام", "فاضل", "فريق", "كرار", "محمدحسين", "مصور",
+                "علام", "فاضل", "فريق", "كرار", "مصطفى الوردة", "محمدحسين", "مصور",
                 "مهدي", "موسى", "وسام", "يونس"
             ];
 
@@ -582,14 +629,17 @@
             const MAX_HISTORY_LEN = 50;
 
             const STATE = {
-                version: '4.5',
-                fontFamily: 'Cairo',
+                version: '4.6',
+                settingsProfile: '4.6',
+                fontFamily: 'Tajawal',
                 fontSize: 16,
-                perfectSneakBonus: false,
+                perfectSneakBonus: true,
                 timerVoteEnabled: true,
                 timerGuessEnabled: true,
                 timeoutPenaltyChoice: true,
                 rejectOutsiderEnabled: false,
+                passSafetyTimerEnabled: false,
+                passSafetyTimerDuration: 5,
                 cocktailSubCategories: ['food', 'animals', 'places', 'household', 'jobs', 'bodyParts'],
                 players: [], // القائمة فارغة بشكل افتراضي كما طلب المستخدم
                 selectedCategory: 'general',
@@ -685,6 +735,15 @@
 
                 const rOut = document.getElementById('rejectOutsiderToggle');
                 if (rOut) rOut.checked = STATE.rejectOutsiderEnabled;
+
+                const passTimer = document.getElementById('passSafetyTimerToggle');
+                if (passTimer) passTimer.checked = STATE.passSafetyTimerEnabled;
+
+                const passTimerDur = document.getElementById('passSafetyTimerDurationInput');
+                if (passTimerDur) passTimerDur.value = STATE.passSafetyTimerDuration.toString();
+
+                const passTimerDurCont = document.getElementById('passSafetyTimerDurationContainer');
+                if (passTimerDurCont) passTimerDurCont.classList.toggle('hidden', !STATE.passSafetyTimerEnabled);
             }
 
             function loadState() {
@@ -726,6 +785,17 @@
                         if (parsed.cocktailSubCategories && Array.isArray(parsed.cocktailSubCategories) && parsed.cocktailSubCategories.length > 0) {
                             STATE.cocktailSubCategories = normaliseCocktailSubCategories(parsed.cocktailSubCategories);
                         }
+                        if (parsed.passSafetyTimerEnabled !== undefined) STATE.passSafetyTimerEnabled = parsed.passSafetyTimerEnabled;
+                        if (parsed.passSafetyTimerDuration) STATE.passSafetyTimerDuration = parseInt(parsed.passSafetyTimerDuration) || 5;
+
+                        // ترحيل لمرة واحدة لإصدار 4.6: فرض الافتراضيات الجديدة مع الإبقاء على اللاعبين والنقاط
+                        if (parsed.settingsProfile !== '4.6') {
+                            STATE.fontFamily = 'Tajawal';
+                            STATE.perfectSneakBonus = true;
+                            STATE.rejectOutsiderEnabled = false;
+                            STATE.settingsProfile = '4.6';
+                            setTimeout(saveState, 0);
+                        }
                     } catch (e) { }
                 }
                 applyStyleSettings();
@@ -739,7 +809,9 @@
                     fontFamily: STATE.fontFamily, fontSize: STATE.fontSize, perfectSneakBonus: STATE.perfectSneakBonus,
                     timerVoteEnabled: STATE.timerVoteEnabled, timerGuessEnabled: STATE.timerGuessEnabled,
                     timeoutPenaltyChoice: STATE.timeoutPenaltyChoice, rejectOutsiderEnabled: STATE.rejectOutsiderEnabled,
-                    cocktailSubCategories: STATE.cocktailSubCategories
+                    cocktailSubCategories: STATE.cocktailSubCategories,
+                    passSafetyTimerEnabled: STATE.passSafetyTimerEnabled, passSafetyTimerDuration: STATE.passSafetyTimerDuration,
+                    settingsProfile: STATE.settingsProfile
                 }));
             }
 
@@ -1090,8 +1162,39 @@
                 const trigger = event.target.closest('[data-draft-trigger]');
                 if (!trigger) return;
                 event.preventDefault();
-                openDraftPickerV44();
+                openDraftPin();
             });
+
+            // ===== بوابة رمز المسودة =====
+            // الرمز مخزّن كبصمة رقمية فقط — لا يظهر نصه في أي مكان داخل التطبيق
+            function hashPin(str) {
+                let h = 5381;
+                for (const ch of str) { h = ((h * 33) ^ ch.charCodeAt(0)) >>> 0; }
+                return h;
+            }
+            const ADMIN_PIN_HASH = 3630536998;
+
+            function openDraftPin() {
+                const input = document.getElementById('draftPinInput');
+                input.value = '';
+                document.getElementById('draftPinError').classList.add('hidden');
+                document.getElementById('draftPinModal').classList.remove('hidden');
+                setTimeout(() => input.focus(), 100);
+            }
+            function closeDraftPin() { document.getElementById('draftPinModal').classList.add('hidden'); }
+            function clearDraftPinError() { document.getElementById('draftPinError').classList.add('hidden'); }
+
+            function submitDraftPin() {
+                const input = document.getElementById('draftPinInput');
+                if (hashPin(input.value.trim()) === ADMIN_PIN_HASH) {
+                    closeDraftPin();
+                    openDraftPickerV44();
+                } else {
+                    document.getElementById('draftPinError').classList.remove('hidden');
+                    input.value = '';
+                    input.focus();
+                }
+            }
 
             function addArchivedPlayer(name) {
                 if (STATE.players.length >= 15) { alertCustom("الحد الأقصى 15 لاعب!"); return; }
@@ -1459,19 +1562,17 @@
                     }
                     if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
 
-                    // ترتيب اللاعبين بناءً على الأقل ظهوراً "برا السالفة" لضمان التوزيع العادل
-                    // مع إمكانية وصول اللاعب إلى 3 أو 4 أو أكثر دون إيقاف اللعبة
-                    const sortedPlayers = [...activePlayers].sort((a, b) => {
-                        const countA = a.totalOutsiderCount || 0;
-                        const countB = b.totalOutsiderCount || 0;
-                        if (countA !== countB) {
-                            return countA - countB; // الأقل اختايراً يأتي أولاً
-                        }
-                        return Math.random() - 0.5; // اختيار عشوائي في حالة التساوي
-                    });
+                    const eligibleForOutsider = activePlayers.filter(p => (p.totalOutsiderCount || 0) < 2).map(p => p.id);
+                    if (eligibleForOutsider.length === 0) {
+                        alertCustom('كل اللاعبين وصلوا الحد الأقصى: مرتان برا السالفة. أضف لاعباً جديداً أو ابدأ تشكيلة جديدة.');
+                        return;
+                    }
+                    // Never assign a third outsider role. If fewer eligible players remain,
+                    // the round continues with the number that is still available.
+                    numOutsiders = Math.min(numOutsiders, eligibleForOutsider.length);
 
-                    // اختيار العدد المطلوب من بين اللاعبين الأقل اختايراً
-                    chosenOutsiders = sortedPlayers.slice(0, numOutsiders).map(p => p.id);
+                    const shuffledIds = [...eligibleForOutsider].sort(() => Math.random() - 0.5);
+                    chosenOutsiders = shuffledIds.slice(0, numOutsiders);
 
                     STATE.players.forEach(p => {
                         if (chosenOutsiders.includes(p.id)) {
@@ -1512,17 +1613,14 @@
                 goToScreen('pass-to-player');
             }
 
-            function toggleVoteTimer(val) { STATE.timerVoteEnabled = val; saveState(); }
-            function toggleGuessTimer(val) { STATE.timerGuessEnabled = val; saveState(); }
-            function toggleTimeoutPenaltyChoice(val) { STATE.timeoutPenaltyChoice = val; saveState(); }
-
-
             let votingTimerInterval = null;
             let guessingTimerInterval = null;
+            let passSafetyTimerInterval = null;
 
             function goToScreen(screenName) {
                 clearInterval(votingTimerInterval);
                 clearInterval(guessingTimerInterval);
+                clearInterval(passSafetyTimerInterval);
 
                 if (screenName === 'settings' || screenName === 'welcome') {
                     STATE.currentRound.isPrankMode = false;
@@ -1732,6 +1830,19 @@
             function toggleTimeoutPenaltyChoice(val) { STATE.timeoutPenaltyChoice = val; saveState(); }
             function toggleRejectOutsider(val) { STATE.rejectOutsiderEnabled = val; saveState(); }
 
+            function togglePassSafetyTimer(val) {
+                STATE.passSafetyTimerEnabled = val;
+                saveState();
+                const cont = document.getElementById('passSafetyTimerDurationContainer');
+                if (cont) cont.classList.toggle('hidden', !val);
+            }
+            function changePassSafetyTimerDuration(val) {
+                const n = parseInt(val);
+                if (isNaN(n) || n < 1) return; // نتجاهل الإدخال الفارغ أثناء الكتابة ولا نكسر القيمة المحفوظة
+                STATE.passSafetyTimerDuration = Math.min(n, 120);
+                saveState();
+            }
+
             function addPlayer() {
                 const input = document.getElementById('playerNameInput');
                 if (!input) return;
@@ -1853,6 +1964,18 @@
                 const currentId = STATE.currentRound.revealOrder[STATE.currentRound.activeRevealerIdx];
                 const currentPlayer = STATE.players.find(p => p.id === currentId) || getActivePlayers()[0];
                 const canPostpone = STATE.currentRound.activeRevealerIdx < STATE.currentRound.revealOrder.length - 1;
+                // اللاعب الأول معفى من المؤقت: الجهاز بيده أصلاً ولا يوجد تمرير قبله
+                const isFirstRevealer = STATE.currentRound.activeRevealerIdx === 0;
+                const useTimer = STATE.passSafetyTimerEnabled && !isFirstRevealer;
+
+                const revealBtnHtml = useTimer
+                    ? `<button id="passTimerRevealBtn" disabled class="${canPostpone ? 'flex-[2]' : 'w-full'} py-3 bg-slate-800 border border-slate-700 text-slate-400 rounded-xl font-bold text-xs shadow opacity-70 cursor-not-allowed transition flex items-center justify-center gap-1.5">
+                        🔒 انتظر <span id="passTimerCountdownVal">${STATE.passSafetyTimerDuration}</span> ثانية...
+                   </button>`
+                    : `<button onclick="goToScreen('reveal-role')" class="${canPostpone ? 'flex-[2]' : 'w-full'} py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs shadow hover:from-violet-500 transition">
+                        أني ${currentPlayer.name}، اكشف دوري 🤫
+                   </button>`;
+
                 container.innerHTML = `
                 <div class="w-full flex flex-col items-center text-center space-y-4 px-1 my-auto max-h-full overflow-y-auto">
                     <span class="text-4xl animate-bounce">📱</span>
@@ -1864,13 +1987,41 @@
                         <p class="text-[0.6875rem] text-red-300 font-semibold leading-relaxed">⚠️ تأكد محد غير ${currentPlayer.name} يباوع للشاشة!</p>
                     </div>
                     <div class="w-full max-w-xs flex gap-1.5">
-                        <button onclick="goToScreen('reveal-role')" class="${canPostpone ? 'flex-[2]' : 'w-full'} py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs shadow hover:from-violet-500 transition">
-                            أني ${currentPlayer.name}، اكشف دوري 🤫
-                        </button>
+                        ${revealBtnHtml}
                         ${canPostpone ? `<button onclick="postponeRevealTurn()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-xl font-bold text-xs transition">⏰ تأجيل دوري</button>` : ''}
                     </div>
                 </div>
             `;
+
+                if (useTimer) startPassSafetyTimer(currentPlayer.name);
+            }
+
+            function startPassSafetyTimer(playerName) {
+                clearInterval(passSafetyTimerInterval);
+                let remaining = STATE.passSafetyTimerDuration;
+                const valEl = document.getElementById('passTimerCountdownVal');
+                if (valEl) valEl.innerText = remaining;
+
+                passSafetyTimerInterval = setInterval(() => {
+                    if (STATE.screen !== 'pass-to-player') { clearInterval(passSafetyTimerInterval); return; }
+                    remaining--;
+                    const liveValEl = document.getElementById('passTimerCountdownVal');
+
+                    if (remaining <= 0) {
+                        clearInterval(passSafetyTimerInterval);
+                        const btn = document.getElementById('passTimerRevealBtn');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.classList.remove('bg-slate-800', 'border', 'border-slate-700', 'text-slate-400', 'opacity-70', 'cursor-not-allowed');
+                            btn.classList.add('bg-gradient-to-r', 'from-violet-600', 'to-indigo-600', 'hover:from-violet-500', 'text-white');
+                            btn.setAttribute('onclick', "goToScreen('reveal-role')");
+                            btn.innerHTML = `أني ${playerName}، اكشف دوري 🤫`;
+                        }
+                        playTimerSound();
+                    } else if (liveValEl) {
+                        liveValEl.innerText = remaining;
+                    }
+                }, 1000);
             }
 
             function getEligibleOutsiderReplacementIds() {
@@ -2016,6 +2167,54 @@
             `;
             }
             function initiateForgotRolePass(id) { STATE.currentRound.forgotRolePlayerId = id; goToScreen('forgot-role-pass'); }
+
+            // ===== إنذار مكافحة الغش عند طلب "نسى دوره" =====
+            // صوت عالٍ + وميض أحمر ثم أبيض، لتنبيه كل الحاضرين أن الجهاز سيعرض دوراً سرياً
+            function playAlarmSound() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const master = ctx.createGain();
+                    master.gain.setValueAtTime(0.9, ctx.currentTime);
+                    master.connect(ctx.destination);
+
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sawtooth';
+                    osc.connect(master);
+
+                    const t = ctx.currentTime;
+                    const pattern = [880, 500, 880, 500, 880, 500];
+                    pattern.forEach((f, i) => osc.frequency.setValueAtTime(f, t + i * 0.25));
+
+                    osc.start(t);
+                    osc.stop(t + pattern.length * 0.25);
+                } catch (e) {
+                    console.log("Audio API blocked or unsupported");
+                }
+            }
+
+            function runAlarmFlashSequence(onComplete) {
+                const overlay = document.getElementById('alarmFlashOverlay');
+                if (!overlay) { onComplete(); return; }
+
+                playAlarmSound();
+                if (navigator.vibrate) { try { navigator.vibrate([300, 100, 300, 100, 400]); } catch (e) { } }
+
+                overlay.style.background = '#ff0000';   // 1) شاشة حمراء صارخة
+                overlay.classList.remove('hidden');
+
+                setTimeout(() => {
+                    overlay.style.background = '#ffffff'; // 2) شاشة بيضاء لمدة ثانية
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                        overlay.style.background = '';
+                        onComplete();
+                    }, 1000);
+                }, 700);
+            }
+
+            function requestForgotRoleAccess() {
+                runAlarmFlashSequence(() => goToScreen('forgot-role-select'));
+            }
 
             function renderForgotRolePassScreen(container) {
                 const player = STATE.players.find(p => p.id === STATE.currentRound.forgotRolePlayerId);
@@ -2303,7 +2502,7 @@
                     </div>
                     <div class="flex gap-1.5 shrink-0 mb-1">
                         <button onclick="postponeVote()" class="flex-1 py-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-xl text-[0.625rem] font-bold hover:bg-slate-700 transition">تأجيل دوري ⏭️</button>
-                        <button onclick="goToScreen('forgot-role-select')" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl text-[0.625rem] font-bold hover:bg-slate-800 transition">نسى دوره؟ 🤷‍♂️</button>
+                        <button onclick="requestForgotRoleAccess()" class="flex-1 py-2 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl text-[0.625rem] font-bold hover:bg-slate-800 transition">نسى دوره؟ 🤷‍♂️</button>
                     </div>
                     <div class="flex gap-1.5 shrink-0">
                         <button onclick="confirmPlayerVote()" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-bold text-xs shadow hover:scale-[1.01] transition">تأكيد التصويت ✔️</button>
@@ -2771,32 +2970,56 @@
                 element.style.overflow = 'visible';
                 element.style.paddingBottom = '36px';
 
+                const finishUp = () => {
+                    element.setAttribute('style', originalStyle);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                };
+
+                const captureOptions = {
+                    backgroundColor: '#090d16',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    windowWidth: element.scrollWidth,
+                    windowHeight: element.scrollHeight
+                };
+
+                const saveCanvas = (canvas) => {
+                    const link = document.createElement('a');
+                    link.download = `نتائج_برا_السالفة_v4.6.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                };
+
+                // مسار احتياطي بدون foreignObjectRendering (بعض المتصفحات/الـ WebView لا تدعمه بالكامل)
+                const fallbackCapture = () => {
+                    html2canvas(element, captureOptions).then(canvas => {
+                        try { saveCanvas(canvas); } catch (e) { alertCustom("خطأ أثناء تحضير ملف الصورة!"); }
+                        finishUp();
+                    }).catch(() => {
+                        alertCustom("عذراً، تعذر تصدير لقطة النتائج!");
+                        finishUp();
+                    });
+                };
+
                 setTimeout(() => {
-                    html2canvas(element, {
-                        backgroundColor: '#090d16',
-                        scale: 2,
-                        logging: false,
-                        useCORS: true,
-                        windowWidth: element.scrollWidth,
-                        windowHeight: element.scrollHeight
+                    // الانتظار حتى تكتمل تحميل الخطوط قبل الالتقاط، وإلا تُرسم الحروف العربية بخط بديل غير متصل
+                    const fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+
+                    fontsReady.then(() => {
+                        // foreignObjectRendering يفوّض رسم النص لمحرك المتصفح بدل محرك html2canvas الداخلي
+                        // وهو الحل المعروف لمشكلة تقطّع حروف العربية المتصلة عند التصدير كصورة
+                        return html2canvas(element, { ...captureOptions, foreignObjectRendering: true });
                     }).then(canvas => {
                         try {
-                            const link = document.createElement('a');
-                            link.download = `نتائج_برا_السالفة_v4.4.png`;
-                            link.href = canvas.toDataURL('image/png');
-                            link.click();
+                            saveCanvas(canvas);
+                            finishUp();
                         } catch (err) {
-                            alertCustom("خطأ أثناء تحضير ملف الصورة!");
-                        } finally {
-                            element.setAttribute('style', originalStyle);
-                            btn.innerHTML = originalText;
-                            btn.disabled = false;
+                            fallbackCapture();
                         }
-                    }).catch(err => {
-                        alertCustom("عذراً، تعذر تصدير لقطة النتائج!");
-                        element.setAttribute('style', originalStyle);
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
+                    }).catch(() => {
+                        fallbackCapture();
                     });
                 }, 300);
             }
@@ -2909,7 +3132,7 @@
                     <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60 text-xs">
                         <div class="flex items-center gap-1.5 w-1/2">
                             <span class="text-[0.625rem] font-black text-slate-500 w-3 shrink-0">${idx + 1}</span>
-                            <button onclick="openHistoryModal(${p.id})" class="font-bold text-slate-200 hover:text-indigo-300 transition underline decoration-slate-600 underline-offset-4 truncate text-right w-full ${isHidden ? 'line-through text-slate-500 font-normal' : ''}" title="اضغط لرؤية السجل">
+                            <button onclick="openHistoryModal(${p.id})" class="font-bold text-slate-200 hover:text-indigo-300 transition underline decoration-slate-600 underline-offset-4 break-words leading-snug text-right w-full ${isHidden ? 'line-through text-slate-500 font-normal' : ''}" title="اضغط لرؤية السجل">
                                 ${p.name} ${badge} ${isHidden ? '<span class="text-[0.55rem] text-red-400 bg-red-950/20 border border-red-900/20 px-1 py-0.2 rounded font-normal">مخفي</span>' : ''}
                             </button>
                         </div>
