@@ -1563,10 +1563,11 @@
                     if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
 
                     const eligibleForOutsider = activePlayers.filter(p => (p.totalOutsiderCount || 0) < 2).map(p => p.id);
-                    if (eligibleForOutsider.length === 0) {
-                        alertCustom('كل اللاعبين وصلوا الحد الأقصى: مرتان برا السالفة. أضف لاعباً جديداً أو ابدأ تشكيلة جديدة.');
-                        return;
-                    }
+                    // if (eligibleForOutsider.length === 0) {
+                    //     alertCustom('كل اللاعبين وصلوا الحد الأقصى: مرتان برا السالفة. أضف لاعباً جديداً أو ابدأ تشكيلة جديدة.');
+                    //     return;
+                    // }
+                    //5656565656
                     // Never assign a third outsider role. If fewer eligible players remain,
                     // the round continues with the number that is still available.
                     numOutsiders = Math.min(numOutsiders, eligibleForOutsider.length);
