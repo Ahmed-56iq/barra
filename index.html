@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>لعبة برا السالفة | الإصدار 4.6</title>
+    <title>لعبة برا السالفة | الإصدار 4.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -82,7 +82,7 @@
             <span class="text-xl">🤫</span>
             <h1
                 class="text-base font-black bg-gradient-to-l from-yellow-400 to-amber-200 bg-clip-text text-transparent">
-                برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v4.6</span>
+                برا السالفة! <span class="text-[0.625rem] text-slate-400 font-normal ml-1 tracking-widest">v4.9</span>
             </h1>
         </div>
 
@@ -97,7 +97,7 @@
     </main>
 
     <footer class="w-full max-w-md mx-auto text-center py-1 text-[0.6rem] text-slate-600 shrink-0">
-        لعبة برا السالفة - الإصدار 4.6 &copy; 2026
+        لعبة برا السالفة - الإصدار 4.9 &copy; 2026
     </footer>
 
     <!-- طبقة الوميض التحذيري (إنذار كشف الدور) -->
@@ -629,8 +629,8 @@
             const MAX_HISTORY_LEN = 50;
 
             const STATE = {
-                version: '4.6',
-                settingsProfile: '4.6',
+                version: '4.9',
+                settingsProfile: '4.9',
                 fontFamily: 'Tajawal',
                 fontSize: 16,
                 perfectSneakBonus: true,
@@ -788,12 +788,12 @@
                         if (parsed.passSafetyTimerEnabled !== undefined) STATE.passSafetyTimerEnabled = parsed.passSafetyTimerEnabled;
                         if (parsed.passSafetyTimerDuration) STATE.passSafetyTimerDuration = parseInt(parsed.passSafetyTimerDuration) || 5;
 
-                        // ترحيل لمرة واحدة لإصدار 4.6: فرض الافتراضيات الجديدة مع الإبقاء على اللاعبين والنقاط
-                        if (parsed.settingsProfile !== '4.6') {
+                        // ترحيل لمرة واحدة لإصدار 4.9: فرض الافتراضيات الجديدة مع الإبقاء على اللاعبين والنقاط
+                        if (parsed.settingsProfile !== '4.9') {
                             STATE.fontFamily = 'Tajawal';
                             STATE.perfectSneakBonus = true;
                             STATE.rejectOutsiderEnabled = false;
-                            STATE.settingsProfile = '4.6';
+                            STATE.settingsProfile = '4.9';
                             setTimeout(saveState, 0);
                         }
                     } catch (e) { }
@@ -1562,18 +1562,21 @@
                     }
                     if (numOutsiders >= playerCount - 1) numOutsiders = Math.max(1, playerCount - 2);
 
-                    const eligibleForOutsider = activePlayers.filter(p => (p.totalOutsiderCount || 0) < 2).map(p => p.id);
-                    if (eligibleForOutsider.length === 0) {
-                        alertCustom('كل اللاعبين وصلوا الحد الأقصى: مرتان برا السالفة. أضف لاعباً جديداً أو ابدأ تشكيلة جديدة.');
-                        return;
+                    // إذا وصل جميع اللاعبين النشطين إلى مرتين أو أكثر، يتم تصفير العداد لتبدأ دورة جديدة
+                    if (activePlayers.every(p => (p.totalOutsiderCount || 0) >= 2)) {
+                        activePlayers.forEach(p => { p.totalOutsiderCount = 0; });
                     }
-                    //5656565656
-                    // Never assign a third outsider role. If fewer eligible players remain,
-                    // the round continues with the number that is still available.
-                    numOutsiders = Math.min(numOutsiders, eligibleForOutsider.length);
 
-                    const shuffledIds = [...eligibleForOutsider].sort(() => Math.random() - 0.5);
-                    chosenOutsiders = shuffledIds.slice(0, numOutsiders);
+                    // إعطاء الأولوية للاعبين الذين كانوا برا السالفة أقل من مرتين
+                    const priorityCandidates = activePlayers.filter(p => (p.totalOutsiderCount || 0) < 2);
+                    const secondaryCandidates = activePlayers.filter(p => (p.totalOutsiderCount || 0) >= 2);
+
+                    const shuffledPriority = [...priorityCandidates].sort(() => Math.random() - 0.5);
+                    const shuffledSecondary = [...secondaryCandidates].sort(() => Math.random() - 0.5);
+
+                    // اختيار برا السالفة بالأولوية، ثم إكمال العدد من بقية اللاعبين إن لزم
+                    const selectionPool = [...shuffledPriority, ...shuffledSecondary];
+                    chosenOutsiders = selectionPool.slice(0, numOutsiders).map(p => p.id);
 
                     STATE.players.forEach(p => {
                         if (chosenOutsiders.includes(p.id)) {
@@ -2028,13 +2031,17 @@
             function getEligibleOutsiderReplacementIds() {
                 const round = STATE.currentRound;
                 const revealOrder = Array.isArray(round.revealOrder) ? round.revealOrder : [];
-                return revealOrder.slice(round.activeRevealerIdx + 1).filter((id) => {
+                const available = revealOrder.slice(round.activeRevealerIdx + 1).filter((id) => {
                     const player = STATE.players.find((candidate) => candidate.id === id);
                     return player
                         && !round.outsiders.includes(id)
-                        && !round.rejectedPlayers.includes(id)
-                        && (Number(player.totalOutsiderCount) || 0) < 2;
+                        && !round.rejectedPlayers.includes(id);
                 });
+                const priority = available.filter((id) => {
+                    const player = STATE.players.find((candidate) => candidate.id === id);
+                    return (Number(player?.totalOutsiderCount) || 0) < 2;
+                });
+                return priority.length > 0 ? priority : available;
             }
 
             function rejectOutsiderRole(playerId) {
@@ -2043,7 +2050,7 @@
 
                 const replacementIds = getEligibleOutsiderReplacementIds();
                 if (replacementIds.length === 0) {
-                    alertCustom('لا يوجد لاعب مؤهل لمقايضة الدور من دون تجاوز حد المرتين.');
+                    alertCustom('لا يوجد لاعب بديل متاح لمقايضة الدور في هذه الجولة.');
                     return;
                 }
 
@@ -2988,7 +2995,7 @@
 
                 const saveCanvas = (canvas) => {
                     const link = document.createElement('a');
-                    link.download = `نتائج_برا_السالفة_v4.6.png`;
+                    link.download = `نتائج_برا_السالفة_v4.9.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 };
